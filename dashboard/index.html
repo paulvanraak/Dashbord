@@ -1,0 +1,1123 @@
+<title>Life Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: a day sheet. Date masthead, one inverted briefing band, then three working lanes: agenda | inbox | work + Slack. */
+:root {
+  --bg: #ECEEF2;
+  --surface: #FFFFFF;
+  --raised: #F5F6F9;
+  --ink: #141821;
+  --muted: #586072;
+  --faint: #868D9D;
+  --line: #D8DCE3;
+  --accent: #2F45C8;
+  --accent-soft: #E2E6FA;
+  --band: #141821;
+  --band-ink: #F2F3F6;
+  --band-muted: #A3AABA;
+  --band-line: #2C3242;
+  --band-accent: #AEB9FF;
+  --warn: #8A5300;
+  --warn-soft: #FAEED6;
+  --crit: #B3262E;
+  --crit-soft: #FBE2E3;
+  --ok: #1C7246;
+  --ok-soft: #DCF1E4;
+  --skeleton: #E3E6EB;
+  --font-display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0E1117; --surface: #161A22; --raised: #1C212B; --ink: #E8EAF0; --muted: #A0A7B6; --faint: #747C8D; --line: #272D39;
+    --accent: #9AA8FF; --accent-soft: #232A4A;
+    --band: #1F2535; --band-ink: #F2F3F6; --band-muted: #A3AABA; --band-line: #323A4D; --band-accent: #AEB9FF;
+    --warn: #F2B861; --warn-soft: #382910; --crit: #FF8F95; --crit-soft: #3B1A1D; --ok: #7FD6A5; --ok-soft: #13301F;
+    --skeleton: #222834;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0E1117; --surface: #161A22; --raised: #1C212B; --ink: #E8EAF0; --muted: #A0A7B6; --faint: #747C8D; --line: #272D39;
+  --accent: #9AA8FF; --accent-soft: #232A4A;
+  --band: #1F2535; --band-ink: #F2F3F6; --band-muted: #A3AABA; --band-line: #323A4D; --band-accent: #AEB9FF;
+  --warn: #F2B861; --warn-soft: #382910; --crit: #FF8F95; --crit-soft: #3B1A1D; --ok: #7FD6A5; --ok-soft: #13301F;
+  --skeleton: #222834;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font: 14px/1.5 var(--font-body); -webkit-font-smoothing: antialiased; }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+
+.wrap { max-width: 1440px; margin: 0 auto; padding-inline: 16px; padding-block: 20px 56px; display: grid; gap: 20px; }
+@media (min-width: 760px) { .wrap { padding-inline: 24px; padding-block: 28px 64px; } }
+
+/* Masthead */
+.mast { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px 24px; }
+.mast-date { display: grid; gap: 2px; min-width: 0; }
+.eyebrow { font: 500 12px/1.2 var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.mast h1 { margin: 0; font: 700 clamp(30px, 6vw, 44px)/1.02 var(--font-display); letter-spacing: -0.02em; text-wrap: balance; }
+.mast-side { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.stat { display: inline-flex; align-items: baseline; gap: 6px; padding: 6px 10px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); font-size: 13px; color: var(--muted); white-space: nowrap; }
+.stat b { font: 500 14px/1 var(--font-mono); color: var(--ink); font-variant-numeric: tabular-nums; }
+.stat.hot { border-color: transparent; background: var(--crit-soft); color: var(--crit); }
+.stat.hot b { color: var(--crit); }
+a.stat:hover { border-color: var(--faint); }
+
+.btn { display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 5px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); cursor: pointer; font-size: 13px; font-weight: 500; }
+.btn:hover { border-color: var(--faint); }
+.btn svg { width: 14px; height: 14px; }
+.icon-btn { display: inline-grid; place-items: center; width: 30px; height: 30px; border: 0; border-radius: 6px; background: transparent; color: var(--muted); cursor: pointer; }
+.icon-btn:hover { background: var(--raised); color: var(--ink); }
+.icon-btn svg { width: 16px; height: 16px; }
+
+/* Briefing band */
+.brief { background: var(--band); color: var(--band-ink); border-radius: 14px; padding: 20px 18px; display: grid; gap: 16px; }
+@media (min-width: 760px) { .brief { padding: 26px 28px; } }
+.brief .eyebrow { color: var(--band-muted); display: flex; flex-wrap: wrap; gap: 6px 14px; }
+.brief .eyebrow .old { color: var(--band-accent); }
+.brief h2 { margin: 0; font: 700 clamp(22px, 3.4vw, 30px)/1.15 var(--font-display); letter-spacing: -0.01em; text-wrap: balance; max-width: 38ch; }
+.brief .summary { margin: 0; max-width: 72ch; color: var(--band-ink); opacity: .86; font-size: 15px; }
+.brief-cols { display: grid; gap: 18px; grid-template-columns: 1fr; border-top: 1px solid var(--band-line); padding-top: 16px; }
+@media (min-width: 900px) { .brief-cols { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; } }
+.brief h3 { margin: 0 0 8px; font: 500 12px/1.2 var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--band-muted); }
+.brief ol, .brief ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; }
+.prio { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 2px 8px; }
+.prio .n { font: 500 13px/1.45 var(--font-mono); color: var(--band-accent); }
+.prio .t { font-weight: 600; }
+.prio .w, .bitem .d { grid-column: 2; color: var(--band-muted); font-size: 13px; }
+.bitem { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 2px 8px; align-items: baseline; }
+.bitem .t { font-weight: 500; }
+.bitem a.t:hover, .prio a.t:hover { text-decoration: underline; text-underline-offset: 3px; }
+.src { font: 500 11px/1.6 var(--font-mono); text-transform: uppercase; letter-spacing: .06em; padding: 0 6px; border: 1px solid var(--band-line); border-radius: 4px; color: var(--band-muted); }
+.focus { margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--band-line); color: var(--band-ink); font-size: 13px; }
+.focus b { color: var(--band-accent); font-weight: 500; }
+.brief .issues { font-size: 12px; color: var(--band-muted); }
+.brief-empty { display: grid; gap: 6px; }
+.brief-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; }
+.btn.band { background: transparent; color: var(--band-ink); border-color: var(--band-line); }
+.btn.band:hover { border-color: var(--band-muted); }
+.brief-status { color: var(--band-muted); font-size: 13px; }
+.brief-empty p { margin: 0; color: var(--band-muted); max-width: 64ch; }
+
+/* Lanes */
+.board { display: grid; gap: 16px; grid-template-columns: minmax(0, 1fr); grid-template-areas: "agenda" "mail" "tasks" "slack"; align-items: start; }
+@media (min-width: 760px) { .board { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-areas: "agenda mail" "tasks slack"; } }
+@media (min-width: 1200px) { .board { grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr) minmax(0, 1fr); grid-template-areas: "agenda mail tasks" "agenda mail slack"; } }
+#agenda { grid-area: agenda; } #mail { grid-area: mail; } #tasks { grid-area: tasks; } #slack { grid-area: slack; }
+.lane { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; min-width: 0; display: grid; grid-template-rows: auto auto 1fr; }
+.lane-head { display: flex; align-items: center; gap: 8px; padding: 12px 10px 10px 16px; border-bottom: 1px solid var(--line); min-width: 0; }
+.lane-head h2 { margin: 0; font: 700 18px/1.2 var(--font-display); letter-spacing: -0.01em; }
+.lane-head .count { font: 500 12px/1 var(--font-mono); color: var(--muted); padding: 3px 6px; border-radius: 4px; background: var(--raised); }
+.lane-head .spacer { flex: 1; }
+.fresh { font-size: 12px; color: var(--faint); white-space: nowrap; }
+.tools { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 8px 16px; border-bottom: 1px solid var(--line); }
+.tools:empty { display: none; }
+.seg { display: inline-flex; padding: 2px; border-radius: 7px; background: var(--raised); border: 1px solid var(--line); }
+.seg button { border: 0; background: transparent; padding: 3px 10px; border-radius: 5px; font-size: 12px; font-weight: 500; color: var(--muted); cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 0 0 1px var(--line); }
+.daynav { display: inline-flex; align-items: center; gap: 2px; }
+.daynav .lbl { font-size: 13px; font-weight: 600; padding-inline: 6px; min-width: 9ch; text-align: center; }
+.list { list-style: none; margin: 0; padding: 4px 0; min-width: 0; }
+@media (min-width: 760px) { .list { max-height: min(70vh, 640px); overflow: auto; overscroll-behavior: contain; } #mail .list, #agenda .list { max-height: min(82vh, 980px); } }
+.list > li + li { border-top: 1px solid var(--line); }
+.row { display: grid; gap: 2px 12px; padding: 10px 16px; min-width: 0; }
+a.row:hover { background: var(--raised); }
+.row .title { font-weight: 600; min-width: 0; overflow-wrap: anywhere; }
+.row .meta { color: var(--muted); font-size: 12.5px; min-width: 0; overflow-wrap: anywhere; }
+.row .snip { color: var(--muted); font-size: 13px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere; }
+.chips { display: inline-flex; flex-wrap: wrap; gap: 4px; vertical-align: 1px; }
+.chip { display: inline-block; font-size: 11px; font-weight: 500; line-height: 18px; padding: 0 6px; border-radius: 4px; background: var(--raised); color: var(--muted); white-space: nowrap; }
+.chip.accent { background: var(--accent-soft); color: var(--accent); }
+.chip.warn { background: var(--warn-soft); color: var(--warn); }
+.chip.crit { background: var(--crit-soft); color: var(--crit); }
+.chip.ok { background: var(--ok-soft); color: var(--ok); }
+.more { padding: 10px 16px 14px; }
+.empty { padding: 22px 16px; color: var(--muted); }
+.note { margin: 10px 12px; padding: 10px 12px; border-radius: 8px; background: var(--warn-soft); color: var(--warn); font-size: 13px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.note.crit { background: var(--crit-soft); color: var(--crit); }
+.note .btn { background: var(--surface); color: var(--ink); }
+.skel { display: grid; gap: 14px; padding: 16px; }
+.skel i { display: block; height: 10px; border-radius: 4px; background: var(--skeleton); }
+.skel i:nth-child(3n+1) { width: 82%; } .skel i:nth-child(3n+2) { width: 64%; } .skel i:nth-child(3n) { width: 46%; }
+@media (prefers-reduced-motion: no-preference) { .skel i { animation: pulse 1.4s ease-in-out infinite; } }
+@keyframes pulse { 50% { opacity: .45; } }
+
+/* Agenda rows */
+.ev { grid-template-columns: 52px minmax(0, 1fr); }
+.ev .when { font: 500 13px/1.45 var(--font-mono); font-variant-numeric: tabular-nums; }
+.ev .when span { display: block; color: var(--faint); font-weight: 400; }
+.ev.past { opacity: .55; }
+.ev.declined .title { text-decoration: line-through; color: var(--muted); }
+.ev .links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 4px; font-size: 12.5px; }
+.ev .links a { color: var(--accent); font-weight: 500; }
+.ev .links a:hover { text-decoration: underline; text-underline-offset: 3px; }
+.gap { grid-template-columns: 52px minmax(0, 1fr); padding-block: 6px; color: var(--ok); font-size: 12.5px; }
+.gap .when { font: 400 12px/1.45 var(--font-mono); }
+.nowline { display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 12px; align-items: center; padding: 2px 16px; color: var(--crit); font: 500 11px/1 var(--font-mono); }
+.nowline::after { content: ""; height: 2px; background: var(--crit); border-radius: 2px; }
+.list > li.nowli { border-top: 0; }
+.list > li.nowli + li { border-top: 0; }
+
+/* Mail rows */
+.mail { grid-template-columns: 8px minmax(0, 1fr) auto; align-items: start; }
+.mail .dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 7px; background: transparent; }
+.mail.unread .dot { background: var(--accent); }
+.mail .from { font-weight: 500; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mail.unread .from, .mail.unread .title { font-weight: 700; }
+.mail .title { font-weight: 500; }
+.mail .date { font: 400 12px/1.6 var(--font-mono); color: var(--faint); white-space: nowrap; }
+.mail .body { min-width: 0; display: grid; gap: 1px; }
+.mail .line1 { display: flex; gap: 6px; align-items: center; min-width: 0; }
+
+/* Task rows */
+.task { grid-template-columns: minmax(0, 1fr) auto; align-items: start; }
+.task .side { display: grid; justify-items: end; gap: 4px; }
+.task .due { font: 400 12px/1.4 var(--font-mono); color: var(--muted); white-space: nowrap; }
+.task .due.late { color: var(--crit); font-weight: 500; }
+
+/* Slack rows */
+.msg { grid-template-columns: minmax(0, 1fr) auto; }
+.msg .who { font-weight: 600; }
+.msg .date { font: 400 12px/1.6 var(--font-mono); color: var(--faint); white-space: nowrap; }
+.msg .snip { -webkit-line-clamp: 3; color: var(--ink); opacity: .85; grid-column: 1 / -1; }
+
+.foot { color: var(--faint); font-size: 12px; display: flex; flex-wrap: wrap; gap: 6px 16px; }
+</style>
+
+<div class="wrap">
+  <header class="mast">
+    <div class="mast-date">
+      <span class="eyebrow" id="mast-eyebrow">Week · vandaag</span>
+      <h1 id="mast-date">Vandaag</h1>
+    </div>
+    <div class="mast-side" id="stats">
+      <a class="stat" href="#agenda"><b id="st-meet">–</b> afspraken</a>
+      <a class="stat" href="#mail"><b id="st-unread">–</b> ongelezen</a>
+      <a class="stat" href="#tasks" id="st-wait-wrap"><b id="st-wait">–</b> wachten op jou</a>
+      <a class="stat" href="#slack"><b id="st-slack">–</b> Slack</a>
+      <button class="btn" id="refresh-all" type="button" title="Alle bronnen opnieuw ophalen">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9"/><path d="M13.5 2.5v3h-3"/></svg>
+        Ververs
+      </button>
+    </div>
+  </header>
+
+  <section class="brief" id="briefing" aria-label="Ochtendbriefing">
+    <div class="brief-empty">
+      <span class="eyebrow">Ochtendbriefing</span>
+      <h2>Briefing laden…</h2>
+    </div>
+  </section>
+
+  <main class="board">
+    <section class="lane" id="agenda" aria-labelledby="h-agenda">
+      <div class="lane-head">
+        <h2 id="h-agenda">Agenda</h2><span class="count mono" id="c-agenda">–</span><span class="spacer"></span>
+        <span class="fresh" id="f-agenda"></span>
+        <button class="icon-btn" type="button" data-refresh="agenda" aria-label="Agenda verversen"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9"/><path d="M13.5 2.5v3h-3"/></svg></button>
+      </div>
+      <div class="tools">
+        <div class="daynav">
+          <button class="icon-btn" type="button" id="day-prev" aria-label="Vorige dag"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M10 3 5 8l5 5"/></svg></button>
+          <span class="lbl" id="day-label">Vandaag</span>
+          <button class="icon-btn" type="button" id="day-next" aria-label="Volgende dag"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="m6 3 5 5-5 5"/></svg></button>
+        </div>
+        <button class="btn" type="button" id="day-today" hidden>Naar vandaag</button>
+      </div>
+      <div class="lane-body" id="b-agenda"><div class="skel"><i></i><i></i><i></i><i></i><i></i></div></div>
+    </section>
+
+    <section class="lane" id="mail" aria-labelledby="h-mail">
+      <div class="lane-head">
+        <h2 id="h-mail">Mail</h2><span class="count mono" id="c-mail">–</span><span class="spacer"></span>
+        <span class="fresh" id="f-mail"></span>
+        <button class="icon-btn" type="button" data-refresh="mail" aria-label="Mail verversen"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9"/><path d="M13.5 2.5v3h-3"/></svg></button>
+      </div>
+      <div class="tools">
+        <div class="seg" role="group" aria-label="Mailfilter">
+          <button type="button" data-mail="all" aria-pressed="true">Inbox</button>
+          <button type="button" data-mail="unread" aria-pressed="false">Ongelezen</button>
+          <button type="button" data-mail="important" aria-pressed="false">Belangrijk</button>
+        </div>
+      </div>
+      <div class="lane-body" id="b-mail"><div class="skel"><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
+    </section>
+
+    <section class="lane" id="tasks" aria-labelledby="h-tasks">
+      <div class="lane-head">
+        <h2 id="h-tasks">Taken</h2><span class="count mono" id="c-tasks">–</span><span class="spacer"></span>
+        <span class="fresh" id="f-tasks"></span>
+        <button class="icon-btn" type="button" data-refresh="tasks" aria-label="Taken verversen"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9"/><path d="M13.5 2.5v3h-3"/></svg></button>
+      </div>
+      <div class="tools">
+        <div class="seg" role="group" aria-label="Takenfilter">
+          <button type="button" data-tasks="mine" aria-pressed="true">Aandacht</button>
+          <button type="button" data-tasks="open" aria-pressed="false">Open</button>
+          <button type="button" data-tasks="all" aria-pressed="false">Alles</button>
+        </div>
+      </div>
+      <div class="lane-body" id="b-tasks"><div class="skel"><i></i><i></i><i></i><i></i></div></div>
+    </section>
+
+    <section class="lane" id="slack" aria-labelledby="h-slack">
+      <div class="lane-head">
+        <h2 id="h-slack">Slack</h2><span class="count mono" id="c-slack">–</span><span class="spacer"></span>
+        <span class="fresh" id="f-slack"></span>
+        <button class="icon-btn" type="button" data-refresh="slack" aria-label="Slack verversen"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9"/><path d="M13.5 2.5v3h-3"/></svg></button>
+      </div>
+      <div class="tools">
+        <span class="meta" style="font-size:12.5px;color:var(--muted)">Mentions en DM's van de afgelopen 3 dagen</span>
+      </div>
+      <div class="lane-body" id="b-slack"><div class="skel"><i></i><i></i><i></i></div></div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <span>Live uit Google Calendar, Gmail, monday.com en Slack, met jouw eigen koppelingen.</span>
+    <span>Briefing: elke werkdag om 06:45.</span>
+  </footer>
+</div>
+
+<script>
+(() => {
+  "use strict";
+
+  const TZ = "Europe/Amsterdam";
+  const SV = { cal: "Google Calendar", mail: "Gmail", monday: "monday.com", slack: "Slack" };
+  const SLACK_ME = "U05GUG7LL2W";
+  const DENIALS = new Set(["needs_reauth", "server_not_connected", "server_not_found", "selection_required", "not_in_manifest", "blocked_by_policy", "approval_required", "consent_required", "not_granted", "capability_disabled", "capability_removed"]);
+  const WATCH_CACHE = { staleTime: 60000, gcTime: 86400000 };
+
+  // ---------- small helpers ----------
+  const $ = (id) => document.getElementById(id);
+  function el(tag, props, ...kids) {
+    const n = document.createElement(tag);
+    for (const [k, v] of Object.entries(props || {})) {
+      if (v == null || v === false) continue;
+      if (k === "class") n.className = v;
+      else if (k === "text") n.textContent = v;
+      else if (k.startsWith("on")) n.addEventListener(k.slice(2), v);
+      else n.setAttribute(k, v === true ? "" : String(v));
+    }
+    for (const c of kids.flat()) {
+      if (c == null || c === false) continue;
+      n.append(c.nodeType ? c : document.createTextNode(String(c)));
+    }
+    return n;
+  }
+  const chip = (text, tone) => el("span", { class: "chip" + (tone ? " " + tone : ""), text });
+  const ext = (href, props, ...kids) => el("a", Object.assign({ href, target: "_blank", rel: "noopener noreferrer" }, props), ...kids);
+  function decode(s) { const t = document.createElement("textarea"); t.innerHTML = String(s || ""); return t.value; }
+  const store = {
+    get(k, d) { try { const v = localStorage.getItem("ld:" + k); return v == null ? d : v; } catch { return d; } },
+    set(k, v) { try { localStorage.setItem("ld:" + k, v); } catch { /* storage unavailable */ } },
+  };
+
+  // ---------- dates (all in Europe/Amsterdam) ----------
+  const ymdFmt = new Intl.DateTimeFormat("en-CA", { timeZone: TZ, year: "numeric", month: "2-digit", day: "2-digit" });
+  const hmFmt = new Intl.DateTimeFormat("nl-NL", { timeZone: TZ, hour: "2-digit", minute: "2-digit", hourCycle: "h23" });
+  const shortFmt = new Intl.DateTimeFormat("nl-NL", { timeZone: TZ, day: "numeric", month: "short" });
+  const ymd = (d) => ymdFmt.format(d);
+  const today = () => ymd(new Date());
+  const utcOf = (s) => { const [y, m, d] = s.split("-").map(Number); return new Date(Date.UTC(y, m - 1, d)); };
+  const addDays = (s, n) => { const t = utcOf(s); t.setUTCDate(t.getUTCDate() + n); return t.toISOString().slice(0, 10); };
+  const weekday = (s) => utcOf(s).getUTCDay();
+  const dayLong = (s, opts) => new Intl.DateTimeFormat("nl-NL", Object.assign({ timeZone: "UTC" }, opts)).format(utcOf(s));
+  function isoWeek(s) {
+    const t = utcOf(s); const wd = t.getUTCDay() || 7;
+    t.setUTCDate(t.getUTCDate() + 4 - wd);
+    const y0 = new Date(Date.UTC(t.getUTCFullYear(), 0, 1));
+    return Math.ceil(((t - y0) / 864e5 + 1) / 7);
+  }
+  function minuteOfDay(d) {
+    const p = hmFmt.formatToParts(d);
+    return (+p.find((x) => x.type === "hour").value) * 60 + (+p.find((x) => x.type === "minute").value);
+  }
+  const hm = (d) => hmFmt.format(d);
+  const mm = (m) => String(Math.floor(m / 60)).padStart(2, "0") + ":" + String(m % 60).padStart(2, "0");
+  function dur(m) { const h = Math.floor(m / 60), r = m % 60; return (h ? h + "u" : "") + (r ? (h ? " " : "") + r + "m" : ""); }
+  function relDate(d) {
+    if (!(d instanceof Date) || isNaN(d)) return "";
+    const t = today(), dy = ymd(d);
+    if (dy === t) return hm(d);
+    if (dy === addDays(t, -1)) return "gisteren";
+    return shortFmt.format(d).replace(".", "");
+  }
+  function dayLabel(s) {
+    const t = today();
+    if (s === t) return "Vandaag";
+    if (s === addDays(t, 1)) return "Morgen";
+    if (s === addDays(t, -1)) return "Gisteren";
+    return dayLong(s, { weekday: "short", day: "numeric", month: "short" }).replace(".", "");
+  }
+  function nextBriefingText() {
+    const now = new Date(), t = today();
+    const wd = weekday(t);
+    if (wd >= 1 && wd <= 5 && minuteOfDay(now) < 6 * 60 + 45) return "vandaag om 06:45";
+    let d = addDays(t, 1);
+    while (weekday(d) === 0 || weekday(d) === 6) d = addDays(d, 1);
+    return (d === addDays(t, 1) ? "morgen" : dayLong(d, { weekday: "long" })) + " om 06:45";
+  }
+
+  // ---------- masthead ----------
+  function renderMast() {
+    const t = today();
+    $("mast-eyebrow").textContent = "Week " + isoWeek(t) + " · " + dayLong(t, { weekday: "long" });
+    $("mast-date").textContent = dayLong(t, { day: "numeric", month: "long" });
+  }
+  renderMast();
+
+  const counts = { meet: null, unread: null, wait: null, slack: null };
+  function renderStats() {
+    const show = (id, v) => { $(id).textContent = v == null ? "–" : String(v); };
+    show("st-meet", counts.meet); show("st-unread", counts.unread); show("st-wait", counts.wait); show("st-slack", counts.slack);
+    $("st-wait-wrap").classList.toggle("hot", !!counts.wait);
+  }
+
+  // ---------- section plumbing ----------
+  function setFresh(key, ts) {
+    $("f-" + key).textContent = ts ? "Bijgewerkt " + hm(new Date(ts)) : "";
+  }
+  function setCount(key, v) { $("c-" + key).textContent = v == null ? "–" : String(v); }
+  function stampOf(result) { return (result && result.cache && result.cache.storedAt) || Date.now(); }
+
+  let mcp = null;
+  let permissions = null;
+  async function openPermissions() {
+    try { if (permissions) await permissions.manage(); else throw new Error(); }
+    catch { alertNote("Open het menu Permissions van dit dashboard in claude.ai om de koppeling weer aan te zetten."); }
+  }
+  function alertNote(text) {
+    const n = el("div", { class: "note", role: "status", text });
+    document.querySelector(".wrap").prepend(n);
+    setTimeout(() => n.remove(), 8000);
+  }
+
+  // Builds the message for a failed connector call, with the one action that fixes it.
+  function problem(server, err, handlers) {
+    const code = (err && err.code) || "upstream_error";
+    let text, action = null, tone = "";
+    switch (code) {
+      case "needs_reauth":
+        text = server + " moet opnieuw verbonden worden. Ga in claude.ai naar Instellingen → Connectors en verbind " + server + " opnieuw."; tone = "crit"; break;
+      case "server_not_connected": case "server_not_found":
+        text = server + " is niet gekoppeld. Voeg het toe in claude.ai via Instellingen → Connectors."; tone = "crit"; break;
+      case "selection_required":
+        text = "Je hebt meer dan één " + server + "-koppeling. Kies er één in de melding van Claude en laad de pagina opnieuw."; break;
+      case "not_in_manifest": case "consent_required":
+        text = server + " staat uit voor dit dashboard."; action = ["Rechten beheren", openPermissions]; break;
+      case "blocked_by_policy":
+        text = "Je organisatie staat " + server + " hier niet toe."; tone = "crit"; break;
+      case "approval_required":
+        text = server + " vraagt eerst om jouw akkoord."; if (handlers.approve) action = ["Toestaan", handlers.approve]; break;
+      case "not_granted": case "capability_disabled": case "capability_removed":
+        text = "Live gegevens zijn niet beschikbaar in deze weergave. Open het dashboard in claude.ai."; break;
+      case "tool_error":
+        text = server + " gaf een fout terug: " + (err.message || "onbekende fout") + "."; if (handlers.retry) action = ["Opnieuw", handlers.retry]; break;
+      default:
+        text = server + " reageert nu niet."; if (handlers.retry) action = ["Opnieuw", handlers.retry];
+    }
+    const n = el("div", { class: "note" + (tone ? " " + tone : ""), role: "status" }, el("span", { text }));
+    if (action) n.append(el("button", { class: "btn", type: "button", text: action[0], onclick: action[1] }));
+    return n;
+  }
+
+  // One live widget: watches a connector tool, keeps last-good data on transient errors,
+  // drops it on authorisation errors, and renders through `draw`.
+  function widget(key, server, draw) {
+    const w = { key, server, tool: null, input: null, interval: 300000, data: null, err: null, at: null, unsub: null, retried: false, draw };
+    w.render = () => {
+      const body = $("b-" + key);
+      body.replaceChildren();
+      const handlers = { retry: () => w.refresh(), approve: () => w.approve() };
+      if (w.err) body.append(problem(server, w.err, handlers));
+      if (w.data != null) body.append(draw(w.data, w));
+      else if (!w.err) body.append(el("div", { class: "skel" }, el("i"), el("i"), el("i"), el("i")));
+      setFresh(key, w.data != null ? w.at : null);
+    };
+    w.watch = (tool, input, interval) => {
+      if (w.unsub) w.unsub();
+      w.tool = tool; w.input = input; w.interval = interval || w.interval; w.retried = false;
+      if (!mcp) return;
+      w.unsub = mcp.watchTool(server, tool, input, (ev) => {
+        if (ev.type === "data") {
+          w.data = ev.result.payload; w.at = stampOf(ev.result); w.err = null; w.retried = false;
+        } else {
+          const e = ev.error || {};
+          w.err = e;
+          if (DENIALS.has(e.code)) w.data = null;
+          if (e.retryable && !w.retried) {
+            w.retried = true;
+            setTimeout(() => mcp.invalidate(server, tool, input).catch(() => {}), (e.retryAfterMs || 0) + 800 + Math.random() * 1600);
+          }
+        }
+        w.render();
+      }, { cache: WATCH_CACHE, refetchInterval: w.interval });
+    };
+    w.refresh = () => {
+      if (!mcp || !w.tool) return;
+      w.retried = false;
+      mcp.invalidate(server, w.tool, w.input).catch(() => w.watch(w.tool, w.input, w.interval));
+    };
+    w.approve = async () => {
+      try {
+        const r = await mcp.callTool(server, w.tool, w.input);
+        w.data = r.payload; w.at = stampOf(r); w.err = null;
+      } catch (e) { w.err = e; }
+      w.render();
+    };
+    w.fail = (e) => { w.err = e; w.data = null; w.render(); };
+    return w;
+  }
+
+  // ---------- Agenda ----------
+  let calDay = today();
+  let myEmail = null;
+  const cal = widget("agenda", SV.cal, drawAgenda);
+
+  function eventTimes(ev) {
+    if (ev.start && ev.start.dateTime) return { allDay: false, s: new Date(ev.start.dateTime), e: new Date(ev.end && ev.end.dateTime || ev.start.dateTime) };
+    return { allDay: true, s: null, e: null };
+  }
+  function drawAgenda(data) {
+    if (data && data.summary && /@/.test(data.summary)) myEmail = data.summary.toLowerCase();
+    const events = (data && Array.isArray(data.events) ? data.events : []).filter((e) => e.status !== "cancelled");
+    const rows = events.map((ev) => {
+      const t = eventTimes(ev);
+      const me = (ev.attendees || []).find((a) => a.self);
+      const rsvp = me ? me.responseStatus : "accepted";
+      return { ev, ...t, rsvp, declined: rsvp === "declined" };
+    });
+    const timed = rows.filter((r) => !r.allDay);
+    const active = timed.filter((r) => !r.declined);
+    for (const r of active) r.overlap = active.some((o) => o !== r && o.s < r.e && r.s < o.e);
+    const isToday = calDay === today();
+    const now = new Date();
+    const count = rows.filter((r) => !r.declined).length;
+    setCount("agenda", count);
+    if (isToday) { counts.meet = count; renderStats(); }
+
+    if (!rows.length) {
+      return el("p", { class: "empty", text: isToday ? "Geen afspraken vandaag." : "Geen afspraken op " + dayLabel(calDay).toLowerCase() + "." });
+    }
+
+    const list = el("ul", { class: "list" });
+    for (const r of rows.filter((x) => x.allDay)) {
+      list.append(el("li", null, eventRow(r, false)));
+    }
+
+    // Free blocks of 45 minutes or more between 09:00 and 18:00 on working days.
+    const minsOf = (r) => {
+      const sd = ymd(r.s), ed = ymd(r.e);
+      return [sd < calDay ? 0 : minuteOfDay(r.s), ed > calDay ? 1440 : minuteOfDay(r.e)];
+    };
+    const busy = active.map(minsOf).sort((a, b) => a[0] - b[0]);
+    const gaps = [];
+    const wd = weekday(calDay);
+    if (wd >= 1 && wd <= 5) {
+      let cursor = 9 * 60;
+      if (isToday) cursor = Math.max(cursor, minuteOfDay(now));
+      for (const [s, e] of busy) {
+        if (cursor >= 18 * 60) break;
+        const end = Math.min(s, 18 * 60);
+        if (end - cursor >= 45) gaps.push([cursor, end]);
+        cursor = Math.max(cursor, e);
+      }
+      if (18 * 60 - cursor >= 45) gaps.push([cursor, 18 * 60]);
+    }
+
+    const items = timed.map((r) => ({ at: minsOf(r)[0], r }))
+      .concat(gaps.map((g) => ({ at: g[0], gap: g })));
+    if (isToday) items.push({ at: minuteOfDay(now), now: true });
+    items.sort((a, b) => a.at - b.at || (a.now ? -1 : b.now ? 1 : 0) || (a.gap ? 1 : b.gap ? -1 : 0));
+
+    for (const it of items) {
+      if (it.now) {
+        list.append(el("li", { class: "nowli" }, el("div", { class: "nowline", "aria-label": "Nu" }, el("span", { text: hm(now) }))));
+      } else if (it.gap) {
+        const [s, e] = it.gap;
+        list.append(el("li", null, el("div", { class: "row gap" }, el("span", { class: "when", text: mm(s) }), el("span", { text: "Vrij tot " + mm(e) + " · " + dur(e - s) }))));
+      } else {
+        const past = isToday && it.r.e < now;
+        list.append(el("li", null, eventRow(it.r, past)));
+      }
+    }
+    return list;
+  }
+  function eventRow(r, past) {
+    const ev = r.ev;
+    const when = r.allDay
+      ? el("div", { class: "when" }, "Hele", el("span", { text: "dag" }))
+      : el("div", { class: "when" }, hm(r.s), el("span", { text: hm(r.e) }));
+    const chips = el("span", { class: "chips" });
+    const now = new Date();
+    if (!r.allDay && !r.declined && r.s <= now && now < r.e) chips.append(chip("Nu", "accent"));
+    if (r.rsvp === "needsAction") chips.append(chip("Nog reageren", "warn"));
+    if (r.rsvp === "tentative") chips.append(chip("Misschien"));
+    if (r.declined) chips.append(chip("Afgewezen"));
+    if (r.overlap) chips.append(chip("Overlapt", "crit"));
+    if (ev.eventType === "FOCUS_TIME") chips.append(chip("Focus", "ok"));
+    if (ev.eventType === "OUT_OF_OFFICE") chips.append(chip("Afwezig"));
+    const people = (ev.attendees || []).filter((a) => !a.resource).length;
+    const metaBits = [];
+    if (ev.location) metaBits.push(ev.location);
+    if (people > 1) metaBits.push(people + " deelnemers");
+    const links = el("div", { class: "links" });
+    if (ev.conferenceUrl) links.append(ext(ev.conferenceUrl, { text: "Deelnemen" }));
+    if (ev.htmlLink) links.append(ext(ev.htmlLink, { text: "Open in Agenda" }));
+    return el("div", { class: "row ev" + (past ? " past" : "") + (r.declined ? " declined" : "") },
+      when,
+      el("div", { style: "min-width:0" },
+        el("div", { class: "title" }, (ev.summary || "(geen titel)") + " ", chips),
+        metaBits.length ? el("div", { class: "meta", text: metaBits.join(" · ") }) : null,
+        links.childNodes.length ? links : null));
+  }
+  function watchCal() {
+    $("day-label").textContent = dayLabel(calDay);
+    $("day-today").hidden = calDay === today();
+    cal.data = null; cal.err = null; cal.render();
+    cal.watch("list_events", { startTime: calDay + "T00:00:00", endTime: addDays(calDay, 1) + "T00:00:00", orderBy: "startTime", pageSize: 100 }, 600000);
+  }
+  $("day-prev").addEventListener("click", () => { calDay = addDays(calDay, -1); watchCal(); });
+  $("day-next").addEventListener("click", () => { calDay = addDays(calDay, 1); watchCal(); });
+  $("day-today").addEventListener("click", () => { calDay = today(); watchCal(); });
+
+  // ---------- Mail ----------
+  const MAIL_Q = { all: "in:inbox", unread: "in:inbox is:unread", important: "in:inbox is:important" };
+  let mailFilter = store.get("mail", "all");
+  if (!MAIL_Q[mailFilter]) mailFilter = "all";
+  let mailExtra = [], mailNext = null, mailLoading = false;
+  const mail = widget("mail", SV.mail, drawMail);
+  const unreadCount = widget("unread", SV.mail, () => el("span"));
+  unreadCount.render = () => {
+    const d = unreadCount.data;
+    if (d) {
+      const n = Array.isArray(d.threads) ? d.threads.length : 0;
+      counts.unread = d.nextPageToken ? n + "+" : n;
+    }
+    renderStats();
+  };
+
+  const CATS = { CATEGORY_UPDATES: "Updates", CATEGORY_PROMOTIONS: "Promotie", CATEGORY_SOCIAL: "Sociaal", CATEGORY_FORUMS: "Forum" };
+  function senderName(raw) {
+    const s = decode(raw || "").trim();
+    const m = s.match(/^"?(.*?)"?\s*<([^>]+)>$/);
+    const addr = (m ? m[2] : s).toLowerCase();
+    if (myEmail && addr === myEmail) return "Jij";
+    return m && m[1] ? m[1] : s;
+  }
+  function mailRow(t) {
+    const msgs = Array.isArray(t.messages) ? t.messages : [];
+    const last = msgs[msgs.length - 1] || {};
+    const labels = new Set(msgs.flatMap((m) => m.labelIds || []));
+    const unread = labels.has("UNREAD");
+    const chips = el("span", { class: "chips" });
+    if (labels.has("IMPORTANT")) chips.append(chip("Belangrijk", "accent"));
+    for (const [k, v] of Object.entries(CATS)) if ((last.labelIds || []).includes(k)) chips.append(chip(v));
+    const n = t.messageCount || msgs.length;
+    const subject = decode(last.subject || (msgs[0] && msgs[0].subject) || "(geen onderwerp)");
+    const row = el(t.viewUrl ? "a" : "div", { class: "row mail" + (unread ? " unread" : "") },
+      el("span", { class: "dot", "aria-label": unread ? "Ongelezen" : null }),
+      el("div", { class: "body" },
+        el("div", { class: "line1" }, el("span", { class: "from", text: senderName(last.sender) + (n > 1 ? "  (" + n + ")" : "") }), chips),
+        el("div", { class: "title", text: subject }),
+        last.snippet ? el("div", { class: "snip", text: decode(last.snippet) }) : null),
+      el("span", { class: "date", text: relDate(new Date(last.date)) }));
+    if (t.viewUrl) { row.href = t.viewUrl; row.target = "_blank"; row.rel = "noopener noreferrer"; }
+    return row;
+  }
+  function drawMail(data) {
+    const seen = new Set();
+    const threads = (data && Array.isArray(data.threads) ? data.threads : []).concat(mailExtra)
+      .filter((t) => { if (!t || seen.has(t.id)) return false; seen.add(t.id); return true; });
+    if (mailNext === null) mailNext = (data && data.nextPageToken) || "";
+    const est = data && data.resultCountEstimate != null ? Number(data.resultCountEstimate) : threads.length;
+    setCount("mail", est);
+    if (!threads.length) {
+      return el("p", { class: "empty", text: mailFilter === "unread" ? "Niets ongelezen. Lekker." : "Je inbox is leeg." });
+    }
+    const frag = document.createDocumentFragment();
+    const list = el("ul", { class: "list" });
+    for (const t of threads) list.append(el("li", null, mailRow(t)));
+    frag.append(list);
+    if (mailNext) {
+      frag.append(el("div", { class: "more" }, el("button", {
+        class: "btn", type: "button", text: mailLoading ? "Laden…" : "Meer laden", disabled: mailLoading, onclick: loadMoreMail,
+      })));
+    }
+    return frag;
+  }
+  async function loadMoreMail() {
+    if (!mcp || !mailNext || mailLoading) return;
+    mailLoading = true; mail.render();
+    try {
+      const r = await mcp.callTool(SV.mail, "search_threads", { query: MAIL_Q[mailFilter], pageSize: 25, pageToken: mailNext }, { cache: { staleTime: 60000 } });
+      const p = r.payload || {};
+      mailExtra = mailExtra.concat(Array.isArray(p.threads) ? p.threads : []);
+      mailNext = p.nextPageToken || "";
+    } catch (e) {
+      alertNote("Meer mail laden lukte niet: " + (e && e.message ? e.message : "probeer het opnieuw") + ".");
+    }
+    mailLoading = false; mail.render();
+  }
+  function watchMail() {
+    document.querySelectorAll("[data-mail]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.mail === mailFilter)));
+    mailExtra = []; mailNext = null;
+    mail.data = null; mail.err = null; mail.render();
+    mail.watch("search_threads", { query: MAIL_Q[mailFilter], pageSize: 25 }, 300000);
+  }
+  document.querySelectorAll("[data-mail]").forEach((b) => b.addEventListener("click", () => {
+    if (mailFilter === b.dataset.mail) return;
+    mailFilter = b.dataset.mail; store.set("mail", mailFilter); watchMail();
+  }));
+
+  // ---------- Taken (monday.com) ----------
+  const DONE = /^(done|klaar|closed|goedgekeurd|afgerond|gereed|completed|complete|opgeleverd|geleverd|live|approved)\b/i;
+  const STUCK = /\b(stuck|vast|blocked|geblokkeerd)\b/i;
+  const PARKED = /(hold|pending|waiting|wacht|afwachting|backlog|later)/i;
+  let tasksFilter = store.get("tasks", "mine");
+  if (!["mine", "open", "all"].includes(tasksFilter)) tasksFilter = "mine";
+  let firstName = "";
+  let itemsQuery = "";
+  const boardsW = widget("tasks-boards", SV.monday, () => el("span"));
+  const tasks = widget("tasks", SV.monday, drawTasks);
+
+  boardsW.render = () => {
+    if (boardsW.err && boardsW.data == null) { tasks.fail(boardsW.err); return; }
+    const d = boardsW.data;
+    if (!d || !Array.isArray(d.boards)) return;
+    if (d.me && d.me.name) firstName = String(d.me.name).split(/\s+/)[0];
+    const parts = [];
+    for (const b of d.boards) {
+      if (!(b.type === "board" || b.type === "sub_items_board")) continue;
+      const cols = (b.columns || []).map((c) => c.id).filter((id) => /^[A-Za-z0-9_]+$/.test(id));
+      if (!cols.length || !/^\d+$/.test(String(b.id))) continue;
+      const rules = cols.map((c) => '{column_id:"' + c + '",compare_value:["assigned_to_me"],operator:any_of}').join(",");
+      parts.push("b" + b.id + ": boards(ids:[" + b.id + "]){ name type items_page(limit:100, query_params:{operator:or, rules:[" + rules + "]}){ items{ id name url group{title} column_values(types:[status,date,timeline]){ type text column{title} } } } }");
+    }
+    const q = parts.length ? "query { " + parts.join(" ") + " }" : "";
+    if (!q) { tasks.data = { empty: true }; tasks.at = boardsW.at; tasks.err = null; tasks.render(); return; }
+    if (q !== itemsQuery) {
+      itemsQuery = q;
+      tasks.watch("all_api_read", { query: q }, 600000);
+    }
+  };
+
+  function taskInfo(item, boardName) {
+    const cv = item.column_values || [];
+    const statuses = cv.filter((c) => c.type === "status");
+    const titleOf = (c) => (c.column && c.column.title) || "";
+    const prio = statuses.find((c) => /prior/i.test(titleOf(c)));
+    const status = statuses.find((c) => /status/i.test(titleOf(c)))
+      || statuses.find((c) => !/prior|type|label|sectie|issue|scope|categor/i.test(titleOf(c)));
+    let due = "";
+    for (const c of cv) {
+      if (!c.text) continue;
+      if (c.type === "date") { due = c.text.slice(0, 10); break; }
+      if (c.type === "timeline") { const m = c.text.match(/(\d{4}-\d{2}-\d{2})\s*$/); if (m) { due = m[1]; break; } }
+    }
+    const st = (status && status.text) || "";
+    const pr = (prio && prio.text) || "";
+    const waitingRe = firstName ? new RegExp("(waiting for|wacht(en)? op|in afwachting van)\\s+" + firstName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i") : null;
+    const waiting = !!(waitingRe && waitingRe.test(st));
+    const done = DONE.test(st);
+    const stuck = STUCK.test(st);
+    const high = /critical|kritiek|urgent|high|hoog/i.test(pr);
+    const t = today();
+    const late = !!due && due < t && !done;
+    const soon = !!due && due >= t && due <= addDays(t, 2) && !done;
+    const parked = !waiting && PARKED.test(st);
+    let score = 0;
+    if (waiting) score += 100; if (stuck) score += 80; if (late) score += 50; if (/critical|kritiek|urgent/i.test(pr)) score += 60; else if (high) score += 40;
+    if (soon) score += 30; if (parked) score -= 30; if (done) score -= 200;
+    return { item, board: boardName, st, pr, due, waiting, done, stuck, high, late, soon, parked, score };
+  }
+  function taskList(data) {
+    const all = [];
+    if (data && !data.empty) {
+      for (const [k, v] of Object.entries(data)) {
+        if (!/^b\d+$/.test(k) || !Array.isArray(v)) continue;
+        for (const b of v) {
+          const name = String(b.name || "").replace(/^Subitems van\s+/i, "") + (b.type === "sub_items_board" ? " · subitem" : "");
+          for (const it of ((b.items_page && b.items_page.items) || [])) all.push(taskInfo(it, name));
+        }
+      }
+    }
+    return all;
+  }
+  function drawTasks(data) {
+    const all = taskList(data);
+    const open = all.filter((x) => !x.done);
+    const mine = open.filter((x) => x.waiting || x.stuck || x.late || x.soon);
+    counts.wait = open.filter((x) => x.waiting).length; renderStats();
+    const shown = (tasksFilter === "mine" ? mine : tasksFilter === "open" ? open : all).sort((a, b) => b.score - a.score || a.board.localeCompare(b.board));
+    setCount("tasks", shown.length);
+    if (!shown.length) {
+      const msg = tasksFilter === "mine"
+        ? "Niets dat op jou wacht, vastzit of binnen twee dagen af moet. Bekijk ‘Open’ voor je hele lijst."
+        : "Geen taken gevonden die aan jou zijn toegewezen.";
+      return el("p", { class: "empty", text: msg });
+    }
+    const list = el("ul", { class: "list" });
+    const LIMIT = 60;
+    for (const x of shown.slice(0, LIMIT)) list.append(el("li", null, taskRow(x)));
+    if (shown.length > LIMIT) list.append(el("li", null, el("p", { class: "empty", text: "Nog " + (shown.length - LIMIT) + " taken. Open monday.com voor de rest." })));
+    return list;
+  }
+  function taskRow(x) {
+    const chips = el("span", { class: "chips" });
+    if (x.waiting) chips.append(chip("Wacht op jou", "crit"));
+    else if (x.stuck) chips.append(chip(x.st, "crit"));
+    else if (x.done) chips.append(chip(x.st, "ok"));
+    else if (x.st) chips.append(chip(x.st, x.parked ? "" : "accent"));
+    if (x.high) chips.append(chip(x.pr, "warn"));
+    const side = el("div", { class: "side" });
+    if (x.due) side.append(el("span", { class: "due" + (x.late ? " late" : ""), text: (x.late ? "Te laat · " : "") + shortFmt.format(utcOf(x.due)).replace(".", "") }));
+    const meta = x.board + (x.item.group && x.item.group.title ? " · " + x.item.group.title : "");
+    const row = el(x.item.url ? "a" : "div", { class: "row task" },
+      el("div", { style: "min-width:0" },
+        el("div", { class: "title", text: x.item.name || "(zonder naam)" }),
+        el("div", { class: "meta" }, meta, " ", chips)),
+      side);
+    if (x.item.url) { row.href = x.item.url; row.target = "_blank"; row.rel = "noopener noreferrer"; }
+    return row;
+  }
+  document.querySelectorAll("[data-tasks]").forEach((b) => {
+    b.setAttribute("aria-pressed", String(b.dataset.tasks === tasksFilter));
+    b.addEventListener("click", () => {
+      tasksFilter = b.dataset.tasks; store.set("tasks", tasksFilter);
+      document.querySelectorAll("[data-tasks]").forEach((o) => o.setAttribute("aria-pressed", String(o === b)));
+      tasks.render();
+    });
+  });
+  tasks.refresh = () => {
+    if (!mcp) return;
+    boardsW.refresh();
+    if (tasks.tool) mcp.invalidate(SV.monday, tasks.tool, tasks.input).catch(() => {});
+  };
+
+  // ---------- Slack ----------
+  const slackA = widget("slack-a", SV.slack, () => el("span"));
+  const slackB = widget("slack-b", SV.slack, () => el("span"));
+  const slack = { key: "slack" };
+  function cleanSlack(s) {
+    return String(s || "")
+      .replace(/<@[A-Z0-9]+\|([^>]+)>/g, "@$1")
+      .replace(/<@[A-Z0-9]+>/g, "@iemand")
+      .replace(/<#[A-Z0-9]+\|([^>]*)>/g, "#$1")
+      .replace(/<!(here|channel|everyone)>/g, "@$1")
+      .replace(/<(https?:[^|>]+)\|([^>]+)>/g, "$2")
+      .replace(/<(https?:[^>]+)>/g, "$1")
+      .replace(/&gt;/g, ">").replace(/&lt;/g, "<").replace(/&amp;/g, "&")
+      .replace(/\n{2,}/g, "\n").trim();
+  }
+  function parseSlack(payload, kind) {
+    const md = payload && typeof payload === "object" ? payload.results : typeof payload === "string" ? payload : "";
+    if (!md) return [];
+    return String(md).split(/^### Result \d+ of \d+\s*$/m).slice(1).map((b) => {
+      const get = (re) => { const m = b.match(re); return m ? m[1].trim() : ""; };
+      const channel = get(/^Channel: (.*)$/m).replace(/\s*\(ID: [^)]*\)\s*$/, "");
+      const participants = get(/^Participants: (.*)$/m);
+      const fromRaw = get(/^From: (.*)$/m);
+      const fromId = (fromRaw.match(/\(ID: ([^)]+)\)/) || [])[1] || "";
+      const fromName = fromRaw.replace(/\s*\(ID: [^)]*\)\s*$/, "").replace(/\s*<[^>]*>\s*$/, "").trim();
+      const ts = parseFloat(get(/^Message_ts: (.*)$/m)) || 0;
+      const permalink = get(/^Permalink: \[link\]\((.*)\)\s*$/m);
+      const i = b.indexOf("\nText:");
+      const text = i >= 0 ? b.slice(i + 6).replace(/^[ \t]*\n/, "").replace(/\n*-{3}\s*$/, "") : "";
+      let where = channel;
+      if (/^DM\b/.test(channel)) {
+        const others = participants.split(/,\s*/).filter((p) => !p.includes(SLACK_ME)).map((p) => p.replace(/\s*\(ID: [^)]*\)/, ""));
+        where = "DM" + (others.length ? " · " + others.join(", ") : "");
+      }
+      return { kind, where, fromId, fromName: fromName || "Iemand", ts, permalink, text: cleanSlack(text) };
+    }).filter((m) => m.fromId !== SLACK_ME && m.ts);
+  }
+  function slackMsgs() {
+    const seen = new Set();
+    return parseSlack(slackA.data, "mention").concat(parseSlack(slackB.data, "dm"))
+      .filter((m) => { const k = m.permalink || m.ts; if (seen.has(k)) return false; seen.add(k); return true; })
+      .sort((a, b) => b.ts - a.ts);
+  }
+  function drawSlack() {
+    const body = $("b-slack");
+    body.replaceChildren();
+    const ws = [slackA, slackB];
+    const errs = ws.filter((w) => w.err);
+    const handlers = { retry: () => ws.forEach((w) => w.refresh()), approve: () => ws.forEach((w) => w.approve()) };
+    if (errs.length) body.append(problem(SV.slack, errs[0].err, handlers));
+    if (ws.every((w) => w.data == null)) {
+      if (!errs.length) body.append(el("div", { class: "skel" }, el("i"), el("i"), el("i")));
+      setFresh("slack", null);
+      return;
+    }
+    const msgs = slackMsgs();
+    counts.slack = msgs.length; renderStats();
+    setCount("slack", msgs.length);
+    setFresh("slack", Math.min(...ws.filter((w) => w.data != null).map((w) => w.at)));
+    if (!msgs.length) { body.append(el("p", { class: "empty", text: "Geen mentions of DM's in de afgelopen 3 dagen." })); return; }
+    const list = el("ul", { class: "list" });
+    for (const m of msgs) {
+      const row = el(m.permalink ? "a" : "div", { class: "row msg" },
+        el("div", { style: "min-width:0" },
+          el("span", { class: "who", text: m.fromName }), " ",
+          el("span", { class: "chips" }, chip(m.where, m.kind === "dm" ? "accent" : ""))),
+        el("span", { class: "date", text: relDate(new Date(m.ts * 1000)) }),
+        el("div", { class: "snip", text: m.text || "(bijlage)" }));
+      if (m.permalink) { row.href = m.permalink; row.target = "_blank"; row.rel = "noopener noreferrer"; }
+      list.append(el("li", null, row));
+    }
+    body.append(list);
+  }
+  slackA.render = drawSlack;
+  slackB.render = drawSlack;
+  slack.refresh = () => { slackA.refresh(); slackB.refresh(); };
+  function watchSlack() {
+    const since = addDays(today(), -3);
+    const base = { natural_language_query: "", limit: 20, sort: "timestamp", include_context: false, response_format: "detailed" };
+    slackA.watch("slack_search_public_and_private", Object.assign({ keywords: ["<@" + SLACK_ME + ">"], filters: "after:" + since }, base), 300000);
+    slackB.watch("slack_search_public_and_private", Object.assign({ filters: "is:dm after:" + since }, base), 300000);
+  }
+
+  // ---------- Briefing (written every working day at 06:45 by a Claude routine) ----------
+  const SRC = { mail: "Mail", slack: "Slack", monday: "monday", agenda: "Agenda", calendar: "Agenda" };
+  const safeUrl = (u) => (typeof u === "string" && /^https:\/\//i.test(u) ? u : null);
+  function renderBriefing(doc) {
+    lastBriefDoc = doc;
+    const box = $("briefing");
+    box.replaceChildren();
+    if (!doc) {
+      box.append(el("div", { class: "brief-empty" },
+        el("span", { class: "eyebrow", text: "Ochtendbriefing" }),
+        el("h2", { text: "Je eerste briefing komt " + nextBriefingText() + "." }),
+        el("p", { text: "Elke werkdag leest Claude om 06:45 je agenda, mail, monday-taken en Slack, en zet hier wat er vandaag toe doet." })),
+        briefActions(false));
+      return;
+    }
+    const t = today();
+    const eyebrow = el("div", { class: "eyebrow" }, el("span", { text: "Ochtendbriefing" }));
+    if (doc.date) {
+      const isOld = doc.date !== t;
+      eyebrow.append(el("span", { class: isOld ? "old" : "", text: (isOld ? "Laatste: " : "") + dayLong(doc.date, { weekday: "long", day: "numeric", month: "long" }) }));
+    }
+    if (doc.generatedAt) { const g = new Date(doc.generatedAt); if (!isNaN(g)) eyebrow.append(el("span", { text: "gemaakt " + hm(g) })); }
+    if (doc.date && doc.date !== t) eyebrow.append(el("span", { text: "volgende " + nextBriefingText() }));
+    box.append(eyebrow);
+    box.append(el("h2", { text: doc.headline || "Je dag in het kort" }));
+    if (doc.summary) box.append(el("p", { class: "summary", text: doc.summary }));
+
+    const cols = el("div", { class: "brief-cols" });
+    const prios = Array.isArray(doc.priorities) ? doc.priorities.slice(0, 3) : [];
+    if (prios.length) {
+      const ol = el("ol");
+      prios.forEach((p, i) => {
+        const title = p && safeUrl(p.url) ? ext(p.url, { class: "t", text: p.title || "" }) : el("span", { class: "t", text: (p && p.title) || "" });
+        ol.append(el("li", { class: "prio" }, el("span", { class: "n", text: String(i + 1) }), title, p && p.why ? el("span", { class: "w", text: p.why }) : null));
+      });
+      cols.append(el("div", null, el("h3", { text: "Top 3 vandaag" }), ol));
+    }
+    const actions = Array.isArray(doc.actions) ? doc.actions.slice(0, 8) : [];
+    if (actions.length) {
+      const ul = el("ul");
+      for (const a of actions) {
+        const title = a && safeUrl(a.url) ? ext(a.url, { class: "t", text: a.title || "" }) : el("span", { class: "t", text: (a && a.title) || "" });
+        ul.append(el("li", { class: "bitem" }, el("span", { class: "src", text: SRC[a && a.source] || (a && a.source) || "•" }), title, a && a.detail ? el("span", { class: "d", text: a.detail }) : null));
+      }
+      cols.append(el("div", null, el("h3", { text: "Vraagt actie" }), ul));
+    }
+    const agenda = Array.isArray(doc.agenda) ? doc.agenda.slice(0, 6) : [];
+    if (agenda.length || doc.focus) {
+      const wrap = el("div", null, el("h3", { text: "Agenda" }));
+      if (agenda.length) {
+        const ul = el("ul");
+        for (const a of agenda) ul.append(el("li", { class: "bitem" }, el("span", { class: "src mono", text: (a && a.time) || "" }), el("span", { class: "t", text: (a && a.title) || "" }), a && a.note ? el("span", { class: "d", text: a.note }) : null));
+        wrap.append(ul);
+      }
+      if (doc.focus) wrap.append(el("div", { class: "focus" }, el("b", { text: "Focus · " }), doc.focus));
+      cols.append(wrap);
+    }
+    if (cols.childNodes.length) box.append(cols);
+    if (Array.isArray(doc.issues) && doc.issues.length) box.append(el("div", { class: "issues", text: "Niet gelukt: " + doc.issues.join(" · ") }));
+    box.append(briefActions(doc.date === t));
+  }
+
+  // ---------- "Maak briefing nu": the same briefing, written on demand from the data this page already reads ----------
+  let lastBriefDoc = null, sampleFn = null, dbApi = null, briefBusy = null, briefMsg = "";
+  function briefActions(hasToday) {
+    if (!sampleFn || !dbApi || !mcp) return null;
+    const row = el("div", { class: "brief-actions" });
+    if (briefBusy) {
+      row.append(el("span", { class: "brief-status", role: "status", text: briefBusy.status }),
+        el("button", { class: "btn band", type: "button", text: "Stop", onclick: () => briefBusy && briefBusy.ctl.abort() }));
+    } else {
+      row.append(el("button", { class: "btn band", type: "button", text: hasToday ? "Vernieuw briefing" : "Maak briefing nu", onclick: makeBriefing }));
+      if (briefMsg) row.append(el("span", { class: "brief-status", role: "status", text: briefMsg }));
+    }
+    return row;
+  }
+  const clip = (s, n) => { s = String(s || "").replace(/\s+/g, " ").trim(); return s.length > n ? s.slice(0, n - 1) + "…" : s; };
+  const whenFmt = new Intl.DateTimeFormat("nl-NL", { timeZone: TZ, weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", hourCycle: "h23" });
+  async function gatherBriefingData(t, signal) {
+    const issues = [];
+    const read = (server, tool, input) => mcp.callTool(server, tool, input, { signal, cache: { staleTime: 120000 } })
+      .then((r) => r.payload, (e) => { if (e && e.code === "cancelled") throw e; issues.push(server); return null; });
+    const [calData, mailData] = await Promise.all([
+      read(SV.cal, "list_events", { startTime: t + "T00:00:00", endTime: addDays(t, 3) + "T00:00:00", orderBy: "startTime", pageSize: 100 }),
+      read(SV.mail, "search_threads", { query: weekday(t) === 1 ? "in:inbox newer_than:3d" : "in:inbox newer_than:2d", pageSize: 40 }),
+    ]);
+    const events = ((calData && calData.events) || []).filter((e) => e.status !== "cancelled").map((e) => {
+      const me = (e.attendees || []).find((a) => a.self);
+      const timed = e.start && e.start.dateTime;
+      return {
+        start: timed ? whenFmt.format(new Date(e.start.dateTime)) : "hele dag " + (e.start && e.start.date || ""),
+        end: timed ? hm(new Date(e.end.dateTime)) : "",
+        title: clip(e.summary, 120), location: clip(e.location, 80),
+        myResponse: me ? me.responseStatus : "organizer", attendees: (e.attendees || []).length, url: e.htmlLink || "",
+      };
+    });
+    const mails = ((mailData && mailData.threads) || []).map((th) => {
+      const m = (th.messages || [])[(th.messages || []).length - 1] || {};
+      return { from: decode(m.sender), subject: clip(decode(m.subject), 140), snippet: clip(decode(m.snippet), 220), date: m.date,
+        unread: (m.labelIds || []).includes("UNREAD"), labels: (m.labelIds || []).filter((l) => !/^(INBOX|UNREAD)$/.test(l)), messages: th.messageCount, url: th.viewUrl || "" };
+    });
+    const openTasks = taskList(tasks.data).filter((x) => !x.done).sort((a, b) => b.score - a.score).slice(0, 40).map((x) => ({
+      task: clip(x.item.name, 120), board: x.board, status: x.st, priority: x.pr, due: x.due, waitingOnYou: x.waiting, url: x.item.url || "",
+    }));
+    if (tasks.data == null) issues.push(SV.monday);
+    const slackItems = slackMsgs().slice(0, 20).map((m) => ({ from: m.fromName, where: m.where, kind: m.kind, when: whenFmt.format(new Date(m.ts * 1000)), text: clip(m.text, 300), url: m.permalink }));
+    if (slackA.data == null && slackB.data == null) issues.push(SV.slack);
+    return { issues, data: { calendar: events, mail: mails, unreadInInbox: counts.unread, tasks: openTasks, slack: slackItems } };
+  }
+  function briefingPrompt(t, data) {
+    const now = new Date();
+    return [
+      "Je bent de persoonlijke assistent van " + (firstName || "de gebruiker") + " (The Brand Father). Maak de ochtendbriefing voor " + dayLong(t, { weekday: "long", day: "numeric", month: "long" }) + ". Het is nu " + hm(now) + " (Europe/Amsterdam).",
+      "Schrijf in het Nederlands, in de je-vorm, kort en concreet, als een scherpe persoonlijke assistent. Geen opvulling of beleefdheden. Elke regel helpt beslissen wat er vandaag moet gebeuren. Gebruik echte namen, tijden en onderwerpen uit de gegevens. Neem een url alleen over uit de gegevens; verzin er geen.",
+      "Let op: afspraken waarop nog niet is gereageerd (myResponse needsAction), overlappende afspraken, afspraken die voorbereiding vragen, vrije blokken van minstens een uur tussen 09:00 en 18:00, mail die om een actie vraagt (negeer nieuwsbrieven en automatische meldingen tenzij er echt iets moet), taken met waitingOnYou, Stuck, hoge prioriteit of een datum die vandaag of eerder valt, en Slack-berichten die nog een antwoord nodig hebben.",
+      "Is het weekend of is de werkdag al voorbij, kijk dan vooral vooruit naar de eerstvolgende werkdag en zet de dag erbij in de tijden (bijvoorbeeld \"ma 10:00\").",
+      "Antwoord met alleen één JSON-object, zonder andere tekst, met precies deze velden:",
+      '{"headline": "de dag in één zin, max 90 tekens", "summary": "2 of 3 zinnen", "priorities": [{"title": "...", "why": "...", "url": "optioneel"}], "actions": [{"source": "mail|slack|monday|agenda", "title": "...", "detail": "wat er van je verwacht wordt", "url": "optioneel"}], "agenda": [{"time": "10:00", "title": "...", "note": "wat je moet weten of voorbereiden"}], "focus": "beste blok voor focuswerk en waarvoor"}',
+      "Regels: precies 3 priorities, belangrijkste eerst. Maximaal 8 actions, meest urgente eerst. In agenda alleen afspraken met een echt aandachtspunt, maximaal 6.",
+      "GEGEVENS:",
+      JSON.stringify(data),
+    ].join("\n\n");
+  }
+  function normalizeBriefing(raw, t, issues) {
+    const o = raw && typeof raw === "object" && !Array.isArray(raw) ? raw : {};
+    const str = (v, n) => clip(typeof v === "string" ? v : "", n);
+    const url = (v) => (typeof v === "string" && /^https:\/\//.test(v) ? v : undefined);
+    const arr = (v) => (Array.isArray(v) ? v.filter((x) => x && typeof x === "object") : []);
+    const doc = {
+      date: t,
+      generatedAt: new Date().toISOString(),
+      headline: str(o.headline, 120) || "Je dag in het kort",
+      summary: str(o.summary, 600),
+      priorities: arr(o.priorities).slice(0, 3).map((p) => ({ title: str(p.title, 160), why: str(p.why, 240), url: url(p.url) })),
+      actions: arr(o.actions).slice(0, 8).map((a) => ({ source: str(a.source, 12).toLowerCase(), title: str(a.title, 160), detail: str(a.detail, 240), url: url(a.url) })),
+      agenda: arr(o.agenda).slice(0, 6).map((a) => ({ time: str(a.time, 12), title: str(a.title, 160), note: str(a.note, 240) })),
+      focus: str(o.focus, 300),
+      issues,
+      madeBy: "dashboard",
+    };
+    return JSON.parse(JSON.stringify(doc));
+  }
+  function briefingProblem(e) {
+    switch (e && e.code) {
+      case "cancelled": return "Gestopt.";
+      case "not_granted": case "sampling_disabled": case "not_declared": case "capability_disabled": case "capability_removed":
+        return "Claude mag vanuit dit dashboard niet schrijven. Zet het aan via het menu Permissions van dit dashboard.";
+      case "rate_limited": return "Te veel aanvragen of je gebruikslimiet is bereikt. Probeer het later opnieuw.";
+      case "session_expired": return "Log opnieuw in bij claude.ai en probeer het nog eens.";
+      case "invalid_json": case "empty_completion": return "Claude gaf geen bruikbare briefing terug. Probeer het opnieuw.";
+      case "refused": return "Claude wilde deze briefing niet maken.";
+      case "prompt_too_large": return "Te veel gegevens voor één briefing. Probeer het later opnieuw.";
+      case "invalid_argument": case "quota_exceeded": case "revoked": return "De briefing is gemaakt, maar opslaan lukte niet (" + e.code + ").";
+      default: return "Er ging iets mis. Probeer het opnieuw.";
+    }
+  }
+  async function makeBriefing() {
+    if (briefBusy) return;
+    const ctl = new AbortController();
+    briefBusy = { ctl, status: "Gegevens verzamelen…" }; briefMsg = "";
+    renderBriefing(lastBriefDoc);
+    try {
+      const t = today();
+      const { issues, data } = await gatherBriefingData(t, ctl.signal);
+      briefBusy.status = "Claude schrijft je briefing. Dit duurt meestal een halve minuut…";
+      renderBriefing(lastBriefDoc);
+      const raw = await sampleFn.json(briefingPrompt(t, data), { signal: ctl.signal, cache: false });
+      await dbApi.collection("briefings").doc(t).set(normalizeBriefing(raw, t, issues));
+    } catch (e) {
+      briefMsg = briefingProblem(e);
+    } finally {
+      briefBusy = null;
+      renderBriefing(lastBriefDoc);
+    }
+  }
+
+  // ---------- boot ----------
+  function renderAllWaiting() { cal.render(); mail.render(); tasks.render(); drawSlack(); }
+  renderAllWaiting();
+  renderStats();
+  $("day-label").textContent = dayLabel(calDay);
+
+  const api = window.claude && typeof window.claude.use === "function" ? window.claude : { use: () => Promise.resolve(null) };
+  api.use("db").then((db) => {
+    dbApi = db;
+    if (!db) { renderBriefing(null); return; }
+    db.collection("briefings").orderBy("date", "desc").limit(1).onSnapshot(
+      (snap) => renderBriefing(snap.empty ? null : snap.docs[0].data()),
+      () => renderBriefing(null));
+  }).catch(() => renderBriefing(null));
+
+  api.use("sample").then((fn) => { sampleFn = fn; renderBriefing(lastBriefDoc); }).catch(() => {});
+  Promise.all([api.use("mcp"), api.use("permissions")]).then(async ([m, p]) => {
+    mcp = m; permissions = p;
+    renderBriefing(lastBriefDoc);
+    if (!mcp) {
+      const off = { code: "not_granted" };
+      [cal, mail, tasks].forEach((w) => w.fail(off));
+      slackA.err = off; drawSlack();
+      return;
+    }
+    // One batched consent dialog instead of four separate ones.
+    if (permissions) {
+      try { await permissions.request(Object.values(SV).map((s) => "mcp:" + s)); } catch { /* fall back to asking per call */ }
+    }
+    watchCal();
+    watchMail();
+    unreadCount.watch("search_threads", { query: "in:inbox is:unread", pageSize: 50, view: "THREAD_VIEW_METADATA_ONLY" }, 300000);
+    boardsW.watch("all_api_read", { query: "query { me { name } boards(limit: 200, state: active) { id name type columns(types:[people]) { id } } }" }, 3600000);
+    watchSlack();
+  }).catch(() => {
+    const off = { code: "capability_disabled" };
+    [cal, mail, tasks].forEach((w) => w.fail(off));
+  });
+
+  document.querySelectorAll("[data-refresh]").forEach((b) => b.addEventListener("click", () => {
+    const k = b.dataset.refresh;
+    ({ agenda: cal, mail, tasks, slack })[k].refresh();
+  }));
+  $("refresh-all").addEventListener("click", () => {
+    cal.refresh(); mail.refresh(); unreadCount.refresh(); tasks.refresh(); slack.refresh();
+  });
+
+  // Roll the page over at midnight so "today" stays correct on an open tab.
+  let shownDay = today();
+  setInterval(() => {
+    const t = today();
+    if (t === shownDay) return;
+    const wasToday = calDay === shownDay;
+    shownDay = t; renderMast();
+    if (mcp) { if (wasToday) { calDay = t; watchCal(); } watchSlack(); }
+  }, 60000);
+})();
+</script>
