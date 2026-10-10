@@ -20,13 +20,13 @@ Dashboard (claude.ai)
    └─ Daaronder: live overzichten die bij het openen worden opgehaald met jouw eigen koppelingen
 ```
 
-Alles in dark mode. Acties verschijnen als je met de muis over een regel gaat. Op je telefoon staan ze er altijd.
+Rechtsboven schakel je tussen **licht en donker** (standaard donker; je keuze wordt onthouden). Elk bord heeft een eigen kleur, en die komt terug in de tellers bovenaan en in de briefing: Agenda blauw, Mail oranje, Taken groen, Slack paars. Acties verschijnen als je met de muis over een regel gaat. Op je telefoon staan ze er altijd.
 
 | Bord | Wat je ziet | Acties |
 |---|---|---|
 | **Agenda** | Dag voor dag, met een lijn op het huidige tijdstip, overlappende afspraken en vrije blokken tussen 09:00 en 18:00 | Ja, Misschien of Nee op uitnodigingen |
 | **Mail** | Inbox, Ongelezen of Belangrijk, 8 per pagina met ‹ › | Gelezen/ongelezen, archiveren, verwijderen (met "ongedaan maken") |
-| **Taken** | Alle monday-items die aan jou zijn toegewezen, gegroepeerd per bord. "Aandacht" toont wat op jou wacht, vastzit of binnen twee dagen af moet | Vinkje: zet het item op het "klaar"-label van dat bord (met "ongedaan maken") |
+| **Taken** | Alleen monday-items waarop jij persoonlijk staat (niet via een team), gegroepeerd per bord. Bij gedeelde items staat met wie. "Aandacht" toont wat op jou wacht, vastzit of binnen twee dagen af moet | Vinkje: zet het item op het "klaar"-label van dat bord (met "ongedaan maken") |
 | **Slack** | Mentions en DM's van de afgelopen 3 dagen, gegroepeerd per thread, met het beginbericht erbij | Gelezen/ongelezen, ✅-reactie, antwoorden in de thread |
 
 Gelezen en ongelezen bij Slack gelden alleen in dit dashboard. De Slack-koppeling kan de status in Slack zelf niet aanpassen.

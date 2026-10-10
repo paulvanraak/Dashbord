@@ -22,10 +22,11 @@ Tijdzone: Europe/Amsterdam. Bepaal eerst de datum van vandaag in die tijdzone (b
    Kijk ook kort naar de volgende werkdag voor afspraken waarvoor vandaag al iets moet gebeuren.
 2. **Gmail** `search_threads`: query `in:inbox newer_than:1d` (op maandag `newer_than:3d`), pageSize 50. Lees met `get_thread` (messageFormat `PLAIN_TEXT`) de threads die mogelijk een actie van Paul vragen. Nieuwsbrieven, promoties en automatische meldingen tellen alleen mee als er echt iets in staat dat Paul moet doen. Tel ook het aantal ongelezen inbox-threads (`in:inbox is:unread`, `resultCountEstimate`).
 3. **monday.com** `all_api_read` (alleen queries):
-   a. `query { me { name } boards(limit: 200, state: active) { id name type columns(types:[people]) { id } } }`
+   a. `query { me { id name } boards(limit: 200, state: active) { id name type columns(types:[people]) { id } } }`
    b. Neem elk bord van type `board` of `sub_items_board` met minstens één people-kolom. Bouw één query met een alias per bord:
-      `b<ID>: boards(ids:[<ID>]){ name type items_page(limit:100, query_params:{operator:or, rules:[{column_id:"<kolom>",compare_value:["assigned_to_me"],operator:any_of}, …één regel per people-kolom…]}){ items{ id name url group{title} column_values(types:[status,date,timeline]){ type text column{title} } } } }`
-   c. Sla items over waarvan de status "klaar" betekent (Done, Klaar, Closed, Goedgekeurd, Done+Paul ok en vergelijkbaar). Let vooral op "Waiting for Paul", "Stuck", prioriteit High of Critical, en datums die vandaag of eerder vallen.
+      `b<ID>: boards(ids:[<ID>]){ name type items_page(limit:100, query_params:{operator:or, rules:[{column_id:"<kolom>",compare_value:["assigned_to_me"],operator:any_of}, …één regel per people-kolom…]}){ items{ id name url group{title} column_values(types:[status,date,timeline,people]){ type text column{title} ... on StatusValue { is_done } ... on PeopleValue { persons_and_teams { id kind } } } } } }`
+   c. Neem alleen items waarop Paul persoonlijk staat: een people-kolom met in `persons_and_teams` een item met `kind: "person"` en `id` gelijk aan `me.id`. Items die alleen aan een team zijn toegewezen tellen niet mee.
+   d. Sla items over die klaar zijn (`is_done: true`, of een status als Done, Klaar, Closed, Goedgekeurd of Done+Paul ok). Let vooral op "Waiting for Paul", "Stuck", prioriteit High of Critical, en datums die vandaag of eerder vallen.
 4. **Slack** `slack_search_public_and_private` met `response_format: "detailed"`, `sort: "timestamp"`, `include_context: false`, `limit: 20`, `natural_language_query: ""`:
    a. mentions: `keywords: ["<@U05GUG7LL2W>"]`, `filters: "after:<DATUM min 3 dagen>"`;
    b. DM's: `filters: "is:dm after:<DATUM min 3 dagen>"`.
