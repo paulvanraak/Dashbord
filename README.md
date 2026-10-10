@@ -20,11 +20,18 @@ Dashboard (claude.ai)
    └─ Daaronder: live overzichten die bij het openen worden opgehaald met jouw eigen koppelingen
 ```
 
-- **Agenda:** dag voor dag, met een lijn op het huidige tijdstip, overlappende afspraken, uitnodigingen waarop je nog moet reageren en vrije blokken tussen 09:00 en 18:00.
-- **Mail:** je hele inbox, met de filters Inbox, Ongelezen en Belangrijk, en de knop "Meer laden".
-- **Taken:** alle monday-items die aan jou zijn toegewezen, over al je borden heen. "Aandacht" toont wat op jou wacht, vastzit of binnen twee dagen af moet.
-- **Slack:** mentions en DM's van de afgelopen 3 dagen, zonder je eigen berichten.
-- **Maak briefing nu:** maakt dezelfde briefing op het moment dat je erom vraagt. Handig in het weekend of als je dag halverwege verandert.
+Alles in dark mode. Acties verschijnen als je met de muis over een regel gaat. Op je telefoon staan ze er altijd.
+
+| Bord | Wat je ziet | Acties |
+|---|---|---|
+| **Agenda** | Dag voor dag, met een lijn op het huidige tijdstip, overlappende afspraken en vrije blokken tussen 09:00 en 18:00 | Ja, Misschien of Nee op uitnodigingen |
+| **Mail** | Inbox, Ongelezen of Belangrijk, 8 per pagina met ‹ › | Gelezen/ongelezen, archiveren, verwijderen (met "ongedaan maken") |
+| **Taken** | Alle monday-items die aan jou zijn toegewezen, gegroepeerd per bord. "Aandacht" toont wat op jou wacht, vastzit of binnen twee dagen af moet | Vinkje: zet het item op het "klaar"-label van dat bord (met "ongedaan maken") |
+| **Slack** | Mentions en DM's van de afgelopen 3 dagen, gegroepeerd per thread, met het beginbericht erbij | Gelezen/ongelezen, ✅-reactie, antwoorden in de thread |
+
+Gelezen en ongelezen bij Slack gelden alleen in dit dashboard. De Slack-koppeling kan de status in Slack zelf niet aanpassen.
+
+**Maak briefing nu** maakt dezelfde briefing op het moment dat je erom vraagt. Handig in het weekend of als je dag halverwege verandert.
 
 ## Bestanden
 
