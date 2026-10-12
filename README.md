@@ -31,6 +31,19 @@ Apple-achtige tegels: vier teltegels bovenaan (afspraken, ongelezen mail, wacht 
 
 Gelezen en ongelezen bij Slack gelden alleen in dit dashboard. De Slack-koppeling kan de status in Slack zelf niet aanpassen.
 
+## Altijd actueel
+
+- Mail, Slack en het aantal ongelezen mails verversen elke minuut, agenda en taken elke 2 minuten, zolang de pagina openstaat. Komt de pagina terug in beeld, dan haalt hij direct bij. Rechtsboven zie je **Live** met het tijdstip van de laatste update.
+- De **briefing** werkt zichzelf bij: ontbreekt hij, is hij mislukt of is hij ouder dan 3 uur (tussen 06:45 en 20:00), dan maakt het dashboard een nieuwe. Met **Vernieuw briefing** doe je dat zelf.
+
+## Slimme functies
+
+| Functie | Waar | Wat het doet |
+|---|---|---|
+| **Concept-antwoord** | ✨ bij een mail, "Concept door Claude" bij een Slack-antwoord | Claude leest de thread en schrijft een antwoord in jouw stijl, op basis van je eigen verstuurde mails. Je past het aan en kiest **Verstuur** of **Als concept in Gmail**. |
+| **Plan mijn dag** | Agenda | Claude zet je belangrijkste monday-taken in je vrije blokken. Je ziet het voorstel in je tijdlijn, vinkt uit wat je niet wilt en zet de rest als "Focus: …" in je agenda (met ongedaan maken). |
+| **Per klant** | Rechtsboven: Bronnen / Klanten | Per klant één tegel met afspraken (7 dagen), mail (14 dagen), open taken en Slack-gesprekken, met dezelfde acties. Indeling op e-maildomein, deelnemers, monday-werkruimte en bord, Slack-kanaal en trefwoorden. **Klanten bijwerken** laat Claude de lijst aanvullen. |
+
 **Maak briefing nu** maakt dezelfde briefing op het moment dat je erom vraagt. Handig in het weekend of als je dag halverwege verandert.
 
 ## Bestanden

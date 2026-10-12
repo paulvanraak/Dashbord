@@ -214,6 +214,42 @@ a.count:hover { text-decoration: none; }
 .brief-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin-top: 6px; }
 .brief-status { font-size: 13px; color: var(--muted); }
 
+/* Live, plan, concept, per klant */
+.controls { flex-wrap: wrap; justify-content: flex-end; }
+.live { display: inline-flex; align-items: center; gap: 7px; margin-right: 4px; font-size: 13px; color: var(--faint); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.live i { width: 8px; height: 8px; border-radius: 50%; background: var(--green); }
+@media (prefers-reduced-motion: no-preference) { .live i { animation: live 2.4s ease-out infinite; } }
+@keyframes live { 0% { box-shadow: 0 0 0 0 var(--green-soft); } 70% { box-shadow: 0 0 0 7px transparent; } 100% { box-shadow: 0 0 0 0 transparent; } }
+.live.stale i { background: var(--faint); animation: none; }
+.planbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; margin: 0 16px 10px; padding: 12px 14px; border-radius: 16px; background: var(--green-soft); font-size: 13px; }
+.planbar .grow { flex: 1; min-width: 14ch; }
+.plan { grid-template-columns: 52px minmax(0, 1fr) auto; align-items: start; background: var(--green-soft); box-shadow: inset 0 0 0 1.5px var(--green); }
+.plan:hover, .plan:focus-within { background: var(--green-soft); }
+.plan.off { opacity: .5; background: transparent; box-shadow: inset 0 0 0 1.5px var(--sep); }
+.plan .when { font-size: 15px; font-weight: 600; line-height: 1.35; color: var(--green); font-variant-numeric: tabular-nums; }
+.plan .when span { display: block; font-size: 13px; font-weight: 400; color: var(--faint); }
+.plan input { width: 18px; height: 18px; margin: 2px 0 0; accent-color: var(--green); }
+.compose { grid-column: 1 / -1; display: grid; gap: 10px; margin-top: 8px; }
+.compose textarea { width: 100%; min-height: 140px; padding: 12px 14px; border: 1px solid var(--sep); border-radius: 14px; background: var(--bg); color: var(--ink); font: 15px/1.5 var(--font); resize: vertical; }
+.compose textarea:focus { outline: none; border-color: var(--blue); }
+.compose .status { font-size: 13px; color: var(--muted); }
+.compose-acts { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 8px; }
+.compose-acts label { display: inline-flex; align-items: center; gap: 6px; margin-right: auto; font-size: 13px; color: var(--muted); }
+.compose-acts input { width: 16px; height: 16px; margin: 0; accent-color: var(--blue); }
+.clients { display: grid; gap: 20px; grid-template-columns: minmax(0, 1fr); align-items: start; }
+@media (min-width: 980px) { .clients { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; } }
+.clients-head { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; font-size: 13px; color: var(--muted); }
+.clients-head .grow { flex: 1; min-width: 20ch; }
+.client .tile-head h2 { color: var(--ink); }
+.client.other .tile-head h2 { color: var(--muted); }
+.client .sum { font-size: 13px; color: var(--muted); }
+.csec + .csec { margin-top: 10px; }
+.csec h3 { margin: 4px 18px; font-size: 13px; font-weight: 700; color: var(--c); }
+.csec.s-agenda { --c: var(--blue); } .csec.s-mail { --c: var(--orange); } .csec.s-tasks { --c: var(--green); } .csec.s-slack { --c: var(--purple); }
+.csec .more { margin: 2px 18px 4px; font-size: 13px; color: var(--faint); }
+.mt { grid-template-columns: 92px minmax(0, 1fr); }
+.mt .when { padding-top: 2px; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+
 /* Toast */
 .toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); z-index: 10; transform: translateX(-50%); display: flex; align-items: center; gap: 14px; width: max-content; max-width: calc(100% - 32px); padding: 11px 14px 11px 18px; border-radius: 999px; background: var(--toast); color: var(--toast-ink); font-size: 14px; box-shadow: 0 10px 30px rgba(0, 0, 0, .3); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); }
 .toast.crit { background: rgba(140, 20, 30, .92); }
@@ -230,6 +266,11 @@ a.count:hover { text-decoration: none; }
       <h1 id="mast-date">Vandaag</h1>
     </div>
     <div class="controls">
+      <span class="live stale" id="live" title="Ververst automatisch zolang de pagina openstaat"><i></i><span id="live-time">Live</span></span>
+      <div class="seg" role="group" aria-label="Indeling">
+        <button type="button" data-view="sources" aria-pressed="true">Bronnen</button>
+        <button type="button" data-view="clients" aria-pressed="false">Klanten</button>
+      </div>
       <div class="seg" role="group" aria-label="Weergave">
         <button type="button" data-mode="light" aria-pressed="false" aria-label="Licht" title="Licht" data-icon="sun"></button>
         <button type="button" data-mode="dark" aria-pressed="true" aria-label="Donker" title="Donker" data-icon="moon"></button>
@@ -249,11 +290,12 @@ a.count:hover { text-decoration: none; }
     <div class="brief-empty"><span class="eyebrow">Ochtendbriefing</span><h2>Briefing laden…</h2></div>
   </section>
 
-  <main class="board">
+  <main class="board" id="board">
     <section class="tile" id="agenda" aria-labelledby="h-agenda">
       <div class="tile-head">
         <h2 id="h-agenda"><span class="ic" data-icon="calendar"></span>Agenda</h2>
         <div class="end">
+          <button class="btn" type="button" id="plan-day">Plan mijn dag</button>
           <button class="btn" type="button" id="day-today" hidden>Vandaag</button>
           <button class="ib" type="button" id="day-prev" aria-label="Vorige dag" title="Vorige dag" data-icon="chevL"></button>
           <span class="daylbl" id="day-label">Vandaag</span>
@@ -309,6 +351,7 @@ a.count:hover { text-decoration: none; }
       <div class="scroll" id="b-slack"><div class="skel"><i></i><i></i><i></i></div></div>
     </section>
   </main>
+  <section class="clients" id="clients" aria-label="Per klant" hidden></section>
 </div>
 <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 <script>
@@ -324,6 +367,7 @@ a.count:hover { text-decoration: none; }
   const OVERLAY_MS = 180000;
 
   let mcp = null, permissions = null, sampleFn = null, dbApi = null;
+  let view = "sources";
 
   // ---------- helpers ----------
   const $ = (id) => document.getElementById(id);
@@ -361,6 +405,8 @@ a.count:hover { text-decoration: none; }
     moon: '<path d="M13.2 9.6A5.6 5.6 0 0 1 6.4 2.8a5.6 5.6 0 1 0 6.8 6.8z"/>',
     calendar: '<rect x="2.5" y="3.2" width="11" height="10.3" rx="2.2"/><path d="M2.5 6.6h11M5.5 1.8v2.6M10.5 1.8v2.6"/>',
     tasks: '<path d="m2.4 4.4 1.3 1.3 2.1-2.4M2.4 10.4l1.3 1.3 2.1-2.4M8.2 4.8h5.4M8.2 10.8h5.4"/>',
+    sparkle: '<path d="M7.2 2.2 8.5 5.6l3.4 1.3-3.4 1.3-1.3 3.4-1.3-3.4-3.4-1.3 3.4-1.3z"/><path d="m12.4 10.2.6 1.5 1.5.6-1.5.6-.6 1.5-.6-1.5-1.5-.6 1.5-.6z"/>',
+    close: '<path d="M4.5 4.5l7 7M11.5 4.5l-7 7"/>',
     chat: '<path d="M3.2 3h9.6A1.7 1.7 0 0 1 14.5 4.7v5.2a1.7 1.7 0 0 1-1.7 1.7H7.4L4.3 14v-2.4H3.2a1.7 1.7 0 0 1-1.7-1.7V4.7A1.7 1.7 0 0 1 3.2 3z"/>',
   };
   function icon(name) {
@@ -536,16 +582,52 @@ a.count:hover { text-decoration: none; }
   function setCount() { /* per-tile counts removed; the count tiles carry the totals */ }
   const stampOf = (result) => (result && result.cache && result.cache.storedAt) || Date.now();
 
+  // Live indicator: the newest moment any source was refreshed.
+  let lastLive = 0;
+  function markLive(ts) { if (ts && ts > lastLive) lastLive = ts; renderLive(); }
+  function renderLive() {
+    const live = $("live");
+    if (!live) return;
+    $("live-time").textContent = lastLive ? "Live · " + hm(new Date(lastLive)) : "Live";
+    live.classList.toggle("stale", !lastLive || Date.now() - lastLive > 10 * 60000);
+  }
+  setInterval(renderLive, 30000);
+  // Re-rendering while you type would take the cursor away: wait until focus leaves the text box.
+  function deferIfTyping(container, redo) {
+    const a = document.activeElement;
+    if (!container || !a || !container.contains(a) || !(a.closest && a.closest(".reply, .compose"))) return false;
+    if (!container._deferred) {
+      container._deferred = true;
+      const onOut = () => setTimeout(() => {
+        const b = document.activeElement;
+        if (b && container.contains(b) && b.closest && b.closest(".reply, .compose")) return;
+        container.removeEventListener("focusout", onOut);
+        container._deferred = false;
+        redo();
+      }, 250);
+      container.addEventListener("focusout", onOut);
+    }
+    return true;
+  }
+  let clientsQueued = false;
+  function afterRender() {
+    if (view !== "clients" || clientsQueued) return;
+    clientsQueued = true;
+    setTimeout(() => { clientsQueued = false; renderClients(); }, 0);
+  }
+
   // Watches one connector tool; keeps last-good data on hiccups, drops it when access is gone.
   function widget(key, server, draw) {
     const w = { key, server, tool: null, input: null, interval: 300000, data: null, err: null, at: null, unsub: null, retried: false };
-    w.render = () => {
+    w.render = (force) => {
       const body = $("b-" + key);
+      if (!force && deferIfTyping(body, () => w.render(true))) return;
       body.replaceChildren();
       if (w.err) body.append(problem(server, w.err, { retry: () => w.refresh(), approve: () => w.approve() }));
       if (w.data != null) body.append(draw(w.data, w));
       else if (!w.err) body.append(el("div", { class: "skel" }, el("i"), el("i"), el("i"), el("i")));
       setFresh(key, w.data != null ? w.at : null);
+      afterRender();
     };
     w.watch = (tool, input, interval) => {
       if (w.unsub) w.unsub();
@@ -554,6 +636,7 @@ a.count:hover { text-decoration: none; }
       w.unsub = mcp.watchTool(server, tool, input, (ev) => {
         if (ev.type === "data") {
           w.data = ev.result.payload; w.at = stampOf(ev.result); w.err = null; w.retried = false;
+          markLive(w.at);
         } else {
           const e = ev.error || {};
           w.err = e;
@@ -604,7 +687,8 @@ a.count:hover { text-decoration: none; }
     const count = rows.filter((r) => !r.declined).length;
     setCount("agenda", count);
     if (isToday) { counts.meet = count; renderStats(); }
-    if (!rows.length) return el("p", { class: "empty", text: isToday ? "Geen afspraken vandaag." : "Geen afspraken op " + dayLabel(calDay).toLowerCase() + "." });
+    const planHere = plan && plan.day === calDay ? plan : null;
+    if (!rows.length && !planHere) return el("p", { class: "empty", text: isToday ? "Geen afspraken vandaag." : "Geen afspraken op " + dayLabel(calDay).toLowerCase() + "." });
 
     const list = el("ul", { class: "list" });
     for (const r of rows.filter((x) => x.allDay)) list.append(eventRow(r, false));
@@ -612,7 +696,7 @@ a.count:hover { text-decoration: none; }
     const busy = active.map(minsOf).sort((a, b) => a[0] - b[0]);
     const gaps = [];
     const wd = weekday(calDay);
-    if (wd >= 1 && wd <= 5) {
+    if (wd >= 1 && wd <= 5 && !(planHere && planHere.blocks.length)) {
       let cursor = 9 * 60;
       if (isToday) cursor = Math.max(cursor, minuteOfDay(now));
       for (const [s, e] of busy) {
@@ -625,13 +709,18 @@ a.count:hover { text-decoration: none; }
     }
     const items = timed.map((r) => ({ at: minsOf(r)[0], r })).concat(gaps.map((g) => ({ at: g[0], gap: g })));
     if (isToday) items.push({ at: minuteOfDay(now), now: true });
+    if (planHere) for (const b of planHere.blocks) items.push({ at: b.s, plan: b });
     items.sort((a, b) => a.at - b.at || (a.now ? -1 : b.now ? 1 : 0) || (a.gap ? 1 : b.gap ? -1 : 0));
     for (const it of items) {
       if (it.now) list.append(el("li", { class: "nowline", "aria-label": "Nu" }, el("span", { text: hm(now) })));
       else if (it.gap) list.append(el("li", { class: "row gap" }, el("span", { class: "when", text: mm(it.gap[0]) }), el("span", { text: "Vrij tot " + mm(it.gap[1]) + " · " + dur(it.gap[1] - it.gap[0]) })));
+      else if (it.plan) list.append(planRow(it.plan));
       else list.append(eventRow(it.r, isToday && it.r.e < now));
     }
-    return list;
+    if (!planHere) return list;
+    const frag = document.createDocumentFragment();
+    frag.append(planBar(planHere), list);
+    return frag;
   }
   function eventRow(r, past) {
     const ev = r.ev;
@@ -665,13 +754,13 @@ a.count:hover { text-decoration: none; }
       apply: () => { calOv.set(ev.id, status); cal.render(); },
       revert: () => { before ? calOv.set(ev.id, before) : calOv.del(ev.id); cal.render(); },
       done: () => toast(msg + clip(ev.summary || "afspraak", 50), canUndo ? { undo: () => respond(ev, status, prev) } : {}),
-      after: () => cal.refresh() });
+      after: () => { cal.refresh(); calWeek.refresh(); } });
   }
   function watchCal() {
     $("day-label").textContent = dayLabel(calDay);
     $("day-today").hidden = calDay === today();
     cal.data = null; cal.err = null; cal.render();
-    cal.watch("list_events", { startTime: calDay + "T00:00:00", endTime: addDays(calDay, 1) + "T00:00:00", orderBy: "startTime", pageSize: 100 }, 600000);
+    cal.watch("list_events", { startTime: calDay + "T00:00:00", endTime: addDays(calDay, 1) + "T00:00:00", orderBy: "startTime", pageSize: 100 }, 120000);
   }
   $("day-prev").addEventListener("click", () => { calDay = addDays(calDay, -1); watchCal(); });
   $("day-next").addEventListener("click", () => { calDay = addDays(calDay, 1); watchCal(); });
@@ -737,13 +826,16 @@ a.count:hover { text-decoration: none; }
       el("div", { class: "side" },
         el("span", { class: "date", text: relDate(new Date(last.date)) }),
         el("div", { class: "acts" },
+          iconBtn("sparkle", "Concept-antwoord", () => openCompose(t)),
           iconBtn(unread ? "mailOpen" : "mail", unread ? "Markeer als gelezen" : "Markeer als ongelezen", (e) => mailSetUnread(t, !unread, e.currentTarget)),
           iconBtn("archive", "Archiveren", (e) => mailRemove(t, "archive", e.currentTarget)),
-          iconBtn("trash", "Verwijderen", (e) => mailRemove(t, "trash", e.currentTarget)))));
+          iconBtn("trash", "Verwijderen", (e) => mailRemove(t, "trash", e.currentTarget)))),
+      composeOpen === t.id ? composer(t) : null);
   }
   // After a change, only page 1 is re-read; other pages keep their place and show the change locally.
   function mailAfterChange() {
     unreadCount.refresh();
+    mailAll.refresh();
     if (mailPage === 0 && mcp && mail.tool) mcp.invalidate(SV.mail, mail.tool, mail.input).catch(() => {});
   }
   function mailSetUnread(t, unread, btn) {
@@ -797,7 +889,7 @@ a.count:hover { text-decoration: none; }
     document.querySelectorAll("[data-mail]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.mail === mailFilter)));
     mailPage = 0; mailPages = []; mailTokens = [""]; mailSeen = null;
     mail.data = null; mail.err = null; mail.render(); updatePager();
-    mail.watch("search_threads", { query: MAIL_Q[mailFilter], pageSize: MAIL_PAGE }, 300000);
+    mail.watch("search_threads", { query: MAIL_Q[mailFilter], pageSize: MAIL_PAGE }, 60000);
   }
   document.querySelectorAll("[data-mail]").forEach((b) => b.addEventListener("click", () => {
     if (mailFilter === b.dataset.mail) return;
@@ -843,13 +935,13 @@ a.count:hover { text-decoration: none; }
       if (!people.length) continue;
       const status = {};
       for (const c of cols) if (c.type === "status") status[c.id] = Object.assign({ title: c.title || "" }, parseStatusSettings(c.settings_str));
-      boardMeta[b.id] = { name: String(b.name || "").replace(/^Subitems van\s+/i, ""), sub: b.type === "sub_items_board", status };
+      boardMeta[b.id] = { name: String(b.name || "").replace(/^Subitems van\s+/i, ""), sub: b.type === "sub_items_board", status, ws: (b.workspace && b.workspace.name) || "" };
       const rules = people.map((c) => '{column_id:"' + c + '",compare_value:["assigned_to_me"],operator:any_of}').join(",");
       parts.push("b" + b.id + ": boards(ids:[" + b.id + "]){ items_page(limit:100, query_params:{operator:or, rules:[" + rules + "]}){ items{ id name url group{title} column_values(types:[status,date,timeline,people]){ id type text column{title} ... on StatusValue { index is_done } ... on PeopleValue { persons_and_teams { id kind } } } } } }");
     }
     const q = parts.length ? "query { " + parts.join(" ") + " }" : "";
     if (!q) { tasks.data = { empty: true }; tasks.at = boardsW.at; tasks.err = null; tasks.render(); return; }
-    if (q !== itemsQuery) { itemsQuery = q; tasks.watch("all_api_read", { query: q }, 600000); }
+    if (q !== itemsQuery) { itemsQuery = q; tasks.watch("all_api_read", { query: q }, 120000); }
     else tasks.render();
   };
 
@@ -1102,13 +1194,9 @@ a.count:hover { text-decoration: none; }
       done: () => { markSlack(g, true); toast("✅ gezet bij het bericht van " + target.fromName + "."); } });
   }
   function replyForm(g) {
-    const ta = el("textarea", { id: "reply-" + g.key.replace(/[^A-Za-z0-9]/g, "-"), "aria-label": "Antwoord", placeholder: g.threadTs ? "Antwoord in de thread…" : "Bericht in deze DM…" });
+    const ta = el("textarea", { "data-reply": g.key, "aria-label": "Antwoord", placeholder: g.threadTs ? "Antwoord in de thread…" : "Bericht in deze DM…" });
     ta.value = replyDrafts.get(g.key) || "";
     ta.addEventListener("input", () => replyDrafts.set(g.key, ta.value));
-    ta.addEventListener("blur", () => setTimeout(() => {
-      const a = document.activeElement;
-      if (slackDirty && !(a && a.closest && a.closest(".reply"))) drawSlack();
-    }, 400));
     const send = el("button", { class: "btn primary", type: "button", text: "Verstuur" });
     send.addEventListener("click", async () => {
       const text = ta.value.trim();
@@ -1123,6 +1211,7 @@ a.count:hover { text-decoration: none; }
     });
     setTimeout(() => { if (ta.isConnected) ta.focus(); }, 0);
     return el("div", { class: "reply" }, ta, el("div", { class: "reply-acts" },
+      el("button", { class: "btn", type: "button", text: "Concept door Claude", onclick: (e) => draftSlack(g, e.currentTarget) }),
       el("button", { class: "btn", type: "button", text: "Annuleer", onclick: () => { replyOpen = null; drawSlack(true); } }), send));
   }
   function slackGroup(g) {
@@ -1154,9 +1243,9 @@ a.count:hover { text-decoration: none; }
     if (replyOpen === g.key) box.append(replyForm(g));
     return box;
   }
-  function drawSlack(force) {
-    const a = document.activeElement;
-    if (!force && replyOpen && a && a.closest && a.closest("#b-slack .reply")) { slackDirty = true; return; }
+  function drawSlack(force) { drawSlackInner(force); afterRender(); }
+  function drawSlackInner(force) {
+    if (!force && deferIfTyping($("b-slack"), () => drawSlack(true))) return;
     slackDirty = false;
     const body = $("b-slack");
     body.replaceChildren();
@@ -1195,8 +1284,8 @@ a.count:hover { text-decoration: none; }
   function watchSlack() {
     const since = addDays(today(), -3);
     const base = { natural_language_query: "", limit: 20, sort: "timestamp", include_context: false, response_format: "detailed" };
-    slackA.watch("slack_search_public_and_private", Object.assign({ keywords: ["<@" + SLACK_ME + ">"], filters: "after:" + since }, base), 300000);
-    slackB.watch("slack_search_public_and_private", Object.assign({ filters: "is:dm after:" + since }, base), 300000);
+    slackA.watch("slack_search_public_and_private", Object.assign({ keywords: ["<@" + SLACK_ME + ">"], filters: "after:" + since }, base), 60000);
+    slackB.watch("slack_search_public_and_private", Object.assign({ filters: "is:dm after:" + since }, base), 60000);
   }
 
   // ---------- Briefing (every working day at 06:45 by a Claude routine, or on demand) ----------
@@ -1209,8 +1298,8 @@ a.count:hover { text-decoration: none; }
     if (!doc) {
       box.append(el("div", { class: "brief-empty" },
         el("span", { class: "eyebrow", text: "Ochtendbriefing" }),
-        el("h2", { text: "Je eerste briefing komt " + nextBriefingText() + "." }),
-        el("p", { text: "Elke werkdag leest Claude om 06:45 je agenda, mail, monday-taken en Slack, en zet hier wat er vandaag toe doet." })),
+        el("h2", { text: briefBusy ? "Je briefing wordt gemaakt…" : briefingStale(null) ? "Nog geen briefing voor vandaag." : "Je volgende briefing komt " + nextBriefingText() + "." }),
+        el("p", { text: "Claude leest je agenda, mail, monday-taken en Slack en zet hier wat er vandaag toe doet. Het dashboard houdt hem de hele dag actueel." })),
         briefActions(false));
       return;
     }
@@ -1220,7 +1309,7 @@ a.count:hover { text-decoration: none; }
       const isOld = doc.date !== t;
       eyebrow.append(el("span", { class: isOld ? "old" : "", text: (isOld ? "Laatste: " : "") + dayLong(doc.date, { weekday: "long", day: "numeric", month: "long" }) }));
     }
-    if (doc.generatedAt) { const g = new Date(doc.generatedAt); if (!isNaN(g)) eyebrow.append(el("span", { text: "gemaakt " + hm(g) })); }
+    if (doc.generatedAt) { const g = new Date(doc.generatedAt); if (!isNaN(g)) eyebrow.append(el("span", { text: "bijgewerkt " + hm(g) })); }
     box.append(eyebrow, el("h2", { text: doc.headline || "Je dag in het kort" }));
     if (doc.summary) box.append(el("p", { class: "summary", text: doc.summary }));
     const cols = el("div", { class: "brief-cols" });
@@ -1265,7 +1354,7 @@ a.count:hover { text-decoration: none; }
       row.append(el("span", { class: "brief-status", role: "status", text: briefBusy.status }),
         el("button", { class: "btn", type: "button", text: "Stop", onclick: () => briefBusy && briefBusy.ctl.abort() }));
     } else {
-      row.append(el("button", { class: "btn", type: "button", text: hasToday ? "Vernieuw briefing" : "Maak briefing nu", onclick: makeBriefing }));
+      row.append(el("button", { class: "btn", type: "button", text: hasToday ? "Vernieuw briefing" : "Maak briefing nu", onclick: () => makeBriefing(false) }));
       if (briefMsg) row.append(el("span", { class: "brief-status", role: "status", text: briefMsg }));
     }
     return row;
@@ -1340,10 +1429,10 @@ a.count:hover { text-decoration: none; }
       default: return "Er ging iets mis. Probeer het opnieuw.";
     }
   }
-  async function makeBriefing() {
+  async function makeBriefing(auto) {
     if (briefBusy) return;
     const ctl = new AbortController();
-    briefBusy = { ctl, status: "Gegevens verzamelen…" }; briefMsg = "";
+    briefBusy = { ctl, status: auto ? "Briefing bijwerken met de nieuwste gegevens…" : "Gegevens verzamelen…" }; briefMsg = "";
     renderBriefing(lastBriefDoc);
     try {
       const t = today();
@@ -1360,8 +1449,530 @@ a.count:hover { text-decoration: none; }
     }
   }
 
+  // ---------- shared: Claude errors ----------
+  function aiProblem(e, fallback, server) {
+    switch (e && e.code) {
+      case "not_granted": case "sampling_disabled": case "not_declared": case "capability_disabled": case "capability_removed":
+        return "Claude mag vanuit dit dashboard niet schrijven. Zet het aan via het menu Permissions.";
+      case "rate_limited": return "Te veel aanvragen of je gebruikslimiet is bereikt. Probeer het later opnieuw.";
+      case "session_expired": return "Log opnieuw in bij claude.ai en probeer het nog eens.";
+      case "refused": return "Claude wilde dit niet doen.";
+      case "invalid_json": case "empty_completion": return "Claude gaf geen bruikbaar antwoord. Probeer het opnieuw.";
+      case "invalid_argument": case "quota_exceeded": case "revoked": return "Opslaan lukte niet (" + e.code + ").";
+      case "needs_reauth": case "server_not_connected": case "server_not_found": case "not_in_manifest": case "consent_required":
+      case "approval_required": case "blocked_by_policy": case "tool_error": case "server_unavailable": case "upstream_error":
+        return actionProblem(e.server || server || "De koppeling", e);
+      default: return fallback;
+    }
+  }
+
+  // ---------- Concept-antwoord: mail ----------
+  const compose = new Map();
+  let composeOpen = null;
+  const emailOf = (raw) => { const s = decode(raw || ""); const m = s.match(/<([^>]+)>/); return (m ? m[1] : s).trim().toLowerCase(); };
+  const isMine = (m) => !!m && (((m.labelIds || []).includes("SENT")) || (!!myEmail && emailOf(m.sender) === myEmail));
+  function stripQuoted(body) {
+    const s = String(body || "");
+    const cut = s.search(/\n(On .{5,200} wrote:|Op .{5,200}(schreef|geschreven).{0,40}:|-{2,} ?(Original Message|Oorspronkelijk bericht))/i);
+    return (cut > 0 ? s.slice(0, cut) : s).split("\n").filter((l) => !/^\s*>/.test(l)).join("\n").trim();
+  }
+  let sentCache = null;
+  async function sentExamples(signal) {
+    if (sentCache) return sentCache;
+    try {
+      const r = await mcp.callTool(SV.mail, "search_threads", { query: "in:sent newer_than:60d", pageSize: 10 }, { signal, cache: { staleTime: 21600000, gcTime: 86400000 } });
+      const out = [];
+      for (const th of (r.payload && r.payload.threads) || []) for (const m of th.messages || []) if ((m.labelIds || []).includes("SENT") && m.snippet) out.push(clip(decode(m.snippet), 240));
+      sentCache = out.slice(0, 8);
+    } catch (e) {
+      if (e && e.code === "cancelled") throw e;
+      sentCache = [];
+    }
+    return sentCache;
+  }
+  function mailPrompt(msgs, style) {
+    const thread = msgs.slice(-6).map((m) => "--- Van: " + decode(m.sender || "") + (m.date ? " · " + m.date : "") + "\n" + clip(stripQuoted(m.plaintextBody || m.snippet || ""), 1800)).join("\n\n");
+    return [
+      "Je schrijft een concept-antwoord namens " + (myName || "Paul van Raak") + " van The Brand Father, een creatief bureau.",
+      "Regels:\n- Antwoord in de taal van de laatste mail (Nederlands of Engels).\n- Schrijf zoals hij: kijk naar zijn eigen mails hieronder voor toon, lengte, aanhef en afsluiting.\n- Kort en concreet, geen opvulling.\n- Verzin geen feiten, data, bedragen of toezeggingen. Waar hij iets moet aanvullen, zet je [dit tussen haken].\n- Geef alleen de tekst van het antwoord, zonder onderwerpregel.",
+      "ZIJN EIGEN MAILS (stijlvoorbeelden):\n" + (style.length ? style.map((s) => "- " + s).join("\n") : "(geen voorbeelden)"),
+      "DE THREAD (oudste eerst):\n" + thread,
+    ].join("\n\n");
+  }
+  function paintCompose(id) {
+    const st = compose.get(id);
+    if (!st || !/^[\w-]+$/.test(id)) return;
+    document.querySelectorAll('textarea[data-compose="' + id + '"]').forEach((ta) => { if (ta.value !== st.text) ta.value = st.text; });
+    document.querySelectorAll('[data-compose-status="' + id + '"]').forEach((s) => { s.textContent = st.status || ""; s.hidden = !st.status; });
+  }
+  function openCompose(t) {
+    composeOpen = composeOpen === t.id ? null : t.id;
+    if (composeOpen && !compose.has(t.id)) compose.set(t.id, { text: "", status: "", busy: false });
+    mail.render(true);
+    const st = compose.get(t.id);
+    if (composeOpen && st && !st.text && !st.busy) draftMail(t);
+  }
+  async function draftMail(t) {
+    const st = compose.get(t.id) || { text: "" };
+    compose.set(t.id, st);
+    if (!sampleFn || !mcp) { st.status = "Concepten werken alleen in claude.ai."; mail.render(true); return; }
+    if (st.ctl) st.ctl.abort();
+    const ctl = new AbortController();
+    Object.assign(st, { busy: true, ctl, status: "Thread lezen…", text: "" });
+    mail.render(true);
+    try {
+      const [thread, style] = await Promise.all([
+        mcp.callTool(SV.mail, "get_thread", { threadId: t.id, messageFormat: "PLAIN_TEXT" }, { signal: ctl.signal, cache: { staleTime: 60000 } }).then((r) => r.payload),
+        sentExamples(ctl.signal),
+      ]);
+      const msgs = thread && Array.isArray(thread.messages) ? thread.messages : [];
+      if (!msgs.length) throw { code: "tool_error", server: SV.mail, message: "de thread is leeg" };
+      const target = [...msgs].reverse().find((m) => !isMine(m)) || msgs[msgs.length - 1];
+      st.mine = new Set(msgs.filter(isMine).map((m) => emailOf(m.sender)).concat(myEmail ? [myEmail] : []));
+      st.target = { id: target.id, sender: target.sender, subject: decode(target.subject || threadSubject(t)), to: target.toRecipients || [], cc: target.ccRecipients || [] };
+      st.replyAll = st.target.to.concat(st.target.cc).map(emailOf).filter((a) => a && !st.mine.has(a)).length > 0;
+      st.status = "Claude schrijft…";
+      paintCompose(t.id);
+      const res = await sampleFn(mailPrompt(msgs, style), { signal: ctl.signal, cache: false, onText: ({ text }) => { st.text = text; paintCompose(t.id); } });
+      st.text = String(res.text || "").trim();
+      st.status = res.truncated ? "Het concept is afgekapt; vul het zelf aan." : "";
+    } catch (e) {
+      st.status = e && e.code === "cancelled" ? "" : aiProblem(e, "Concept maken lukte niet. Probeer het opnieuw.", SV.mail);
+      if (e && e.text && !st.text) st.text = e.text;
+    } finally {
+      st.busy = false; st.ctl = null;
+      mail.render(true);
+    }
+  }
+  function composer(t) {
+    const st = compose.get(t.id) || { text: "" };
+    const ta = el("textarea", { "data-compose": t.id, "aria-label": "Concept-antwoord", placeholder: st.busy ? "" : "Schrijf je antwoord…" });
+    ta.value = st.text || "";
+    ta.addEventListener("input", () => { st.text = ta.value; });
+    const status = el("div", { class: "status", "data-compose-status": t.id, role: "status", text: st.status || "" });
+    status.hidden = !st.status;
+    const all = el("input", { type: "checkbox" });
+    all.checked = !!st.replyAll;
+    all.addEventListener("change", () => { st.replyAll = all.checked; });
+    return el("div", { class: "compose" }, status, ta, el("div", { class: "compose-acts" },
+      st.target ? el("label", null, all, "Allen beantwoorden") : null,
+      st.busy
+        ? el("button", { class: "btn", type: "button", text: "Stop", onclick: () => st.ctl && st.ctl.abort() })
+        : el("button", { class: "btn", type: "button", text: "Opnieuw", onclick: () => draftMail(t) }),
+      el("button", { class: "btn", type: "button", text: "Als concept in Gmail", disabled: !!st.busy || !st.target, onclick: (e) => saveDraft(t, e.currentTarget) }),
+      el("button", { class: "btn primary", type: "button", text: "Verstuur", disabled: !!st.busy || !st.target, onclick: (e) => sendReply(t, e.currentTarget) })));
+  }
+  function closeCompose(t) { compose.delete(t.id); composeOpen = null; mail.render(true); }
+  function sendReply(t, btn) {
+    const st = compose.get(t.id);
+    const body = String((st && st.text) || "").trim();
+    if (!st || !st.target || !body) return;
+    act({ server: SV.mail, tool: "reply", input: { messageId: st.target.id, body, replyAll: !!st.replyAll }, btn,
+      done: () => { closeCompose(t); toast("Verstuurd: " + clip(threadSubject(t), 44)); },
+      after: mailAfterChange });
+  }
+  function saveDraft(t, btn) {
+    const st = compose.get(t.id);
+    const body = String((st && st.text) || "").trim();
+    if (!st || !st.target || !body) return;
+    const to = [emailOf(st.target.sender)].filter(Boolean);
+    const cc = st.replyAll ? [...new Set(st.target.to.concat(st.target.cc).map(emailOf))].filter((a) => a && a !== to[0] && !st.mine.has(a)) : [];
+    const subject = /^re:/i.test(st.target.subject) ? st.target.subject : "Re: " + st.target.subject;
+    act({ server: SV.mail, tool: "create_draft", input: Object.assign({ to, subject, body, replyToMessageId: st.target.id }, cc.length ? { cc } : {}), btn,
+      done: () => { closeCompose(t); toast("Het concept staat klaar in Gmail."); } });
+  }
+
+  // ---------- Concept-antwoord: Slack ----------
+  async function draftSlack(g, btn) {
+    if (!sampleFn || !mcp) { toast("Concepten werken alleen in claude.ai.", { tone: "crit" }); return; }
+    const label = btn.textContent;
+    btn.disabled = true; btn.textContent = "Claude schrijft…";
+    const paint = (text) => document.querySelectorAll("textarea[data-reply]").forEach((ta) => { if (ta.dataset.reply === g.key) ta.value = text; });
+    try {
+      let context = g.msgs.map((m) => m.fromName + ": " + m.text).join("\n");
+      if (g.threadTs) {
+        try {
+          const r = await mcp.callTool(SV.slack, "slack_read_thread", { channel_id: g.channelId, message_ts: g.threadTs, limit: 40, response_format: "concise" }, { cache: { staleTime: 60000 } });
+          const s = r.payload && typeof r.payload === "object" ? r.payload.messages : r.payload;
+          if (typeof s === "string" && s.trim()) context = cleanSlack(s);
+        } catch (e) { /* use the messages already on screen */ }
+      }
+      const style = await sentExamples();
+      const prompt = [
+        "Je schrijft een Slack-antwoord namens " + (myName || "Paul van Raak") + " van The Brand Father.",
+        "Regels:\n- Antwoord in de taal van het gesprek.\n- Informeel, direct en kort: één tot drie zinnen, zoals in Slack.\n- Geen aanhef of afsluiting.\n- Verzin geen feiten of toezeggingen. Waar hij iets moet aanvullen, zet je [dit tussen haken].\n- Geef alleen de tekst.",
+        "ZIJN SCHRIJFSTIJL (uit zijn mails):\n" + (style.length ? style.slice(0, 4).map((s) => "- " + s).join("\n") : "(geen voorbeelden)"),
+        "HET GESPREK in " + g.where + ":\n" + clip(context, 6000),
+      ].join("\n\n");
+      const res = await sampleFn(prompt, { cache: false, onText: ({ text }) => { replyDrafts.set(g.key, text); paint(text); } });
+      replyDrafts.set(g.key, String(res.text || "").trim());
+      paint(replyDrafts.get(g.key));
+    } catch (e) {
+      toast(aiProblem(e, "Concept maken lukte niet. Probeer het opnieuw.", SV.slack), { tone: "crit" });
+    } finally {
+      if (btn.isConnected) { btn.disabled = false; btn.textContent = label; }
+    }
+  }
+
+  // ---------- Plan mijn dag ----------
+  let plan = null;
+  function freeBlocksFor(day, data) {
+    const events = (data && Array.isArray(data.events) ? data.events : []).filter((e) => e.status !== "cancelled" && e.start && e.start.dateTime);
+    const busy = events.filter((ev) => {
+      const me = (ev.attendees || []).find((a) => a.self);
+      return (calOv.get(ev.id) || (me ? me.responseStatus : "accepted")) !== "declined";
+    }).map((ev) => {
+      const s = new Date(ev.start.dateTime), e = new Date((ev.end && ev.end.dateTime) || ev.start.dateTime);
+      return [ymd(s) < day ? 0 : minuteOfDay(s), ymd(e) > day ? 1440 : minuteOfDay(e)];
+    }).sort((a, b) => a[0] - b[0]);
+    let cursor = 9 * 60;
+    if (day === today()) cursor = Math.max(cursor, Math.ceil((minuteOfDay(new Date()) + 5) / 15) * 15);
+    const free = [];
+    for (const [s, e] of busy) {
+      if (cursor >= 18 * 60) break;
+      const end = Math.min(s, 18 * 60);
+      if (end - cursor >= 30) free.push([cursor, end]);
+      cursor = Math.max(cursor, e);
+    }
+    if (18 * 60 - cursor >= 30) free.push([cursor, 18 * 60]);
+    return { free, events };
+  }
+  const toMin = (s) => { const m = /^(\d{1,2}):(\d{2})$/.exec(String(s || "").trim()); return m ? (+m[1]) * 60 + (+m[2]) : NaN; };
+  function planPrompt(day, free, events, open) {
+    const meet = events.map((ev) => hm(new Date(ev.start.dateTime)) + "–" + hm(new Date((ev.end && ev.end.dateTime) || ev.start.dateTime)) + " " + clip(ev.summary, 80)).join("\n");
+    return [
+      "Plan focusblokken voor " + dayLong(day, { weekday: "long", day: "numeric", month: "long" }) + " voor " + (firstName || "de gebruiker") + " van The Brand Father.",
+      "VRIJE BLOKKEN (plan alleen hierin):\n" + free.map(([s, e]) => mm(s) + "–" + mm(e)).join("\n"),
+      "AFSPRAKEN:\n" + (meet || "(geen)"),
+      "OPEN TAKEN (meest urgent eerst):\n" + JSON.stringify(open.map((x) => ({ id: String(x.item.id), taak: clip(x.item.name, 100), bord: x.board, status: x.st, deadline: x.due || null, wachtOpJou: x.waiting, vastgelopen: x.stuck, prioriteit: x.pr || null }))),
+      "Regels:\n- Plan alleen binnen de vrije blokken en laat 10 minuten ruimte voor en na afspraken.\n- Blokken van 30 tot 120 minuten.\n- Begin met wat op hem wacht, vastzit, een deadline heeft of hoge prioriteit heeft.\n- Combineer kleine taken van hetzelfde bord in één blok.\n- Houd tussen 12:00 en 13:30 een half uur vrij voor lunch als dat in een vrij blok valt.\n- Maximaal 5 blokken; plan de dag niet helemaal vol.",
+      'Antwoord met alleen JSON: {"blocks":[{"start":"HH:MM","end":"HH:MM","title":"korte titel","taskIds":["id"],"why":"één korte zin waarom nu"}]}',
+    ].join("\n\n");
+  }
+  function validatePlan(out, free, open) {
+    const raw = out && Array.isArray(out.blocks) ? out.blocks : Array.isArray(out) ? out : [];
+    const byId = new Map(open.map((x) => [String(x.item.id), x]));
+    const res = [];
+    for (const b of raw) {
+      const s = toMin(b && b.start), e = toMin(b && b.end);
+      if (!(e - s >= 20)) continue;
+      if (!free.some(([fs, fe]) => s >= fs && e <= fe)) continue;
+      if (res.some((o) => s < o.e && o.s < e)) continue;
+      const tasksIn = (Array.isArray(b.taskIds) ? b.taskIds : []).map((id) => byId.get(String(id))).filter(Boolean);
+      res.push({ s, e, title: clip((b && b.title) || (tasksIn[0] && tasksIn[0].item.name) || "Focus", 80), why: clip(b && b.why, 160), tasks: tasksIn, on: true });
+      if (res.length >= 6) break;
+    }
+    return res.sort((a, b) => a.s - b.s);
+  }
+  async function makePlan() {
+    if (plan && plan.busy) return;
+    if (!sampleFn || !mcp) { toast("Plannen werkt alleen in claude.ai.", { tone: "crit" }); return; }
+    const day = calDay;
+    if (day < today()) { toast("Plannen kan alleen voor vandaag of later."); return; }
+    if (!cal.data) { toast("De agenda is nog aan het laden."); return; }
+    const { free, events } = freeBlocksFor(day, cal.data);
+    if (!free.length) { toast("Geen vrije tijd meer op " + dayLabel(day).toLowerCase() + "."); return; }
+    const open = taskList(tasks.data).filter((x) => !x.done).sort((a, b) => b.score - a.score).slice(0, 20);
+    if (!open.length) { toast("Geen open taken om in te plannen."); return; }
+    const ctl = new AbortController();
+    plan = { day, blocks: [], busy: true, ctl, status: "Claude zet je taken in je vrije tijd…" };
+    cal.render(true);
+    try {
+      const out = await sampleFn.json(planPrompt(day, free, events, open), { signal: ctl.signal, cache: false });
+      if (!plan || plan.ctl !== ctl) return;
+      plan.blocks = validatePlan(out, free, open);
+      plan.status = plan.blocks.length ? "" : "Claude vond geen goede indeling. Probeer het opnieuw.";
+    } catch (e) {
+      if (e && e.code === "cancelled") { if (plan && plan.ctl === ctl) plan = null; }
+      else if (plan && plan.ctl === ctl) plan.status = aiProblem(e, "Plannen lukte niet. Probeer het opnieuw.");
+    } finally {
+      if (plan && plan.ctl === ctl) { plan.busy = false; plan.ctl = null; }
+      cal.render(true);
+    }
+  }
+  function planBar(p) {
+    const bar = el("div", { class: "planbar", role: "status" });
+    if (p.busy) {
+      bar.append(el("span", { class: "grow", text: p.status }), el("button", { class: "btn", type: "button", text: "Stop", onclick: () => p.ctl && p.ctl.abort() }));
+      return bar;
+    }
+    const n = p.blocks.filter((b) => b.on).length;
+    bar.append(el("span", { class: "grow", text: p.status || ("Voorstel: " + p.blocks.length + (p.blocks.length === 1 ? " focusblok" : " focusblokken") + ". Vink uit wat je niet wilt.") }));
+    if (p.blocks.length) bar.append(el("button", { class: "btn primary", type: "button", text: "Zet " + n + " in agenda", disabled: !n, onclick: (e) => applyPlan(e.currentTarget) }));
+    bar.append(el("button", { class: "btn", type: "button", text: "Opnieuw", onclick: makePlan }),
+      el("button", { class: "ib", type: "button", "aria-label": "Voorstel sluiten", title: "Sluiten", onclick: () => { plan = null; cal.render(true); } }, icon("close")));
+    return bar;
+  }
+  function planRow(b) {
+    const cb = el("input", { type: "checkbox", "aria-label": "Inplannen: " + b.title });
+    cb.checked = b.on;
+    cb.addEventListener("change", () => { b.on = cb.checked; cal.render(true); });
+    return el("li", { class: "row plan" + (b.on ? "" : " off") },
+      el("div", { class: "when" }, mm(b.s), el("span", { text: mm(b.e) })),
+      el("div", { style: "min-width:0" }, el("div", { class: "title", text: b.title }), b.why ? el("div", { class: "meta", text: b.why }) : null),
+      cb);
+  }
+  async function applyPlan(btn) {
+    if (!plan || !mcp) return;
+    const p = plan, chosen = p.blocks.filter((b) => b.on);
+    if (!chosen.length) return;
+    btn.disabled = true; btn.textContent = "Bezig…";
+    const created = [];
+    for (const b of chosen) {
+      const links = b.tasks.map((x) => "• " + x.item.name + (x.item.url ? " – " + x.item.url : "")).join("\n");
+      const input = { summary: "Focus: " + b.title, startTime: p.day + "T" + mm(b.s) + ":00", endTime: p.day + "T" + mm(b.e) + ":00",
+        description: "Gepland met Life Dashboard." + (links ? "\n\n" + links : ""), colorId: "2", notificationLevel: "NONE" };
+      try {
+        const r = await mcp.callTool(SV.cal, "create_event", input, { cache: false });
+        const pl = r && r.payload;
+        created.push({ id: (pl && (pl.id || (pl.event && pl.event.id))) || null, summary: input.summary, start: input.startTime });
+      } catch (e) {
+        toast(actionProblem(SV.cal, e), { tone: "crit" });
+        break;
+      }
+    }
+    plan = null;
+    cal.render(true);
+    setTimeout(() => { cal.refresh(); calWeek.refresh(); }, 1200);
+    if (created.length) toast(created.length + (created.length === 1 ? " focusblok staat" : " focusblokken staan") + " in je agenda.", { undo: () => undoPlan(created, p.day) });
+  }
+  async function undoPlan(created, day) {
+    const ids = created.map((c) => c.id).filter(Boolean);
+    if (ids.length < created.length) {
+      try {
+        const r = await mcp.callTool(SV.cal, "list_events", { startTime: day + "T00:00:00", endTime: addDays(day, 1) + "T00:00:00", orderBy: "startTime", pageSize: 100 }, { cache: false });
+        const evs = (r.payload && r.payload.events) || [];
+        for (const c of created) {
+          if (c.id) continue;
+          const hit = evs.find((ev) => ev.summary === c.summary && ev.start && ev.start.dateTime && ev.start.dateTime.slice(0, 16) === c.start.slice(0, 16));
+          if (hit) ids.push(hit.id);
+        }
+      } catch (e) { /* remove the ones we know */ }
+    }
+    let n = 0;
+    for (const id of ids) {
+      try { await mcp.callTool(SV.cal, "delete_event", { eventId: id, notificationLevel: "NONE" }, { cache: false }); n++; }
+      catch (e) { toast(actionProblem(SV.cal, e), { tone: "crit" }); break; }
+    }
+    cal.refresh(); calWeek.refresh();
+    if (n) toast(n === 1 ? "Focusblok verwijderd." : n + " focusblokken verwijderd.");
+  }
+  $("plan-day").addEventListener("click", makePlan);
+
+  // ---------- Per klant ----------
+  view = store.get("view", "sources") === "clients" ? "clients" : "sources";
+  let clientsCfg = null, clientsCompiled = [], clientsBusy = false, clientsMsg = "";
+  const calWeek = widget("week", SV.cal, () => el("span"));
+  const mailAll = widget("mailall", SV.mail, () => el("span"));
+  calWeek.render = () => afterRender();
+  mailAll.render = () => afterRender();
+  let clientWatching = false;
+  function startClientWatches() {
+    if (clientWatching || !mcp) return;
+    clientWatching = true;
+    const t = today();
+    calWeek.watch("list_events", { startTime: t + "T00:00:00", endTime: addDays(t, 7) + "T00:00:00", orderBy: "startTime", pageSize: 250 }, 300000);
+    mailAll.watch("search_threads", { query: "in:inbox newer_than:14d", pageSize: 50 }, 120000);
+  }
+  function setView(v) {
+    view = v === "clients" ? "clients" : "sources";
+    store.set("view", view);
+    document.querySelectorAll("button[data-view]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.view === view)));
+    $("board").hidden = view === "clients";
+    $("clients").hidden = view !== "clients";
+    if (view === "clients") { startClientWatches(); renderClients(true); }
+  }
+  document.querySelectorAll("button[data-view]").forEach((b) => b.addEventListener("click", () => setView(b.dataset.view)));
+  document.querySelectorAll("a.count").forEach((a) => a.addEventListener("click", () => { if (view === "clients") setView("sources"); }));
+  const escRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const OWN = new Set(["thebrandfather.nl"]);
+  const domainOf = (addr) => { const m = String(addr || "").toLowerCase().match(/@([a-z0-9.-]+)/); return m ? m[1] : ""; };
+  function compileClients(list) {
+    return (list || []).map((c) => {
+      const kws = (Array.isArray(c.keywords) ? c.keywords : []).map((k) => String(k).trim()).filter((k) => k.length >= 2).map(escRe);
+      return {
+        name: String(c.name || "").trim(),
+        domains: (Array.isArray(c.domains) ? c.domains : []).map((d) => String(d).toLowerCase().trim()).filter(Boolean),
+        re: kws.length ? new RegExp("(?:^|[^\\p{L}\\p{N}])(?:" + kws.join("|") + ")(?=$|[^\\p{L}\\p{N}])", "iu") : null,
+      };
+    }).filter((c) => c.name);
+  }
+  function matchClient(text, domains) {
+    const mine = domainOf(myEmail);
+    const ds = domains.filter((d) => d && !OWN.has(d) && d !== mine);
+    for (const c of clientsCompiled) if (ds.some((d) => c.domains.some((cd) => d === cd || d.endsWith("." + cd)))) return c.name;
+    for (const c of clientsCompiled) if (c.re && c.re.test(text)) return c.name;
+    return null;
+  }
+  function eventInfo(ev) {
+    const timed = !!(ev.start && ev.start.dateTime);
+    const me = (ev.attendees || []).find((a) => a.self) || null;
+    const rsvp = calOv.get(ev.id) || (me ? me.responseStatus : "accepted");
+    return { ev, me, rsvp, declined: rsvp === "declined", allDay: !timed,
+      s: timed ? new Date(ev.start.dateTime) : null, e: timed ? new Date((ev.end && ev.end.dateTime) || ev.start.dateTime) : null,
+      day: timed ? ymd(new Date(ev.start.dateTime)) : ((ev.start && ev.start.date) || today()) };
+  }
+  const threadUnread = (t) => { const ov = mailOv.get(t.id) || {}; return ov.unread != null ? ov.unread : (t.messages || []).some((m) => (m.labelIds || []).includes("UNREAD")); };
+  const lastDate = (t) => { const ms = t.messages || []; return new Date((ms[ms.length - 1] || {}).date || 0).getTime() || 0; };
+  function clientBuckets() {
+    const buckets = new Map(clientsCompiled.map((c) => [c.name, { name: c.name, meetings: [], mails: [], tasks: [], slack: [] }]));
+    const other = { name: "Overig", other: true, meetings: [], mails: [], tasks: [], slack: [] };
+    const put = (name, kind, item) => (buckets.get(name) || other)[kind].push(item);
+    const now = new Date();
+    for (const ev of (calWeek.data && Array.isArray(calWeek.data.events) ? calWeek.data.events : [])) {
+      if (ev.status === "cancelled") continue;
+      const r = eventInfo(ev);
+      if (r.declined || (!r.allDay && r.e < now)) continue;
+      put(matchClient([ev.summary, ev.location, clip(ev.description, 400)].join(" "), (ev.attendees || []).map((a) => domainOf(a.email))), "meetings", r);
+    }
+    const seen = new Set();
+    for (const t of [].concat((mailAll.data && mailAll.data.threads) || [], (mail.data && mail.data.threads) || [])) {
+      if (!t || seen.has(t.id) || (mailOv.get(t.id) || {}).gone) continue;
+      seen.add(t.id);
+      const msgs = t.messages || [];
+      const doms = msgs.flatMap((m) => [m.sender].concat(m.toRecipients || [], m.ccRecipients || [])).map((a) => domainOf(emailOf(a)));
+      put(matchClient(msgs.map((m) => decode(m.subject || "") + " " + decode(m.snippet || "")).join(" "), doms), "mails", t);
+    }
+    for (const x of taskList(tasks.data)) {
+      if (x.done) continue;
+      const meta = boardMeta[x.boardId] || {};
+      put(matchClient([meta.ws, meta.name, x.item.group && x.item.group.title, x.item.name].join(" "), []), "tasks", x);
+    }
+    for (const g of slackGroups()) put(matchClient([g.where, (roots.get(g.key) || {}).text || "", g.msgs.map((m) => m.text).join(" ")].join(" "), []), "slack", g);
+    return { list: [...buckets.values()], other };
+  }
+  function bucketScore(b) {
+    const t = today();
+    return b.tasks.reduce((s, x) => s + (x.waiting ? 5 : 0) + (x.stuck ? 3 : 0) + (x.late ? 3 : 0) + (x.soon ? 2 : 0), 0)
+      + b.mails.filter(threadUnread).length * 2 + b.slack.filter((g) => !g.read).length * 2
+      + b.meetings.filter((r) => r.day === t).length * 2
+      + (b.meetings.length + b.mails.length + b.tasks.length + b.slack.length) * 0.1;
+  }
+  function meetingRow(r) {
+    const when = dayLabel(r.day) + (r.allDay ? "" : " " + hm(r.s));
+    const title = safeUrl(r.ev.htmlLink) ? ext(r.ev.htmlLink, { class: "title", text: r.ev.summary || "(geen titel)" }) : el("span", { class: "title", text: r.ev.summary || "(geen titel)" });
+    return el("li", { class: "row mt" }, el("span", { class: "when", text: when }), el("div", { style: "min-width:0" }, title, rsvpControl(r)));
+  }
+  function clientTile(b) {
+    const parts = [[b.meetings.length, "afspraak", "afspraken"], [b.mails.length, "mail", "mails"], [b.tasks.length, "taak", "taken"], [b.slack.length, "Slack-gesprek", "Slack-gesprekken"]]
+      .filter(([n]) => n).map(([n, one, many]) => n + " " + (n === 1 ? one : many));
+    const tile = el("section", { class: "tile client" + (b.other ? " other" : "") },
+      el("div", { class: "tile-head" }, el("h2", { text: b.name }), el("span", { class: "sum", text: parts.join(" · ") })));
+    const more = (n, max) => (n > max ? el("p", { class: "more", text: "Nog " + (n - max) + " meer" }) : null);
+    const sec = (kind, label, ...content) => el("div", { class: "csec s-" + kind }, el("h3", { text: label }), ...content);
+    if (b.meetings.length) {
+      const ms = b.meetings.slice().sort((x, y) => (x.s ? x.s.getTime() : utcOf(x.day).getTime()) - (y.s ? y.s.getTime() : utcOf(y.day).getTime()));
+      tile.append(sec("agenda", "Agenda", el("ul", { class: "list" }, ms.slice(0, 4).map(meetingRow)), more(ms.length, 4)));
+    }
+    if (b.mails.length) {
+      const ms = b.mails.slice().sort((x, y) => (threadUnread(y) - threadUnread(x)) || (lastDate(y) - lastDate(x)));
+      tile.append(sec("mail", "Mail", el("ul", { class: "list" }, ms.slice(0, 5).map(mailRow)), more(ms.length, 5)));
+    }
+    if (b.tasks.length) {
+      const ts = b.tasks.slice().sort((x, y) => y.score - x.score);
+      tile.append(sec("tasks", "Taken", el("ul", { class: "list" }, ts.slice(0, 6).map(taskRow)), more(ts.length, 6)));
+    }
+    if (b.slack.length) {
+      const gs = b.slack.slice().sort((x, y) => (x.read - y.read) || (y.latest - x.latest));
+      tile.append(sec("slack", "Slack", el("div", { class: "sgroups" }, gs.slice(0, 3).map(slackGroup)), more(gs.length, 3)));
+    }
+    return tile;
+  }
+  function renderClients(force) {
+    const box = $("clients");
+    if (view !== "clients" || !box) return;
+    if (!force && deferIfTyping(box, () => renderClients(true))) return;
+    box.replaceChildren();
+    const canAsk = !!(sampleFn && dbApi && mcp);
+    box.append(el("div", { class: "clients-head" },
+      el("span", { class: "grow", text: clientsMsg || (clientsCfg && clientsCfg.length ? "Ingedeeld op afzender, deelnemers, bord, kanaal en trefwoorden." : "") }),
+      canAsk ? el("button", { class: "btn", type: "button", text: clientsBusy ? "Claude kijkt mee…" : "Klanten bijwerken", disabled: clientsBusy, onclick: updateClients }) : null));
+    if (clientsCfg === null) { box.append(el("div", { class: "tile" }, el("div", { class: "skel" }, el("i"), el("i"), el("i")))); return; }
+    if (!clientsCfg.length) {
+      box.append(el("div", { class: "tile" }, el("p", { class: "empty", text: "Nog geen klanten ingesteld. Klik op ‘Klanten bijwerken’; Claude stelt ze voor op basis van je mail, agenda, Slack en monday." })));
+      return;
+    }
+    const { list, other } = clientBuckets();
+    const filled = list.filter((b) => b.meetings.length + b.mails.length + b.tasks.length + b.slack.length)
+      .map((b) => ({ b, score: bucketScore(b) })).sort((a, b) => b.score - a.score).map((x) => x.b);
+    for (const b of filled) box.append(clientTile(b));
+    if (other.meetings.length + other.mails.length + other.tasks.length + other.slack.length) box.append(clientTile(other));
+    if (!filled.length && !other.mails.length && !other.tasks.length) box.append(el("div", { class: "tile" }, el("div", { class: "skel" }, el("i"), el("i"), el("i"))));
+  }
+  function normalizeClients(out) {
+    const raw = out && Array.isArray(out.clients) ? out.clients : Array.isArray(out) ? out : [];
+    const seen = new Set();
+    return raw.filter((c) => c && typeof c === "object").map((c) => ({
+      name: clip(String(c.name || ""), 40),
+      domains: [...new Set((Array.isArray(c.domains) ? c.domains : []).map((d) => String(d).toLowerCase().trim().replace(/^@/, "")).filter((d) => /^[a-z0-9.-]+\.[a-z]{2,}$/.test(d) && !OWN.has(d)))].slice(0, 12),
+      keywords: [...new Set((Array.isArray(c.keywords) ? c.keywords : []).map((k) => clip(String(k), 40)).filter((k) => k.length >= 2))].slice(0, 24),
+    })).filter((c) => {
+      const k = c.name.toLowerCase();
+      if (!c.name || seen.has(k) || !(c.domains.length || c.keywords.length)) return false;
+      seen.add(k);
+      return true;
+    }).slice(0, 30);
+  }
+  async function updateClients() {
+    if (clientsBusy || !sampleFn || !dbApi) return;
+    clientsBusy = true; clientsMsg = "Claude bekijkt je mail, agenda, Slack en monday…";
+    renderClients(true);
+    try {
+      const { other } = clientBuckets();
+      const boards = [...new Set(Object.values(boardMeta).map((m) => (m.ws ? m.ws + " / " : "") + m.name))].slice(0, 60);
+      const unmatched = {
+        mails: other.mails.slice(0, 40).map((t) => { const m = (t.messages || [])[0] || {}; return { van: emailOf(m.sender), onderwerp: clip(decode(m.subject), 100) }; }),
+        afspraken: other.meetings.slice(0, 30).map((r) => ({ titel: clip(r.ev.summary, 100), domeinen: [...new Set((r.ev.attendees || []).map((a) => domainOf(a.email)).filter((d) => d && !OWN.has(d)))] })),
+        taken: other.tasks.slice(0, 40).map((x) => ((boardMeta[x.boardId] || {}).ws || "") + " / " + x.board + " / " + clip(x.item.name, 80)),
+        slack: other.slack.slice(0, 20).map((g) => g.where + ": " + clip(g.msgs.map((m) => m.text).join(" "), 120)),
+      };
+      const prompt = [
+        "Je beheert de klantindeling van het dashboard van " + (firstName || "de gebruiker") + " (The Brand Father, een creatief bureau). Hieronder staan de huidige klanten en de items die nog bij geen klant horen.",
+        "Geef de volledige, bijgewerkte lijst terug:\n- Behoud bestaande klanten en vul hun domeinen en trefwoorden aan waar dat helpt.\n- Voeg een nieuwe klant of project toe als meerdere items erbij horen.\n- Collega's van thebrandfather.nl zijn geen klant. Interne zaken (weekstart, sales, marketing van TBF) horen bij \"TBF intern\".\n- Domeinen: e-maildomeinen van de klant of van zijn bureau.\n- Trefwoorden: specifieke merk-, project-, bord- of kanaalnamen. Geen algemene woorden zoals design, update of meeting.",
+        'Antwoord met alleen JSON: {"clients":[{"name":"...","domains":["..."],"keywords":["..."]}]}',
+        "HUIDIGE KLANTEN:\n" + JSON.stringify(clientsCfg || []),
+        "BORDEN IN MONDAY:\n" + boards.join("\n"),
+        "NOG NIET INGEDEELD:\n" + JSON.stringify(unmatched),
+      ].join("\n\n");
+      const list = normalizeClients(await sampleFn.json(prompt, { cache: false }));
+      if (!list.length) throw { code: "invalid_json" };
+      await dbApi.doc("state/clients").set({ clients: list, updatedAt: new Date().toISOString() });
+      clientsMsg = "Klanten bijgewerkt: " + list.length + ".";
+    } catch (e) {
+      clientsMsg = aiProblem(e, "Bijwerken lukte niet. Probeer het opnieuw.");
+    } finally {
+      clientsBusy = false;
+      renderClients(true);
+    }
+  }
+
+  // ---------- Altijd actueel ----------
+  let briefLoaded = false, autoSlot = "";
+  const bootAt = Date.now();
+  function briefingStale(doc) {
+    const now = new Date(), min = minuteOfDay(now);
+    if (min < 6 * 60 + 45 || min >= 20 * 60) return false;
+    if (!doc || doc.date !== today()) return true;
+    if (Array.isArray(doc.issues) && doc.issues.length >= 2) return true;
+    const g = new Date(doc.generatedAt);
+    return isNaN(g) || now - g > 3 * 3600000;
+  }
+  function maybeAutoBriefing() {
+    if (!briefLoaded || !sampleFn || !dbApi || !mcp || briefBusy || document.hidden) return;
+    if (!briefingStale(lastBriefDoc)) return;
+    const ready = tasks.data != null && cal.data != null && (slackA.data != null || slackB.data != null);
+    if (!ready && Date.now() - bootAt < 90000) return;
+    const slot = today() + ":" + Math.floor(Date.now() / (3 * 3600000));
+    if (autoSlot === slot || store.get("autoBrief", "") === slot) return;
+    autoSlot = slot;
+    store.set("autoBrief", slot);
+    makeBriefing(true);
+  }
+  setInterval(maybeAutoBriefing, 30000);
+
   // ---------- boot ----------
   cal.render(); mail.render(); tasks.render(); drawSlack(true);
+  setView(view);
   renderStats();
   $("day-label").textContent = dayLabel(calDay);
   const api = window.claude && typeof window.claude.use === "function" ? window.claude : { use: () => Promise.resolve(null) };
@@ -1370,12 +1981,19 @@ a.count:hover { text-decoration: none; }
     dbApi = db;
     if (!db) {
       try { slackRead = JSON.parse(store.get("slackRead", "{}")) || {}; } catch { slackRead = {}; }
-      renderBriefing(null); drawSlack(true);
+      briefLoaded = true; renderBriefing(null); drawSlack(true);
+      clientsCfg = []; renderClients();
       return;
     }
     db.collection("briefings").orderBy("date", "desc").limit(1).onSnapshot(
-      (snap) => renderBriefing(snap.empty ? null : snap.docs[0].data()),
-      () => renderBriefing(null));
+      (snap) => { briefLoaded = true; renderBriefing(snap.empty ? null : snap.docs[0].data()); setTimeout(maybeAutoBriefing, 0); },
+      () => { briefLoaded = true; renderBriefing(null); });
+    db.doc("state/clients").onSnapshot((snap) => {
+      const d = snap.exists ? snap.data() : null;
+      clientsCfg = d && Array.isArray(d.clients) ? d.clients : [];
+      clientsCompiled = compileClients(clientsCfg);
+      renderClients();
+    }, () => { clientsCfg = []; clientsCompiled = []; renderClients(); });
     db.doc("state/slack").onSnapshot((snap) => {
       const d = snap.exists ? snap.data() : null;
       slackRead = Object.assign({}, (d && d.read) || {});
@@ -1400,15 +2018,16 @@ a.count:hover { text-decoration: none; }
     }
     watchCal();
     watchMail();
-    unreadCount.watch("search_threads", { query: "in:inbox is:unread", pageSize: 50, view: "THREAD_VIEW_METADATA_ONLY" }, 300000);
-    boardsW.watch("all_api_read", { query: "query { me { id name } boards(limit: 200, state: active) { id name type columns(types:[people, status]) { id type title settings_str } } }" }, 3600000);
+    unreadCount.watch("search_threads", { query: "in:inbox is:unread", pageSize: 50, view: "THREAD_VIEW_METADATA_ONLY" }, 60000);
+    boardsW.watch("all_api_read", { query: "query { me { id name } boards(limit: 200, state: active) { id name type workspace { name } columns(types:[people, status]) { id type title settings_str } } }" }, 3600000);
     watchSlack();
+    if (view === "clients") startClientWatches();
   }).catch(() => {
     const off = { code: "capability_disabled" };
     [cal, mail, tasks].forEach((w) => w.fail(off));
   });
 
-  $("refresh-all").addEventListener("click", () => { cal.refresh(); mail.refresh(); unreadCount.refresh(); tasks.refresh(); slack.refresh(); });
+  $("refresh-all").addEventListener("click", () => { cal.refresh(); mail.refresh(); unreadCount.refresh(); tasks.refresh(); slack.refresh(); calWeek.refresh(); mailAll.refresh(); });
 
   // Roll over at midnight so "today" stays right on an open tab.
   let shownDay = today();
@@ -1417,7 +2036,11 @@ a.count:hover { text-decoration: none; }
     if (t === shownDay) return;
     const wasToday = calDay === shownDay;
     shownDay = t; renderMast();
-    if (mcp) { if (wasToday) { calDay = t; watchCal(); } watchSlack(); }
+    if (mcp) {
+      if (wasToday) { calDay = t; watchCal(); }
+      watchSlack();
+      if (clientWatching) { clientWatching = false; startClientWatches(); }
+    }
   }, 60000);
 })();
 </script>
