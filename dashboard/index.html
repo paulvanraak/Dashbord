@@ -1,357 +1,316 @@
 <title>Life Dashboard</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
 <style>
-/* Layout: one working surface, dark by default with a light mode. Date and briefing sit on the page itself; four quiet panels below hold the live lanes, each with its own topic colour. */
+/* Layout: Apple-style widget grid. A quiet date header, four count tiles, one wide briefing tile, then four content tiles in a 2×2 grid. Lots of air, few lines. */
 :root {
   color-scheme: dark;
-  --bg: #0B0D12;
-  --panel: #12151C;
-  --raised: #1B1F29;
-  --hover: #171B24;
-  --line: #222735;
-  --ink: #ECEEF3;
-  --muted: #98A0B1;
-  --faint: #636B7C;
-  --accent: #8FA0FF;
-  --accent-soft: rgba(143, 160, 255, .14);
-  --ok: #63D49B;
-  --ok-soft: rgba(99, 212, 155, .13);
-  --warn: #F0B65E;
-  --warn-soft: rgba(240, 182, 94, .13);
-  --crit: #FF7D88;
-  --crit-soft: rgba(255, 125, 136, .13);
-  --toast: #262B38;
-  --toast-crit: #3A1E24;
-  --toast-ink: #ECEEF3;
-  --toast-accent: #AEB9FF;
-  --t-agenda: #74A7FF;
-  --t-mail: #FFA45C;
-  --t-tasks: #4FD1A1;
-  --t-slack: #C99BFF;
-  --font-display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
-  --font-body: "IBM Plex Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
-  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --bg: #000000;
+  --tile: #1C1C1E;
+  --fill: rgba(118, 118, 128, .24);
+  --seg-on: #636366;
+  --hover: rgba(255, 255, 255, .045);
+  --sep: #38383A;
+  --ink: #F5F5F7;
+  --muted: #AEAEB2;
+  --faint: #8E8E93;
+  --blue: #0A84FF;
+  --orange: #FF9F0A;
+  --green: #30D158;
+  --purple: #BF5AF2;
+  --red: #FF453A;
+  --yellow: #FFD60A;
+  --blue-soft: rgba(10, 132, 255, .16);
+  --red-soft: rgba(255, 69, 58, .16);
+  --green-soft: rgba(48, 209, 88, .14);
+  --yellow-soft: rgba(255, 214, 10, .14);
+  --on-color: #FFFFFF;
+  --shadow: none;
+  --toast: rgba(44, 44, 46, .92);
+  --toast-ink: #F5F5F7;
+  --toast-accent: #0A84FF;
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", "Segoe UI", system-ui, sans-serif;
 }
 :root[data-mode="light"] {
   color-scheme: light;
-  --bg: #EEF0F4; --panel: #FFFFFF; --raised: #EBEEF3; --hover: #F5F7FA; --line: #E0E4EB;
-  --ink: #131722; --muted: #545E70; --faint: #6E7687;
-  --accent: #3446C4; --accent-soft: rgba(52, 70, 196, .10);
-  --ok: #12784A; --ok-soft: rgba(18, 120, 74, .10);
-  --warn: #935400; --warn-soft: rgba(214, 140, 20, .16);
-  --crit: #BF2A36; --crit-soft: rgba(191, 42, 54, .10);
-  --toast: #1C2130; --toast-crit: #5B1F28; --toast-ink: #F2F3F6; --toast-accent: #AEB9FF;
-  --t-agenda: #1F63C9; --t-mail: #B4530A; --t-tasks: #0B7A52; --t-slack: #7A3CC4;
+  --bg: #F5F5F7; --tile: #FFFFFF; --fill: rgba(118, 118, 128, .12); --seg-on: #FFFFFF; --hover: rgba(0, 0, 0, .035); --sep: #E5E5EA;
+  --ink: #1D1D1F; --muted: #6E6E73; --faint: #7C7C82;
+  --blue: #0066CC; --orange: #C93400; --green: #248A3D; --purple: #8944AB; --red: #D70015; --yellow: #A05A00;
+  --blue-soft: rgba(0, 102, 204, .10); --red-soft: rgba(215, 0, 21, .08); --green-soft: rgba(36, 138, 61, .10); --yellow-soft: rgba(160, 90, 0, .10);
+  --shadow: 0 1px 2px rgba(0, 0, 0, .04), 0 8px 28px rgba(0, 0, 0, .05);
+  --toast: rgba(29, 29, 31, .92); --toast-ink: #F5F5F7; --toast-accent: #64A8FF;
 }
 * { box-sizing: border-box; }
-body { background: var(--bg); color: var(--ink); font: 14px/1.5 var(--font-body); -webkit-font-smoothing: antialiased; }
+body { background: var(--bg); color: var(--ink); font: 15px/1.47 var(--font); letter-spacing: -0.01em; -webkit-font-smoothing: antialiased; }
 a { color: inherit; text-decoration: none; }
 a:hover { text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--faint); }
-button { font: inherit; color: inherit; }
-:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+button { font: inherit; color: inherit; letter-spacing: inherit; }
+:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; border-radius: 8px; }
 
-.wrap { max-width: 1440px; margin: 0 auto; padding-inline: 16px; padding-block: 24px 72px; display: grid; gap: 28px; }
-@media (min-width: 760px) { .wrap { padding-inline: 28px; padding-block: 36px 80px; gap: 32px; } }
+.wrap { max-width: 1240px; margin: 0 auto; padding-inline: 20px; padding-block: 32px 96px; display: grid; gap: 24px; }
+@media (min-width: 760px) { .wrap { padding-inline: 40px; padding-block: 56px 120px; gap: 28px; } }
 
-/* Masthead */
-.mast { display: grid; gap: 6px; }
-.mast-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-width: 0; }
-.mast-main { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px 24px; }
-.mode { display: inline-flex; padding: 3px; border-radius: 999px; background: var(--panel); flex: none; }
-.mode button { display: inline-flex; align-items: center; gap: 6px; border: 0; background: transparent; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 600; color: var(--faint); cursor: pointer; }
-.mode button:hover { color: var(--ink); }
-.mode button[aria-pressed="true"] { background: var(--raised); color: var(--ink); }
-.mode svg { width: 14px; height: 14px; }
-.eyebrow { font: 500 12px/1.2 var(--font-mono); letter-spacing: .06em; color: var(--faint); text-transform: uppercase; }
-.mast h1 { margin: 0; font: 700 clamp(32px, 6vw, 48px)/1 var(--font-display); letter-spacing: -0.025em; }
-.stats { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
-.stat { display: inline-flex; align-items: baseline; gap: 6px; padding: 7px 12px; border-radius: 999px; background: var(--panel); color: var(--muted); font-size: 13px; white-space: nowrap; }
-.stat b { font: 500 14px/1 var(--font-mono); color: var(--ink); font-variant-numeric: tabular-nums; }
-#st-meet { color: var(--t-agenda); } #st-unread { color: var(--t-mail); } #st-wait { color: var(--t-tasks); } #st-slack { color: var(--t-slack); }
-.stat.hot { background: var(--crit-soft); color: var(--crit); }
-.stat.hot b, .stat.hot #st-wait { color: var(--crit); }
-a.stat:hover { text-decoration: none; background: var(--raised); }
+/* Header */
+.top { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px; }
+.day { display: grid; gap: 2px; min-width: 0; }
+.day .wd { font-size: 15px; font-weight: 600; color: var(--red); }
+.day .wd::first-letter { text-transform: uppercase; }
+.day h1 { margin: 0; font-size: clamp(34px, 5vw, 44px); line-height: 1.05; font-weight: 700; letter-spacing: -0.03em; }
+.controls { display: flex; align-items: center; gap: 10px; }
+.seg { display: inline-flex; padding: 2px; border-radius: 9px; background: var(--fill); }
+.seg button { display: inline-flex; align-items: center; gap: 6px; border: 0; background: transparent; padding: 5px 14px; border-radius: 7px; font-size: 13px; font-weight: 500; color: var(--ink); cursor: pointer; white-space: nowrap; }
+.seg button[aria-pressed="true"] { background: var(--seg-on); font-weight: 600; box-shadow: 0 1px 3px rgba(0, 0, 0, .14); }
+.seg svg { width: 15px; height: 15px; }
+.round { display: grid; place-items: center; width: 34px; height: 34px; border: 0; border-radius: 50%; background: var(--fill); color: var(--ink); cursor: pointer; }
+.round svg { width: 16px; height: 16px; }
 
-.btn { display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 5px 12px; border: 0; border-radius: 9px; background: var(--raised); cursor: pointer; font-size: 13px; font-weight: 500; color: var(--ink); }
-.btn:hover { background: var(--line); }
-:root[data-mode="light"] .btn:not(.primary) { background: var(--panel); box-shadow: inset 0 0 0 1px var(--line); }
-:root[data-mode="light"] .btn:not(.primary):hover { background: var(--hover); }
+/* Count tiles */
+.counts { display: grid; gap: 16px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (min-width: 760px) { .counts { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; } }
+a.count { display: grid; gap: 12px; padding: 18px 20px 20px; border-radius: 22px; background: var(--tile); box-shadow: var(--shadow); text-decoration: none; }
+a.count:hover { text-decoration: none; }
+.ic { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--c); color: var(--on-color); flex: none; }
+.ic svg { width: 16px; height: 16px; }
+.count b { font-size: 34px; line-height: 1; font-weight: 700; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+.count .lbl { font-size: 15px; font-weight: 600; color: var(--muted); }
+.count.hot b { color: var(--red); }
+
+/* Tiles */
+.tile { background: var(--tile); border-radius: 24px; box-shadow: var(--shadow); padding: 22px 8px 14px; min-width: 0; }
+.tile-head { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 12px; padding: 0 16px 14px; }
+.tile-head h2 { display: flex; align-items: center; gap: 10px; margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.02em; color: var(--c); }
+.tile-head .end { margin-left: auto; display: flex; align-items: center; gap: 6px; }
+#agenda { --c: var(--blue); } #mail { --c: var(--orange); } #tasks { --c: var(--green); } #slack { --c: var(--purple); }
+.board { display: grid; gap: 20px; grid-template-columns: minmax(0, 1fr); align-items: start; }
+@media (min-width: 980px) { .board { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; } .scroll { max-height: 660px; overflow: auto; overscroll-behavior: contain; } }
+.tile-foot { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 8px 16px 0; font-size: 13px; color: var(--faint); font-variant-numeric: tabular-nums; }
+.daylbl { font-size: 15px; font-weight: 600; min-width: 8ch; text-align: center; }
+
+.btn { display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 6px 14px; border: 0; border-radius: 999px; background: var(--fill); color: var(--blue); font-size: 13px; font-weight: 600; cursor: pointer; }
 .btn:disabled { opacity: .5; cursor: default; }
-.btn.primary { background: var(--accent); color: var(--bg); }
-.btn.primary:hover { filter: brightness(1.1); }
-.ib { display: inline-grid; place-items: center; width: 30px; height: 30px; border: 0; border-radius: 8px; background: transparent; color: var(--muted); cursor: pointer; flex: none; }
-.ib:hover { background: var(--raised); color: var(--ink); text-decoration: none; }
-.ib:disabled { opacity: .35; cursor: default; background: transparent; }
-.ib svg { width: 16px; height: 16px; }
+.btn.primary { background: var(--blue); color: var(--on-color); }
+.ib { display: inline-grid; place-items: center; width: 32px; height: 32px; border: 0; border-radius: 50%; background: transparent; color: var(--muted); cursor: pointer; flex: none; }
+.ib:hover { background: var(--fill); color: var(--ink); text-decoration: none; }
+.ib:disabled { opacity: .3; cursor: default; background: transparent; }
+.ib svg { width: 17px; height: 17px; }
 
-/* Briefing */
-.brief { display: grid; gap: 14px; }
-.brief .eyebrow { display: flex; flex-wrap: wrap; gap: 6px 14px; }
-.brief .eyebrow .old { color: var(--warn); }
-.brief h2 { margin: 0; font: 700 clamp(24px, 3.4vw, 34px)/1.12 var(--font-display); letter-spacing: -0.015em; text-wrap: balance; max-width: 36ch; }
-.brief .summary { margin: 0; max-width: 74ch; color: var(--muted); font-size: 15px; }
-.brief-cols { display: grid; gap: 22px; grid-template-columns: minmax(0, 1fr); margin-top: 8px; padding-top: 20px; border-top: 1px solid var(--line); }
-@media (min-width: 900px) { .brief-cols { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 36px; } }
-.brief h3 { margin: 0 0 10px; font: 700 14px/1.2 var(--font-mono); letter-spacing: .05em; text-transform: uppercase; color: var(--accent); }
-.brief h3.h-act { color: var(--crit); }
-.brief h3.h-agenda { color: var(--t-agenda); }
-.brief ol, .brief ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 12px; }
-.prio { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 2px 8px; }
-.prio .n { font: 500 13px/1.5 var(--font-mono); color: var(--accent); }
-.prio .t, .bitem .t { font-weight: 600; min-width: 0; overflow-wrap: anywhere; }
-.prio .w, .bitem .d { grid-column: 2; color: var(--muted); font-size: 13px; }
-.bitem { display: grid; grid-template-columns: 66px minmax(0, 1fr); gap: 2px 10px; align-items: baseline; }
-.src { font: 700 13px/1.5 var(--font-mono); text-transform: uppercase; letter-spacing: .03em; color: var(--faint); }
-.src.s-mail { color: var(--t-mail); } .src.s-slack { color: var(--t-slack); } .src.s-monday { color: var(--t-tasks); } .src.s-agenda, .src.s-calendar, .src.s-time { color: var(--t-agenda); }
-.focus { margin-top: 14px; padding: 10px 12px; border-radius: 10px; background: var(--ok-soft); color: var(--ink); font-size: 13px; }
-.focus b { color: var(--ok); font-weight: 600; }
-.brief .issues { font-size: 12px; color: var(--faint); }
-.brief-empty { display: grid; gap: 8px; }
-.brief-empty p { margin: 0; color: var(--muted); max-width: 64ch; }
-.brief-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; }
-.brief-status { color: var(--muted); font-size: 13px; }
-
-/* Lanes */
-.board { display: grid; gap: 16px; grid-template-columns: minmax(0, 1fr); grid-template-areas: "agenda" "mail" "tasks" "slack"; align-items: start; }
-@media (min-width: 820px) { .board { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-areas: "agenda mail" "tasks slack"; } }
-@media (min-width: 1240px) { .board { grid-template-columns: minmax(0, .9fr) minmax(0, 1.15fr) minmax(0, 1fr); grid-template-areas: "agenda mail tasks" "agenda slack tasks"; } }
-#agenda { grid-area: agenda; --topic: var(--t-agenda); } #mail { grid-area: mail; --topic: var(--t-mail); }
-#tasks { grid-area: tasks; --topic: var(--t-tasks); } #slack { grid-area: slack; --topic: var(--t-slack); }
-.lane { background: var(--panel); border-radius: 16px; min-width: 0; display: flex; flex-direction: column; padding-bottom: 8px; }
-.lane-head { display: flex; align-items: center; gap: 10px; padding: 16px 12px 8px 20px; min-width: 0; }
-.lane-head h2 { margin: 0; font: 700 20px/1.2 var(--font-display); letter-spacing: -0.01em; color: var(--topic); }
-.lane-head .count { font: 500 12.5px/1 var(--font-mono); color: var(--faint); white-space: nowrap; }
-.lane-head .spacer { flex: 1; }
-.fresh { font: 400 12px/1 var(--font-mono); color: var(--faint); white-space: nowrap; }
-.tools { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; padding: 0 12px 8px 14px; }
-.tabs { display: inline-flex; gap: 2px; }
-.tabs button { border: 0; background: transparent; padding: 5px 10px; border-radius: 8px; font-size: 13px; font-weight: 500; color: var(--faint); cursor: pointer; }
-.tabs button:hover { color: var(--ink); }
-.tabs button[aria-pressed="true"] { background: var(--raised); color: var(--ink); }
-.pager { margin-left: auto; display: inline-flex; align-items: center; gap: 2px; font: 400 12px/1 var(--font-mono); color: var(--faint); }
-.pager span { padding-inline: 4px; }
-.daynav { display: inline-flex; align-items: center; gap: 2px; }
-.daynav .lbl { font-size: 13px; font-weight: 600; padding-inline: 6px; min-width: 9ch; text-align: center; }
-.lane-body { min-width: 0; }
-@media (min-width: 820px) { #tasks .lane-body, #slack .lane-body, #agenda .lane-body { max-height: min(78vh, 900px); overflow: auto; overscroll-behavior: contain; } }
-.list { list-style: none; margin: 0; padding: 0 8px; min-width: 0; display: grid; gap: 1px; }
-.row { display: grid; gap: 2px 12px; padding: 10px 12px; border-radius: 10px; min-width: 0; }
+/* Rows */
+.list { list-style: none; margin: 0; padding: 0 8px; display: grid; gap: 2px; min-width: 0; }
+.row { display: grid; gap: 3px 14px; padding: 12px 10px; border-radius: 14px; min-width: 0; }
 .row:hover, .row:focus-within { background: var(--hover); }
 .title { font-weight: 600; min-width: 0; overflow-wrap: anywhere; }
-.meta { color: var(--muted); font-size: 12.5px; min-width: 0; overflow-wrap: anywhere; }
-.snip { color: var(--muted); font-size: 13px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere; }
-.chips { display: inline-flex; flex-wrap: wrap; gap: 4px; vertical-align: 1px; max-width: 100%; }
-.chip { display: inline-block; font-size: 11px; font-weight: 500; line-height: 18px; padding: 0 7px; border-radius: 6px; background: var(--raised); color: var(--muted); white-space: nowrap; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
-.chip.accent { background: var(--accent-soft); color: var(--accent); }
-.chip.warn { background: var(--warn-soft); color: var(--warn); }
-.chip.crit { background: var(--crit-soft); color: var(--crit); }
-.chip.ok { background: var(--ok-soft); color: var(--ok); }
-.acts { display: flex; align-items: center; gap: 0; opacity: 0; transition: opacity .12s ease; }
+.meta { font-size: 13px; color: var(--muted); min-width: 0; overflow-wrap: anywhere; }
+.snip { font-size: 13px; color: var(--muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere; }
+.date { font-size: 13px; color: var(--faint); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.crit { color: var(--red); } .ok { color: var(--green); }
+.acts { display: flex; align-items: center; opacity: 0; transition: opacity .15s ease; }
 .row:hover .acts, .row:focus-within .acts, .sgroup:hover .acts, .sgroup:focus-within .acts { opacity: 1; }
 @media (hover: none) { .acts { opacity: 1; } }
-.empty { padding: 18px 20px 12px; margin: 0; color: var(--muted); }
-.note { margin: 4px 16px 10px; padding: 10px 12px; border-radius: 10px; background: var(--warn-soft); color: var(--warn); font-size: 13px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
-.note.crit { background: var(--crit-soft); color: var(--crit); }
-.skel { display: grid; gap: 14px; padding: 12px 20px 16px; }
-.skel i { display: block; height: 10px; border-radius: 5px; background: var(--raised); }
-.skel i:nth-child(3n+1) { width: 82%; } .skel i:nth-child(3n+2) { width: 62%; } .skel i:nth-child(3n) { width: 44%; }
+.empty { margin: 0; padding: 10px 18px 14px; color: var(--muted); }
+.note { margin: 0 16px 12px; padding: 12px 14px; border-radius: 14px; background: var(--yellow-soft); color: var(--ink); font-size: 13px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.note.crit { background: var(--red-soft); }
+.skel { display: grid; gap: 16px; padding: 10px 18px 18px; }
+.skel i { display: block; height: 12px; border-radius: 6px; background: var(--fill); }
+.skel i:nth-child(3n+1) { width: 80%; } .skel i:nth-child(3n+2) { width: 60%; } .skel i:nth-child(3n) { width: 42%; }
 @media (prefers-reduced-motion: no-preference) { .skel i { animation: pulse 1.4s ease-in-out infinite; } }
-@keyframes pulse { 50% { opacity: .4; } }
+@keyframes pulse { 50% { opacity: .45; } }
 @media (prefers-reduced-motion: reduce) { .acts, .ghead svg { transition: none; } }
 
 /* Agenda */
-.ev { grid-template-columns: 48px minmax(0, 1fr); }
-.ev .when { font: 500 13px/1.5 var(--font-mono); font-variant-numeric: tabular-nums; }
-.ev .when span { display: block; color: var(--faint); font-weight: 400; }
-.ev.past { opacity: .5; }
+.ev { grid-template-columns: 52px minmax(0, 1fr); }
+.ev .when { font-size: 15px; font-weight: 600; font-variant-numeric: tabular-nums; line-height: 1.35; }
+.ev .when span { display: block; font-size: 13px; font-weight: 400; color: var(--faint); }
+.ev.past { opacity: .45; }
 .ev.declined .title { text-decoration: line-through; color: var(--muted); }
-.ev .links { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 4px; font-size: 12.5px; }
-.ev .links a { color: var(--accent); font-weight: 500; }
-.rsvp { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
+.ev .links { margin-top: 4px; font-size: 13px; }
+.ev .links a { color: var(--blue); font-weight: 600; }
+.rsvp { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
 .rsvp.quiet { display: none; }
 .row:hover .rsvp.quiet, .row:focus-within .rsvp.quiet { display: flex; }
 @media (hover: none) { .rsvp.quiet { display: flex; } }
-.rsvp button { font-size: 12px; font-weight: 500; padding: 3px 11px; border-radius: 999px; border: 1px solid var(--line); background: transparent; color: var(--muted); cursor: pointer; }
-.rsvp button:hover { color: var(--ink); border-color: var(--faint); }
-.rsvp button[aria-pressed="true"] { background: var(--accent-soft); border-color: transparent; color: var(--accent); }
+.rsvp button { border: 0; border-radius: 999px; padding: 5px 14px; background: var(--fill); color: var(--ink); font-size: 13px; font-weight: 600; cursor: pointer; }
+.rsvp button[aria-pressed="true"] { background: var(--blue); color: var(--on-color); }
 .rsvp button:disabled { opacity: .5; }
-.gap { grid-template-columns: 48px minmax(0, 1fr); padding-block: 4px; color: var(--ok); font-size: 12.5px; }
-.gap .when { font: 400 12px/1.5 var(--font-mono); }
-.nowline { display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: 12px; align-items: center; padding: 2px 12px; color: var(--crit); font: 500 11px/1 var(--font-mono); }
-.nowline::after { content: ""; height: 1.5px; background: var(--crit); border-radius: 2px; }
+.gap { grid-template-columns: 52px minmax(0, 1fr); padding-block: 6px; font-size: 13px; color: var(--green); }
+.nowline { display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 14px; align-items: center; padding: 2px 10px; color: var(--red); font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.nowline::after { content: ""; height: 2px; border-radius: 2px; background: var(--red); }
 
 /* Mail */
 .mail { grid-template-columns: 8px minmax(0, 1fr) auto; align-items: start; }
-.mail .dot { width: 7px; height: 7px; border-radius: 50%; margin-top: 7px; }
-.mail.unread .dot { background: var(--accent); }
-.mail .from { font-weight: 500; color: var(--muted); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.mail.unread .from { color: var(--ink); font-weight: 600; }
-.mail .title { font-weight: 500; color: var(--muted); }
+.mail .dot { width: 8px; height: 8px; margin-top: 7px; border-radius: 50%; }
+.mail.unread .dot { background: var(--blue); }
+.mail .body { display: grid; gap: 1px; min-width: 0; }
+.mail .line1 { display: flex; align-items: baseline; gap: 6px; min-width: 0; }
+.mail .from { font-weight: 500; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mail .n { font-size: 13px; color: var(--faint); }
+.mail .title { font-weight: 400; color: var(--muted); }
+.mail.unread .from { font-weight: 700; }
 .mail.unread .title { font-weight: 600; color: var(--ink); }
-.mail .body { min-width: 0; display: grid; gap: 1px; }
-.mail .line1 { display: flex; gap: 6px; align-items: center; min-width: 0; }
-.mail .n { font: 400 11.5px/1 var(--font-mono); color: var(--faint); }
-.side { display: grid; justify-items: end; align-content: start; gap: 2px; }
-.date { font: 400 12px/1.6 var(--font-mono); color: var(--faint); white-space: nowrap; }
+.side { display: grid; justify-items: end; align-content: start; gap: 4px; }
 
 /* Taken */
-.group + .group { margin-top: 6px; }
-.ghead { display: flex; align-items: center; gap: 8px; width: 100%; padding: 12px 20px 6px; border: 0; background: none; color: var(--topic); font: 700 14.5px/1.3 var(--font-body); cursor: pointer; text-align: left; }
-.ghead:hover .name { text-decoration: underline; text-underline-offset: 3px; }
+.group + .group { margin-top: 8px; }
+.ghead { display: flex; align-items: center; gap: 8px; width: 100%; padding: 10px 18px 4px; border: 0; background: none; color: var(--c); font-size: 15px; font-weight: 700; text-align: left; cursor: pointer; }
 .ghead .name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.ghead .n { font: 400 12px/1 var(--font-mono); color: var(--faint); }
+.ghead .n { font-size: 13px; font-weight: 500; color: var(--faint); }
 .ghead svg { width: 14px; height: 14px; flex: none; transition: transform .15s ease; }
 .ghead[aria-expanded="false"] svg { transform: rotate(-90deg); }
-.task { grid-template-columns: 22px minmax(0, 1fr) auto; align-items: start; }
-.tick { width: 20px; height: 20px; margin-top: 1px; border-radius: 50%; border: 1.5px solid var(--faint); background: transparent; display: grid; place-items: center; color: transparent; cursor: pointer; padding: 0; }
-.tick:hover:not(:disabled) { border-color: var(--ok); color: var(--ok); }
-.tick.on { background: var(--ok); border-color: var(--ok); color: var(--bg); cursor: default; }
+.task { grid-template-columns: 24px minmax(0, 1fr) auto; align-items: start; }
+.tick { display: grid; place-items: center; width: 22px; height: 22px; margin-top: 1px; padding: 0; border-radius: 50%; border: 1.5px solid var(--faint); background: transparent; color: transparent; cursor: pointer; }
+.tick:hover:not(:disabled) { border-color: var(--green); color: var(--green); }
+.tick.on { border-color: var(--green); background: var(--green); color: var(--on-color); cursor: default; }
 .tick:disabled:not(.on) { opacity: .3; cursor: default; }
-.tick svg { width: 12px; height: 12px; }
+.tick svg { width: 13px; height: 13px; }
 .task.is-done .title { color: var(--faint); text-decoration: line-through; }
-.task .with { color: var(--faint); }
-.due { font: 400 12px/1.6 var(--font-mono); color: var(--muted); white-space: nowrap; }
-.due.late { color: var(--crit); }
+.due { font-size: 13px; color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.due.late { color: var(--red); font-weight: 600; }
 
 /* Slack */
 .sgroups { display: grid; gap: 4px; padding: 0 8px; }
-.sgroup { border-radius: 12px; padding: 10px 12px 12px; display: grid; gap: 8px; min-width: 0; }
+.sgroup { display: grid; gap: 10px; padding: 12px 12px 14px; border-radius: 16px; min-width: 0; }
 .sgroup:hover, .sgroup:focus-within { background: var(--hover); }
 .shead { display: flex; align-items: center; gap: 8px; min-width: 0; }
-.shead .dot { width: 7px; height: 7px; border-radius: 50%; flex: none; }
-.sgroup.unread .shead .dot { background: var(--accent); }
-.shead .where { font-weight: 700; font-size: 15px; color: var(--topic); opacity: .75; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.shead .dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+.sgroup.unread .shead .dot { background: var(--purple); }
+.shead .where { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 15px; font-weight: 700; color: var(--c); opacity: .7; }
 .sgroup.unread .shead .where { opacity: 1; }
 .shead .spacer { flex: 1; }
-@media (max-width: 520px) { .shead { flex-wrap: wrap; } .shead .acts { flex-basis: 100%; margin-left: 9px; } }
-.root { margin: 0 0 0 15px; padding-left: 10px; border-left: 2px solid var(--line); color: var(--faint); font-size: 12.5px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere; }
-.smsgs { list-style: none; margin: 0 0 0 15px; padding: 0; display: grid; gap: 8px; }
-.smsg { display: grid; gap: 1px; min-width: 0; }
-.smsg .who { font-weight: 600; font-size: 13px; }
-.smsg .who .date { margin-left: 6px; font-weight: 400; }
-.smsg .snip { -webkit-line-clamp: 3; color: var(--ink); opacity: .82; }
-.sgroup:not(.unread) .smsg .snip { opacity: .6; }
-.reply { margin-left: 15px; display: grid; gap: 8px; }
-.reply textarea { width: 100%; min-height: 64px; resize: vertical; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); font: 14px/1.45 var(--font-body); }
-.reply textarea:focus { outline: none; border-color: var(--accent); }
+@media (max-width: 520px) { .shead { flex-wrap: wrap; } .shead .acts { flex-basis: 100%; margin-left: 8px; } }
+.root { margin: 0 0 0 16px; padding-left: 12px; border-left: 2px solid var(--sep); font-size: 13px; color: var(--faint); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere; }
+.smsgs { list-style: none; margin: 0 0 0 16px; padding: 0; display: grid; gap: 10px; }
+.smsg { display: grid; gap: 2px; min-width: 0; }
+.smsg .who { font-size: 13px; font-weight: 600; }
+.smsg .who .date { margin-left: 8px; font-weight: 400; }
+.smsg .snip { -webkit-line-clamp: 3; font-size: 15px; color: var(--ink); }
+.sgroup:not(.unread) .smsg .snip { color: var(--muted); }
+.reply { display: grid; gap: 10px; margin-left: 16px; }
+.reply textarea { width: 100%; min-height: 72px; padding: 12px 14px; border: 1px solid var(--sep); border-radius: 14px; background: var(--bg); color: var(--ink); font: 15px/1.45 var(--font); resize: vertical; }
+.reply textarea:focus { outline: none; border-color: var(--blue); }
 .reply-acts { display: flex; justify-content: flex-end; gap: 8px; }
 
-/* Toast */
-.toast { position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 10; display: flex; align-items: center; gap: 14px; width: max-content; max-width: calc(100% - 32px); padding: 10px 12px 10px 16px; border-radius: 12px; background: var(--toast); color: var(--toast-ink); font-size: 13.5px; box-shadow: 0 10px 30px rgba(0, 0, 0, .35); }
-.toast.crit { background: var(--toast-crit); }
-.toast span { min-width: 0; overflow-wrap: anywhere; }
-.toast .tbtn { flex: none; border: 0; background: transparent; color: var(--toast-accent); font-weight: 600; cursor: pointer; padding: 4px 6px; border-radius: 6px; }
-.toast .tbtn:hover { background: rgba(255, 255, 255, .08); }
+/* Briefing */
+.brief { display: grid; gap: 12px; padding: 26px 28px 28px; }
+@media (min-width: 760px) { .brief { padding: 34px 40px 36px; } }
+.brief .eyebrow { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 13px; font-weight: 600; color: var(--faint); }
+.brief .eyebrow .old { color: var(--yellow); }
+.brief h2 { margin: 0; max-width: 34ch; font-size: clamp(24px, 3.2vw, 32px); line-height: 1.15; font-weight: 700; letter-spacing: -0.025em; text-wrap: balance; }
+.brief .summary { margin: 0; max-width: 70ch; font-size: 17px; color: var(--muted); }
+.brief-cols { display: grid; grid-template-columns: minmax(0, 1fr); gap: 28px; margin-top: 14px; }
+@media (min-width: 900px) { .brief-cols { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 40px; } }
+.brief h3 { margin: 0 0 12px; font-size: 15px; font-weight: 700; color: var(--yellow); }
+.brief h3.h-act { color: var(--red); }
+.brief h3.h-agenda { color: var(--blue); }
+.brief ol, .brief ul { display: grid; gap: 14px; margin: 0; padding: 0; list-style: none; }
+.prio { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 2px 8px; }
+.prio .n { font-weight: 700; color: var(--yellow); font-variant-numeric: tabular-nums; }
+.prio .t, .bitem .t { font-weight: 600; min-width: 0; overflow-wrap: anywhere; }
+.prio .w, .bitem .d { grid-column: 2; font-size: 13px; color: var(--muted); }
+.bitem { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 2px 10px; align-items: baseline; }
+.src { font-size: 13px; font-weight: 700; color: var(--faint); font-variant-numeric: tabular-nums; }
+.src.s-mail { color: var(--orange); } .src.s-slack { color: var(--purple); } .src.s-monday { color: var(--green); } .src.s-agenda, .src.s-calendar, .src.s-time { color: var(--blue); }
+.focus { margin-top: 16px; padding: 12px 14px; border-radius: 14px; background: var(--green-soft); font-size: 13px; }
+.focus b { color: var(--green); }
+.brief .issues { font-size: 13px; color: var(--faint); }
+.brief-empty { display: grid; gap: 10px; }
+.brief-empty p { margin: 0; max-width: 62ch; color: var(--muted); }
+.brief-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin-top: 6px; }
+.brief-status { font-size: 13px; color: var(--muted); }
 
-.foot { color: var(--faint); font-size: 12px; display: flex; flex-wrap: wrap; gap: 6px 16px; }
+/* Toast */
+.toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); z-index: 10; transform: translateX(-50%); display: flex; align-items: center; gap: 14px; width: max-content; max-width: calc(100% - 32px); padding: 11px 14px 11px 18px; border-radius: 999px; background: var(--toast); color: var(--toast-ink); font-size: 14px; box-shadow: 0 10px 30px rgba(0, 0, 0, .3); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); }
+.toast.crit { background: rgba(140, 20, 30, .92); }
+.toast span { min-width: 0; overflow-wrap: anywhere; }
+.toast .tbtn { flex: none; padding: 4px 8px; border: 0; border-radius: 999px; background: transparent; color: var(--toast-accent); font-weight: 600; cursor: pointer; }
+.toast .tbtn:hover { background: rgba(255, 255, 255, .1); }
 </style>
 <script>try { if (localStorage.getItem("ld:mode") === "light") document.documentElement.setAttribute("data-mode", "light"); } catch (e) { /* storage unavailable */ }</script>
 
 <div class="wrap">
-  <header class="mast">
-    <div class="mast-top">
-      <span class="eyebrow" id="mast-eyebrow">Week · vandaag</span>
-      <div class="mode" role="group" aria-label="Weergave">
-        <button type="button" data-mode="light" aria-pressed="false" data-icon="sun">Licht</button>
-        <button type="button" data-mode="dark" aria-pressed="true" data-icon="moon">Donker</button>
-      </div>
+  <header class="top">
+    <div class="day">
+      <span class="wd" id="mast-eyebrow">vandaag</span>
+      <h1 id="mast-date">Vandaag</h1>
     </div>
-    <div class="mast-main">
-    <h1 id="mast-date">Vandaag</h1>
-    <nav class="stats" aria-label="Overzicht">
-      <a class="stat" href="#agenda"><b id="st-meet">–</b> afspraken</a>
-      <a class="stat" href="#mail"><b id="st-unread">–</b> ongelezen</a>
-      <a class="stat" href="#tasks" id="st-wait-wrap"><b id="st-wait">–</b> wachten op jou</a>
-      <a class="stat" href="#slack"><b id="st-slack">–</b> Slack</a>
-      <button class="btn" id="refresh-all" type="button" title="Alle bronnen opnieuw ophalen">Ververs</button>
-    </nav>
+    <div class="controls">
+      <div class="seg" role="group" aria-label="Weergave">
+        <button type="button" data-mode="light" aria-pressed="false" aria-label="Licht" title="Licht" data-icon="sun"></button>
+        <button type="button" data-mode="dark" aria-pressed="true" aria-label="Donker" title="Donker" data-icon="moon"></button>
+      </div>
+      <button class="round" id="refresh-all" type="button" aria-label="Alles verversen" title="Alles verversen" data-icon="refresh"></button>
     </div>
   </header>
 
-  <section class="brief" id="briefing" aria-label="Ochtendbriefing">
+  <nav class="counts" aria-label="Overzicht">
+    <a class="count" href="#agenda" style="--c: var(--blue)"><span class="ic" data-icon="calendar"></span><b id="st-meet">–</b><span class="lbl">Afspraken</span></a>
+    <a class="count" href="#mail" style="--c: var(--orange)"><span class="ic" data-icon="mail"></span><b id="st-unread">–</b><span class="lbl">Ongelezen</span></a>
+    <a class="count" href="#tasks" id="st-wait-wrap" style="--c: var(--green)"><span class="ic" data-icon="tasks"></span><b id="st-wait">–</b><span class="lbl">Wacht op jou</span></a>
+    <a class="count" href="#slack" style="--c: var(--purple)"><span class="ic" data-icon="chat"></span><b id="st-slack">–</b><span class="lbl">Slack</span></a>
+  </nav>
+
+  <section class="tile brief" id="briefing" aria-label="Ochtendbriefing">
     <div class="brief-empty"><span class="eyebrow">Ochtendbriefing</span><h2>Briefing laden…</h2></div>
   </section>
 
   <main class="board">
-    <section class="lane" id="agenda" aria-labelledby="h-agenda">
-      <div class="lane-head">
-        <h2 id="h-agenda">Agenda</h2><span class="count" id="c-agenda"></span><span class="spacer"></span>
-        <span class="fresh" id="f-agenda" title="Laatst bijgewerkt"></span>
-        <button class="ib" type="button" data-refresh="agenda" aria-label="Agenda verversen" title="Verversen" data-icon="refresh"></button>
-      </div>
-      <div class="tools">
-        <div class="daynav">
+    <section class="tile" id="agenda" aria-labelledby="h-agenda">
+      <div class="tile-head">
+        <h2 id="h-agenda"><span class="ic" data-icon="calendar"></span>Agenda</h2>
+        <div class="end">
+          <button class="btn" type="button" id="day-today" hidden>Vandaag</button>
           <button class="ib" type="button" id="day-prev" aria-label="Vorige dag" title="Vorige dag" data-icon="chevL"></button>
-          <span class="lbl" id="day-label">Vandaag</span>
+          <span class="daylbl" id="day-label">Vandaag</span>
           <button class="ib" type="button" id="day-next" aria-label="Volgende dag" title="Volgende dag" data-icon="chevR"></button>
         </div>
-        <button class="btn" type="button" id="day-today" hidden>Naar vandaag</button>
       </div>
-      <div class="lane-body" id="b-agenda"><div class="skel"><i></i><i></i><i></i><i></i><i></i></div></div>
+      <div class="scroll" id="b-agenda"><div class="skel"><i></i><i></i><i></i><i></i><i></i></div></div>
     </section>
 
-    <section class="lane" id="mail" aria-labelledby="h-mail">
-      <div class="lane-head">
-        <h2 id="h-mail">Mail</h2><span class="count" id="c-mail"></span><span class="spacer"></span>
-        <span class="fresh" id="f-mail" title="Laatst bijgewerkt"></span>
-        <button class="ib" type="button" data-refresh="mail" aria-label="Mail verversen" title="Verversen" data-icon="refresh"></button>
-      </div>
-      <div class="tools">
-        <div class="tabs" role="group" aria-label="Mailfilter">
-          <button type="button" data-mail="all" aria-pressed="true">Inbox</button>
-          <button type="button" data-mail="unread" aria-pressed="false">Ongelezen</button>
-          <button type="button" data-mail="important" aria-pressed="false">Belangrijk</button>
-        </div>
-        <div class="pager">
-          <button class="ib" type="button" id="mail-prev" aria-label="Vorige 8 mails" title="Vorige 8" data-icon="chevL" disabled></button>
-          <span id="mail-range">1–8</span>
-          <button class="ib" type="button" id="mail-next" aria-label="Volgende 8 mails" title="Volgende 8" data-icon="chevR" disabled></button>
+    <section class="tile" id="mail" aria-labelledby="h-mail">
+      <div class="tile-head">
+        <h2 id="h-mail"><span class="ic" data-icon="mail"></span>Mail</h2>
+        <div class="end">
+          <div class="seg" role="group" aria-label="Mailfilter">
+            <button type="button" data-mail="all" aria-pressed="true">Inbox</button>
+            <button type="button" data-mail="unread" aria-pressed="false">Ongelezen</button>
+            <button type="button" data-mail="important" aria-pressed="false">Belangrijk</button>
+          </div>
         </div>
       </div>
-      <div class="lane-body" id="b-mail"><div class="skel"><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
+      <div id="b-mail"><div class="skel"><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
+      <div class="tile-foot">
+        <button class="ib" type="button" id="mail-prev" aria-label="Vorige 8 mails" title="Vorige 8" data-icon="chevL" disabled></button>
+        <span id="mail-range">1–8</span>
+        <button class="ib" type="button" id="mail-next" aria-label="Volgende 8 mails" title="Volgende 8" data-icon="chevR" disabled></button>
+      </div>
     </section>
 
-    <section class="lane" id="tasks" aria-labelledby="h-tasks">
-      <div class="lane-head">
-        <h2 id="h-tasks">Taken</h2><span class="count" id="c-tasks"></span><span class="spacer"></span>
-        <span class="fresh" id="f-tasks" title="Laatst bijgewerkt"></span>
-        <button class="ib" type="button" data-refresh="tasks" aria-label="Taken verversen" title="Verversen" data-icon="refresh"></button>
-      </div>
-      <div class="tools">
-        <div class="tabs" role="group" aria-label="Takenfilter">
-          <button type="button" data-tasks="mine" aria-pressed="true">Aandacht</button>
-          <button type="button" data-tasks="open" aria-pressed="false">Open</button>
-          <button type="button" data-tasks="all" aria-pressed="false">Alles</button>
+    <section class="tile" id="tasks" aria-labelledby="h-tasks">
+      <div class="tile-head">
+        <h2 id="h-tasks"><span class="ic" data-icon="tasks"></span>Taken</h2>
+        <div class="end">
+          <div class="seg" role="group" aria-label="Takenfilter">
+            <button type="button" data-tasks="mine" aria-pressed="true">Aandacht</button>
+            <button type="button" data-tasks="open" aria-pressed="false">Open</button>
+            <button type="button" data-tasks="all" aria-pressed="false">Alles</button>
+          </div>
         </div>
       </div>
-      <div class="lane-body" id="b-tasks"><div class="skel"><i></i><i></i><i></i><i></i></div></div>
+      <div class="scroll" id="b-tasks"><div class="skel"><i></i><i></i><i></i><i></i></div></div>
     </section>
 
-    <section class="lane" id="slack" aria-labelledby="h-slack">
-      <div class="lane-head">
-        <h2 id="h-slack">Slack</h2><span class="count" id="c-slack"></span><span class="spacer"></span>
-        <span class="fresh" id="f-slack" title="Laatst bijgewerkt"></span>
-        <button class="ib" type="button" data-refresh="slack" aria-label="Slack verversen" title="Verversen" data-icon="refresh"></button>
-      </div>
-      <div class="tools">
-        <div class="tabs" role="group" aria-label="Slackfilter">
-          <button type="button" data-slack="unread" aria-pressed="true">Ongelezen</button>
-          <button type="button" data-slack="all" aria-pressed="false">Alles</button>
+    <section class="tile" id="slack" aria-labelledby="h-slack">
+      <div class="tile-head">
+        <h2 id="h-slack"><span class="ic" data-icon="chat"></span>Slack</h2>
+        <div class="end">
+          <div class="seg" role="group" aria-label="Slackfilter">
+            <button type="button" data-slack="unread" aria-pressed="true">Ongelezen</button>
+            <button type="button" data-slack="all" aria-pressed="false">Alles</button>
+          </div>
         </div>
       </div>
-      <div class="lane-body" id="b-slack"><div class="skel"><i></i><i></i><i></i></div></div>
+      <div class="scroll" id="b-slack"><div class="skel"><i></i><i></i><i></i></div></div>
     </section>
   </main>
-
-  <footer class="foot">
-    <span>Live uit Google Calendar, Gmail, monday.com en Slack, met jouw eigen koppelingen. Acties gaan direct naar die diensten.</span>
-    <span>Taken: alleen items waarop jij persoonlijk staat. Gelezen en ongelezen bij Slack gelden alleen in dit dashboard.</span>
-  </footer>
 </div>
 <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
-
 <script>
 (() => {
   "use strict";
@@ -400,6 +359,9 @@ a.stat:hover { text-decoration: none; background: var(--raised); }
     external: '<path d="M9 3h4v4M13 3 7.5 8.5"/><path d="M11.5 9.5V13h-8.5V4.5H6.5"/>',
     sun: '<circle cx="8" cy="8" r="2.8"/><path d="M8 1.5v1.6M8 12.9v1.6M1.5 8h1.6M12.9 8h1.6M3.4 3.4l1.1 1.1M11.5 11.5l1.1 1.1M3.4 12.6l1.1-1.1M11.5 4.5l1.1-1.1"/>',
     moon: '<path d="M13.2 9.6A5.6 5.6 0 0 1 6.4 2.8a5.6 5.6 0 1 0 6.8 6.8z"/>',
+    calendar: '<rect x="2.5" y="3.2" width="11" height="10.3" rx="2.2"/><path d="M2.5 6.6h11M5.5 1.8v2.6M10.5 1.8v2.6"/>',
+    tasks: '<path d="m2.4 4.4 1.3 1.3 2.1-2.4M2.4 10.4l1.3 1.3 2.1-2.4M8.2 4.8h5.4M8.2 10.8h5.4"/>',
+    chat: '<path d="M3.2 3h9.6A1.7 1.7 0 0 1 14.5 4.7v5.2a1.7 1.7 0 0 1-1.7 1.7H7.4L4.3 14v-2.4H3.2a1.7 1.7 0 0 1-1.7-1.7V4.7A1.7 1.7 0 0 1 3.2 3z"/>',
   };
   function icon(name) {
     const s = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -411,7 +373,6 @@ a.stat:hover { text-decoration: none; background: var(--raised); }
   }
   document.querySelectorAll("[data-icon]").forEach((b) => b.prepend(icon(b.dataset.icon)));
   const iconBtn = (name, label, onclick) => el("button", { class: "ib", type: "button", "aria-label": label, title: label, onclick }, icon(name));
-  const chip = (text, tone) => el("span", { class: "chip" + (tone ? " " + tone : ""), text, title: text });
   const ext = (href, props, ...kids) => el("a", Object.assign({ href, target: "_blank", rel: "noopener noreferrer" }, props), ...kids);
   const safeUrl = (u) => (typeof u === "string" && /^https:\/\//i.test(u) ? u : null);
   function decode(s) { const t = document.createElement("textarea"); t.innerHTML = String(s || ""); return t.value; }
@@ -440,12 +401,6 @@ a.stat:hover { text-decoration: none; background: var(--raised); }
   const addDays = (s, n) => { const t = utcOf(s); t.setUTCDate(t.getUTCDate() + n); return t.toISOString().slice(0, 10); };
   const weekday = (s) => utcOf(s).getUTCDay();
   const dayLong = (s, opts) => new Intl.DateTimeFormat("nl-NL", Object.assign({ timeZone: "UTC" }, opts)).format(utcOf(s));
-  function isoWeek(s) {
-    const t = utcOf(s); const wd = t.getUTCDay() || 7;
-    t.setUTCDate(t.getUTCDate() + 4 - wd);
-    const y0 = new Date(Date.UTC(t.getUTCFullYear(), 0, 1));
-    return Math.ceil(((t - y0) / 864e5 + 1) / 7);
-  }
   function minuteOfDay(d) {
     const p = hmFmt.formatToParts(d);
     return (+p.find((x) => x.type === "hour").value) * 60 + (+p.find((x) => x.type === "minute").value);
@@ -488,7 +443,7 @@ a.stat:hover { text-decoration: none; background: var(--raised); }
   // ---------- masthead ----------
   function renderMast() {
     const t = today();
-    $("mast-eyebrow").textContent = "Week " + isoWeek(t) + " · " + dayLong(t, { weekday: "long" });
+    $("mast-eyebrow").textContent = dayLong(t, { weekday: "long" });
     $("mast-date").textContent = dayLong(t, { day: "numeric", month: "long" });
   }
   renderMast();
@@ -577,8 +532,8 @@ a.stat:hover { text-decoration: none; background: var(--raised); }
   }
 
   // ---------- live widgets ----------
-  function setFresh(key, ts) { $("f-" + key).textContent = ts ? hm(new Date(ts)) : ""; }
-  function setCount(key, v) { $("c-" + key).textContent = v == null ? "" : String(v); }
+  function setFresh() { /* per-tile time stamps removed */ }
+  function setCount() { /* per-tile counts removed; the count tiles carry the totals */ }
   const stampOf = (result) => (result && result.cache && result.cache.storedAt) || Date.now();
 
   // Watches one connector tool; keeps last-good data on hiccups, drops it when access is gone.
@@ -681,21 +636,15 @@ a.stat:hover { text-decoration: none; background: var(--raised); }
   function eventRow(r, past) {
     const ev = r.ev;
     const when = r.allDay ? el("div", { class: "when" }, "Hele", el("span", { text: "dag" })) : el("div", { class: "when" }, hm(r.s), el("span", { text: hm(r.e) }));
-    const chips = el("span", { class: "chips" });
-    const now = new Date();
-    if (!r.allDay && !r.declined && r.s <= now && now < r.e) chips.append(chip("Nu", "accent"));
-    if (r.rsvp === "needsAction") chips.append(chip("Nog reageren", "warn"));
-    if (r.overlap) chips.append(chip("Overlapt", "crit"));
-    if (ev.eventType === "FOCUS_TIME") chips.append(chip("Focus", "ok"));
-    if (ev.eventType === "OUT_OF_OFFICE") chips.append(chip("Afwezig"));
-    const people = (ev.attendees || []).filter((a) => !a.resource).length;
-    const meta = [ev.location, people > 1 ? people + " deelnemers" : ""].filter(Boolean).join(" · ");
+    const meta = el("div", { class: "meta" });
+    if (ev.location) meta.append(ev.location);
+    if (r.overlap) meta.append(el("span", { class: "crit", text: (ev.location ? " · " : "") + "Overlapt" }));
     const title = safeUrl(ev.htmlLink) ? ext(ev.htmlLink, { class: "title", text: ev.summary || "(geen titel)" }) : el("span", { class: "title", text: ev.summary || "(geen titel)" });
     return el("li", { class: "row ev" + (past ? " past" : "") + (r.declined ? " declined" : "") },
       when,
       el("div", { style: "min-width:0" },
-        el("div", null, title, " ", chips),
-        meta ? el("div", { class: "meta", text: meta }) : null,
+        el("div", null, title),
+        meta.childNodes.length ? meta : null,
         safeUrl(ev.conferenceUrl) ? el("div", { class: "links" }, ext(ev.conferenceUrl, { text: "Deelnemen" })) : null,
         rsvpControl(r)));
   }
@@ -741,7 +690,6 @@ a.stat:hover { text-decoration: none; background: var(--raised); }
     if (d) { const n = Array.isArray(d.threads) ? d.threads.length : 0; counts.unread = d.nextPageToken ? n + "+" : n; }
     renderStats();
   };
-  const CATS = { CATEGORY_UPDATES: "Updates", CATEGORY_PROMOTIONS: "Promotie", CATEGORY_SOCIAL: "Sociaal", CATEGORY_FORUMS: "Forum" };
   function senderName(raw) {
     const s = decode(raw || "").trim();
     const m = s.match(/^"?(.*?)"?\s*<([^>]+)>$/);
@@ -778,15 +726,12 @@ a.stat:hover { text-decoration: none; background: var(--raised); }
     const last = msgs[msgs.length - 1] || {};
     const labels = new Set(msgs.flatMap((m) => m.labelIds || []));
     const unread = ov.unread != null ? ov.unread : labels.has("UNREAD");
-    const chips = el("span", { class: "chips" });
-    if (labels.has("IMPORTANT")) chips.append(chip("Belangrijk", "accent"));
-    for (const [k, v] of Object.entries(CATS)) if ((last.labelIds || []).includes(k)) chips.append(chip(v));
     const n = t.messageCount || msgs.length;
     const subject = threadSubject(t);
     return el("li", { class: "row mail" + (unread ? " unread" : "") },
       el("span", { class: "dot", "aria-label": unread ? "Ongelezen" : null }),
       el("div", { class: "body" },
-        el("div", { class: "line1" }, el("span", { class: "from", text: senderName(last.sender) }), n > 1 ? el("span", { class: "n", text: String(n), title: n + " berichten" }) : null, chips),
+        el("div", { class: "line1" }, el("span", { class: "from", text: senderName(last.sender) }), n > 1 ? el("span", { class: "n", text: String(n), title: n + " berichten" }) : null),
         safeUrl(t.viewUrl) ? ext(t.viewUrl, { class: "title", text: subject }) : el("span", { class: "title", text: subject }),
         last.snippet ? el("div", { class: "snip", text: decode(last.snippet) }) : null),
       el("div", { class: "side" },
@@ -989,11 +934,10 @@ a.stat:hover { text-decoration: none; background: var(--raised); }
     const frag = document.createDocumentFragment();
     for (const g of ordered) {
       const isOpen = !collapsed.has(g.name);
-      const waitingN = g.xs.filter((x) => x.waiting).length;
       const head = el("button", { class: "ghead", type: "button", "aria-expanded": String(isOpen), onclick: () => {
         if (collapsed.has(g.name)) collapsed.delete(g.name); else collapsed.add(g.name);
         store.set("collapsed", JSON.stringify([...collapsed])); tasks.render();
-      } }, icon("chevD"), el("span", { class: "name", text: g.name }), el("span", { class: "n", text: String(g.xs.length) }), waitingN ? chip(waitingN + " wacht op jou", "crit") : null);
+      } }, icon("chevD"), el("span", { class: "name", text: g.name }), el("span", { class: "n", text: String(g.xs.length) }));
       const wrap = el("div", { class: "group" }, head);
       if (isOpen) {
         const ul = el("ul", { class: "list" });
@@ -1005,12 +949,8 @@ a.stat:hover { text-decoration: none; background: var(--raised); }
     return frag;
   }
   function taskRow(x) {
-    const chips = el("span", { class: "chips" });
-    if (x.waiting) chips.append(chip("Wacht op jou", "crit"));
-    else if (x.stuck) chips.append(chip(x.st, "crit"));
-    else if (x.done) chips.append(chip(x.st, "ok"));
-    else if (x.st) chips.append(chip(x.st, x.parked ? "" : "accent"));
-    if (x.high && !x.done) chips.append(chip(x.pr, "warn"));
+    const status = x.waiting ? "Wacht op jou" : x.st;
+    const tone = x.waiting || x.stuck ? "crit" : x.done ? "ok" : "";
     const canTick = !x.done && x.statusId && x.doneIdx != null;
     const tickLabel = x.done ? x.st : canTick ? "Zet op " + x.doneLabel : "Dit bord heeft geen klaar-status";
     const tick = el("button", { class: "tick" + (x.done ? " on" : ""), type: "button", disabled: !canTick, "aria-label": tickLabel, title: tickLabel,
@@ -1020,8 +960,10 @@ a.stat:hover { text-decoration: none; background: var(--raised); }
     return el("li", { class: "row task" + (x.done ? " is-done" : "") },
       tick,
       el("div", { style: "min-width:0" }, title,
-        el("div", { class: "meta" }, (x.item.group && x.item.group.title) ? x.item.group.title + " " : "",
-          others.length ? el("span", { class: "with", text: "· met " + others.join(", ") + " " }) : null, chips)),
+        el("div", { class: "meta" },
+          status ? el("span", { class: tone, text: status }) : null,
+          x.high && !x.done ? " · " + x.pr : "",
+          others.length ? (status ? " · " : "") + "met " + others.join(", ") : "")),
       x.due ? el("span", { class: "due" + (x.late ? " late" : ""), text: (x.late ? "te laat · " : "") + shortFmt.format(utcOf(x.due)).replace(".", "") }) : el("span"));
   }
   function setStatus(x, index, ovValue, btn, done) {
@@ -1185,11 +1127,10 @@ a.stat:hover { text-decoration: none; background: var(--raised); }
   }
   function slackGroup(g) {
     const latest = g.msgs[g.msgs.length - 1];
-    const label = g.where + (g.isThread ? " · thread" : "");
+    const label = g.where;
     const head = el("div", { class: "shead" },
       el("span", { class: "dot", "aria-label": g.read ? null : "Ongelezen" }),
       el("span", { class: "where", text: label, title: label }),
-      g.msgs.length > 1 ? el("span", { class: "chip", text: g.msgs.length + " berichten" }) : null,
       el("span", { class: "spacer" }),
       el("span", { class: "date", text: relDate(new Date(g.latest * 1000)) }),
       el("div", { class: "acts" },
@@ -1467,9 +1408,6 @@ a.stat:hover { text-decoration: none; background: var(--raised); }
     [cal, mail, tasks].forEach((w) => w.fail(off));
   });
 
-  document.querySelectorAll("[data-refresh]").forEach((b) => b.addEventListener("click", () => {
-    ({ agenda: cal, mail, tasks, slack })[b.dataset.refresh].refresh();
-  }));
   $("refresh-all").addEventListener("click", () => { cal.refresh(); mail.refresh(); unreadCount.refresh(); tasks.refresh(); slack.refresh(); });
 
   // Roll over at midnight so "today" stays right on an open tab.

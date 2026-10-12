@@ -20,7 +20,7 @@ Dashboard (claude.ai)
    └─ Daaronder: live overzichten die bij het openen worden opgehaald met jouw eigen koppelingen
 ```
 
-Rechtsboven schakel je tussen **licht en donker** (standaard donker; je keuze wordt onthouden). Elk bord heeft een eigen kleur, en die komt terug in de tellers bovenaan en in de briefing: Agenda blauw, Mail oranje, Taken groen, Slack paars. Acties verschijnen als je met de muis over een regel gaat. Op je telefoon staan ze er altijd.
+Apple-achtige tegels: vier teltegels bovenaan (afspraken, ongelezen mail, wacht op jou, Slack), één brede tegel met de briefing en daaronder Agenda, Mail, Taken en Slack. Rechtsboven schakel je tussen **licht en donker** (standaard donker; je keuze wordt onthouden) en ververs je alles. Elk bord heeft een eigen kleur: Agenda blauw, Mail oranje, Taken groen, Slack paars. Acties verschijnen als je met de muis over een regel gaat. Op je telefoon staan ze er altijd.
 
 | Bord | Wat je ziet | Acties |
 |---|---|---|
