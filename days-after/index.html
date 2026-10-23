@@ -215,6 +215,22 @@ p { margin: 0; }
 .calrow .links a, .calrow .links button { height: 34px; padding: 0 10px; border-radius: 9px; border: 1px solid var(--line); background: var(--bg); font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; text-decoration: none; }
 .calrow .links a:hover, .calrow .links button:hover { border-color: var(--blue); }
 .preview { margin-top: 14px; padding: 12px 14px; border-radius: 12px; border: 1px dashed var(--line); font-family: var(--mono); font-size: 12px; white-space: pre-wrap; color: var(--muted); overflow-wrap: anywhere; }
+.themebtn { width: 34px; height: 34px; border: 0; background: none; display: grid; place-items: center; border-radius: 50%; opacity: .6; }
+.themebtn:hover { opacity: 1; background: var(--blue-soft); }
+.story { gap: 12px; }
+.story .para { display: flex; flex-direction: column; gap: 8px; }
+.story .para + .para { border-top: 1px solid var(--line); padding-top: 12px; }
+.story .para b { font-weight: 600; }
+.amtag { font-family: var(--mono); font-size: 11.5px; color: var(--muted); margin-left: 4px; white-space: nowrap; }
+.qbtn.inline { display: inline-grid; width: 22px; height: 22px; font-size: 12px; vertical-align: 1px; margin-left: 6px; }
+.qbtn[aria-expanded="true"] { background: var(--blue); color: var(--blue-ink); border-color: var(--blue); }
+.more { background: var(--blue-soft); border-radius: 10px; padding: 10px 12px; font-size: 13.5px; display: flex; flex-direction: column; gap: 4px; }
+.more .label { margin-right: 6px; }
+.calmain { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
+.calmain .cta, .calmain .btn2 { width: 100%; flex: none; text-decoration: none; }
+.perday { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 16px; }
+.perday a { height: 32px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); font-size: 13px; display: inline-flex; align-items: center; text-decoration: none; }
+.perday a:hover { border-color: var(--blue); }
 @keyframes rise { from { transform: translateY(30px); opacity: .4; } to { transform: none; opacity: 1; } }
 
 .toast { position: fixed; left: 50%; bottom: calc(150px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%) translateY(10px); background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 10px; font-size: 14px; opacity: 0; transition: opacity .2s, transform .2s; z-index: 60; pointer-events: none; }
@@ -282,6 +298,8 @@ const ICON = {
   eat: '<path d="M3 12h18a9 9 0 0 1-18 0z"/><path d="M9 4c-1 1.5 1 2.5 0 4M13 4c-1 1.5 1 2.5 0 4"/>',
   avoid: '<circle cx="12" cy="12" r="9"/><path d="m5.6 5.6 12.8 12.8"/>',
   pulse: '<path d="M3 12h4l2.5-6 5 12 2.5-6h4"/>',
+  sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+  moon: '<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>',
   phone: '<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a1 1 0 0 1-1 1A16 16 0 0 1 4 5a1 1 0 0 1 1-1z"/>',
   stimulant: '<path d="M13 3 5 14h6l-1 7 8-11h-6z"/>',
   empathogen: '<path d="M12 20s-7.5-4.6-7.5-10.3A4.2 4.2 0 0 1 12 7.2a4.2 4.2 0 0 1 7.5 2.5C19.5 15.4 12 20 12 20z"/>',
@@ -670,6 +688,14 @@ function eventFor(P, day) {
   const next = new Date(day.date); next.setDate(next.getDate() + 1);
   return { title, body, start: day.date, end: next };
 }
+// one all-day event spanning every day of the plan, with the day-by-day list inside
+function planEvent(P) {
+  const days = P.days.map(day => "DAY " + day.n + " · " + day.title.toUpperCase() + "\n" +
+    SECTIONS.map(([k, , , verb]) => day.sections[k].length ? verb + ": " + day.sections[k].map(i => shortLabel(i.t)).join(" / ") : "").filter(Boolean).join("\n") +
+    "\nTip: " + day.note).join("\n\n");
+  const end = new Date(P.days[0].date); end.setDate(end.getDate() + P.len);
+  return { title: "Days After · " + P.len + "-day recovery", body: days, start: P.days[0].date, end };
+}
 function googleUrl(e) {
   return "https://calendar.google.com/calendar/render?action=TEMPLATE&text=" + encodeURIComponent(e.title) +
     "&dates=" + ymd(e.start) + "/" + ymd(e.end) + "&details=" + encodeURIComponent(e.body);
@@ -682,7 +708,7 @@ function outlookUrl(e) {
 /* ---------- Storage (this device only) ---------- */
 const KEY = "daysafter.v1";
 function load() { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { return {}; } }
-function persist() { try { localStorage.setItem(KEY, JSON.stringify({ onboarded: S.onboarded, profile: S.profile, saved: S.saved })); } catch (e) {} }
+function persist() { try { localStorage.setItem(KEY, JSON.stringify({ onboarded: S.onboarded, profile: S.profile, saved: S.saved, theme: S.theme })); } catch (e) {} }
 const normPicks = subs => (subs || []).map(x => typeof x === "string" ? { id: x, amt: 2 } : x);
 
 const stored = load();
@@ -692,8 +718,10 @@ const S = {
   saved: Array.isArray(stored.saved) ? stored.saved.map(s => Object.assign({}, s, { subs: normPicks(s.subs) })) : [],
   view: stored.onboarded ? "subs" : "onboard",
   selected: new Map(), q: "", cat: "all",
-  plan: null, planMeta: null, day: 1, confirmDel: null, sheet: null
+  plan: null, planMeta: null, day: 1, confirmDel: null, sheet: null,
+  expanded: new Set(), theme: stored.theme || null
 };
+if (S.theme) document.documentElement.setAttribute("data-theme", S.theme);
 
 /* ---------- Helpers ---------- */
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -704,22 +732,27 @@ const app = document.getElementById("app"), dock = document.getElementById("dock
 let toastT;
 function toast(msg) { const el = document.getElementById("toast"); el.textContent = msg; el.classList.add("on"); clearTimeout(toastT); toastT = setTimeout(() => el.classList.remove("on"), 1800); }
 
-function top(title, back) {
+function isDark() {
+  const t = document.documentElement.getAttribute("data-theme");
+  if (t) return t === "dark";
+  try { return matchMedia("(prefers-color-scheme: dark)").matches; } catch (e) { return false; }
+}
+
+function top(back) {
   return '<header class="top">' +
     (back ? '<button class="iconbtn" data-act="back" aria-label="Back">' + ic("back", "sm") + '</button>' : ic("logo")) +
     '<div class="brand">Days <b>After</b></div><div class="spacer"></div>' +
-    (title ? '<span class="label">' + esc(title) + '</span>' : '') + '</header>';
+    '<button class="themebtn" data-act="theme" aria-label="' + (isDark() ? "Light mode" : "Dark mode") + '">' + ic(isDark() ? "sun" : "moon", "sm") + '</button></header>';
 }
 
 /* ---------- Views ---------- */
 function vOnboard() {
-  return top("Welcome") +
-    '<h1>Recover well from the days after.</h1>' +
-    '<p class="lead">Tell us what you took. Get a short body explainer and a day-by-day recovery plan.</p>' +
+  return top() +
+    '<h1>Recover well.</h1>' +
     '<div class="points">' +
-      '<div class="point"><span class="glyph">' + ic("shield") + '</span><div><b>Completely anonymous</b><span>No account, no name. Saved only on this device.</span></div></div>' +
-      '<div class="point"><span class="glyph">' + ic("scale") + '</span><div><b>Weight and height are optional</b><span>Used for your water and protein targets.</span></div></div>' +
-      '<div class="point"><span class="glyph">' + ic("info") + '</span><div><b>Information, not a diagnosis</b><span>Emergency? Call 112.</span></div></div>' +
+      '<div class="point"><span class="glyph">' + ic("shield") + '</span><div><b>Anonymous</b><span>Stays on this device.</span></div></div>' +
+      '<div class="point"><span class="glyph">' + ic("scale") + '</span><div><b>Weight and height optional</b><span>For exact amounts.</span></div></div>' +
+      '<div class="point"><span class="glyph">' + ic("phone") + '</span><div><b>Emergency</b><span>Call 112.</span></div></div>' +
     '</div>' + bodyFields() +
     '<div class="actions"><button class="btn2" data-act="skip">Skip</button><button class="btn2 primary" data-act="start">Continue</button></div>';
 }
@@ -757,8 +790,8 @@ function vSubs() {
   const q = S.q.trim().toLowerCase();
   const list = SUBS.filter(s => (S.cat === "all" || s.c === S.cat) &&
     (!q || (s.n + " " + s.aka + " " + CATNAME[s.c]).toLowerCase().includes(q)));
-  return top("Step 1 of 2") +
-    '<h1>What did you take?</h1><p class="lead">Switch on everything, then pick how much. Tap ? for more info.</p>' +
+  return top() +
+    '<h1>What did you take?</h1>' +
     '<div class="search">' + ic("search", "sm") + '<input id="q" type="search" placeholder="Search 30 substances" autocomplete="off" value="' + esc(S.q) + '" aria-label="Search substances"></div>' +
     '<div class="chips" role="toolbar" aria-label="Filter by type">' +
       ['<button class="chip" data-act="cat" data-cat="all" aria-pressed="' + (S.cat === "all") + '">All</button>']
@@ -776,11 +809,14 @@ function vPlan() {
     m.h ? '<span class="fact"><b>' + m.h + '</b> cm</span>' : '',
     P.ctx.kcal ? '<span class="fact">≈ <b>' + P.ctx.kcal.toLocaleString("en-GB") + '</b> kcal / day</span>' : ''
   ].join("");
-  const stories = P.list.map(({ s, amt }) =>
-    '<article class="story"><div class="head"><span class="glyph">' + ic(s.c) + '</span><div class="txt"><div class="name">' + esc(s.n) + '</div><div class="meta">' + esc(amtLabel(s, amt)) + '</div></div>' +
-    '<button class="qbtn" data-act="info" data-id="' + s.id + '" aria-label="About ' + esc(s.n) + '">?</button></div>' +
-    '<p>' + esc(s.story) + '</p>' +
-    '<button class="help" data-act="info" data-id="' + s.id + '">' + ic("alert", "sm") + 'When to get help</button></article>').join("");
+  const story = '<article class="story">' + P.list.map(({ s, amt }) => {
+    const open = S.expanded.has(s.id);
+    return '<div class="para"><p><b>' + esc(s.n) + '</b><span class="amtag">' + esc(amtLabel(s, amt)) + '</span>' +
+      '<button class="qbtn inline" data-act="expand" data-id="' + s.id + '" aria-expanded="' + open + '" aria-label="More about ' + esc(s.n) + '">?</button><br>' + esc(s.story) + '</p>' +
+      (open ? '<div class="more"><p>' + esc(s.info.what) + ' ' + esc(s.info.use) + '</p>' +
+        '<p><span class="label">Onset</span>' + esc(s.info.onset) + '</p>' +
+        '<p><span class="label">Get help</span>' + esc(s.flag) + '</p></div>' : '') + '</div>';
+  }).join("") + '</article>';
   const combos = P.combos.length ? '<div class="caution">' + P.combos.map(c =>
     '<div class="c">' + ic("alert", "sm") + '<div><b>' + esc(c.t) + '</b><span>' + esc(c.w) + '</span></div></div>').join("") + '</div>' : '';
   const dayBtns = P.days.map(d =>
@@ -792,15 +828,13 @@ function vPlan() {
       items.map(it => '<div class="item"><div class="it">' + esc(it.t) + '</div><div class="why"><span>' + esc(it.w[0]) + '</span><span>' + esc(it.w[1]) + '</span></div></div>').join("") +
       '</div></section>';
   }).join("");
-  return top(m.id ? "Saved plan" : "Step 2 of 2", true) +
-    '<div class="planhead"><span class="label">Recovery plan · from ' + fmtDay(new Date(m.created)) + '</span><h1>' + esc(P.list.map(x => x.s.n).join(" + ")) + '</h1><div class="facts">' + facts + '</div></div>' +
-    (!m.w ? '<div class="note">' + ic("scale", "sm") + '<span>Add your weight in Profile for personal water and protein amounts.</span></div>' : '') +
-    '<h2>What happened in your body</h2><div class="stories">' + stories + '</div>' + combos +
-    '<h2>Your recovery, day by day</h2><div class="daybar" role="tablist">' + dayBtns + '</div>' +
-    '<div class="dayhead"><span class="label">Day ' + day.n + ' · ' + fmtDay(day.date) + '</span><span class="t">' + esc(day.title) + '</span></div>' +
+  return top(true) +
+    '<div class="planhead"><h1>' + esc(P.list.map(x => x.s.n).join(" + ")) + '</h1><div class="facts">' + facts + '</div></div>' +
+    '<h2>What happened in your body</h2>' + story + combos +
+    '<h2>Recovery</h2><div class="daybar" role="tablist">' + dayBtns + '</div>' +
+    '<div class="dayhead"><span class="t">' + esc(day.title) + '</span></div>' +
     '<div class="note">' + ic("pulse", "sm") + '<span>' + esc(day.note) + '</span></div>' + sections +
-    '<div class="actions"><button class="btn2" data-act="cal">' + ic("calendar", "sm") + 'Add to calendar</button></div>' +
-    '<div class="disclaimer">General harm-reduction information, not medical advice. Supplements can interact with medication: ask a pharmacist. Emergency: 112.</div>';
+    '<div class="disclaimer">Not medical advice. Emergency: 112.</div>';
 }
 
 function vSaved() {
@@ -812,9 +846,9 @@ function vSaved() {
       : '<button class="iconbtn" data-act="askdel" data-id="' + s.id + '" aria-label="Delete plan">' + ic("trash", "sm") + '</button>';
     return '<div class="scard"><span class="glyph">' + ic("bookmark") + '</span><div class="txt"><button class="open" data-act="open" data-id="' + s.id + '"><div class="t">' + esc(names) + '</div><div class="s mono">' + fmtDay(new Date(s.created)) + ' · ' + len + ' days</div></button></div>' + del + '</div>';
   }).join("");
-  return top("Saved") + '<h1>Saved plans</h1><p class="lead">Stored only in this browser.</p>' +
+  return top() + '<h1>Saved plans</h1>' +
     (items ? '<div class="saved">' + items + '</div>' :
-      '<div class="emptystate">' + ic("bookmark", "lg") + '<span>No saved plans yet. Create a recovery diet and tap “Save plan”.</span><button class="btn2" data-act="nav" data-view="subs">Choose substances</button></div>');
+      '<div class="emptystate">' + ic("bookmark", "lg") + '<span>No saved plans yet.</span><button class="btn2" data-act="nav" data-view="subs">Choose substances</button></div>');
 }
 
 function vProfile() {
@@ -822,13 +856,13 @@ function vProfile() {
   const bmi = p.w && p.h ? (p.w / Math.pow(p.h / 100, 2)).toFixed(1) : "–";
   const water = p.w ? (p.w * 0.035).toFixed(1) + " L" : "–";
   const prot = p.w ? Math.round(p.w * 1.2 / 5) * 5 + " g" : "–";
-  return top("Profile") + '<h1>Your body</h1><p class="lead">Optional and anonymous. Only used for amounts in your plan.</p>' + bodyFields() +
+  return top() + '<h1>Your body</h1>' + bodyFields() +
     '<div class="panel"><div class="kv"><span>BMI</span><span class="v">' + bmi + '</span></div><div class="kv"><span>Base water target</span><span class="v">' + water + '</span></div><div class="kv"><span>Protein target</span><span class="v">' + prot + '</span></div></div>' +
     '<div class="actions"><button class="btn2 primary" data-act="savebody">Save</button></div>' +
-    '<h2>Privacy</h2><div class="panel"><p class="lead">No accounts, nothing sent anywhere. Calendar events you add never name substances.</p>' +
+    '<h2>Privacy</h2><div class="panel"><p class="lead">Nothing leaves this device.</p>' +
     (S.confirmDel === "all" ? '<div class="confirm"><button data-act="nodel">Cancel</button><button class="yes" data-act="wipe">Delete everything</button></div>'
       : '<div><button class="btn2" data-act="askwipe">' + ic("trash", "sm") + 'Clear all data on this device</button></div>') + '</div>' +
-    '<h2>Emergency</h2><div class="panel"><div class="kv">' + ic("phone", "sm") + '<span style="flex:1">Emergency services (EU)</span><span class="v">112</span></div><p class="lead">Unconscious, trouble breathing, overheating, chest pain or a seizure? Call and say what was taken.</p></div>';
+    '<h2>Emergency</h2><div class="panel"><div class="kv">' + ic("phone", "sm") + '<span style="flex:1">Emergency services (EU)</span><span class="v">112</span></div></div>';
 }
 
 /* ---------- Sheets ---------- */
@@ -844,20 +878,17 @@ function sInfo(s) {
 }
 
 function sCal() {
-  const P = S.plan;
-  const rows = P.days.map(d => {
-    const e = eventFor(P, d);
-    return '<div class="calrow"><div class="txt"><div class="t">Day ' + d.n + ' · ' + esc(d.title) + '</div><div class="s">' + fmtDay(d.date) + ' · all day</div></div>' +
-      '<div class="links"><a href="' + esc(googleUrl(e)) + '" target="_blank" rel="noopener">Google' + ic("ext", "sm") + '</a>' +
-      '<a href="' + esc(outlookUrl(e)) + '" target="_blank" rel="noopener">Outlook' + ic("ext", "sm") + '</a>' +
-      '<button data-act="copyday" data-day="' + d.n + '" aria-label="Copy day ' + d.n + ' text">' + ic("copy", "sm") + '</button></div></div>';
-  }).join("");
-  const first = eventFor(P, P.days[0]);
-  return '<div class="shead"><span class="glyph">' + ic("calendar") + '</span><div class="txt"><div class="t">Add to calendar</div><div class="s">One all-day event per day, shown at the top of your agenda.</div></div>' +
+  const P = S.plan, all = planEvent(P);
+  const perDay = P.days.map(d => '<a href="' + esc(googleUrl(eventFor(P, d))) + '" target="_blank" rel="noopener">Day ' + d.n + '</a>').join("");
+  return '<div class="shead"><span class="glyph">' + ic("calendar") + '</span><div class="txt"><div class="t">Add to calendar</div><div class="s">' + fmtShort(all.start) + ' – ' + fmtShort(P.days[P.len - 1].date) + ' · all day</div></div>' +
     '<button class="iconbtn" data-act="closesheet" aria-label="Close">' + ic("close", "sm") + '</button></div>' +
-    '<div class="calrows">' + rows + '</div>' +
-    '<p class="lead" style="margin-top:12px;font-size:13px">Tap Google or Outlook for each day and save the event. For Apple or another calendar, copy the text into a new all-day event. Events never mention substances.</p>' +
-    '<div class="block"><span class="label">Preview · Day 1</span><div class="preview">' + esc(first.title + "\n\n" + first.body) + '</div></div>';
+    '<div class="calmain">' +
+      '<a class="cta" href="' + esc(googleUrl(all)) + '" target="_blank" rel="noopener">' + ic("calendar", "sm") + 'Google Calendar · all ' + P.len + ' days</a>' +
+      '<a class="btn2" href="' + esc(outlookUrl(all)) + '" target="_blank" rel="noopener">Outlook' + ic("ext", "sm") + '</a>' +
+      '<button class="btn2" data-act="copyall">' + ic("copy", "sm") + 'Copy for Apple / other</button>' +
+    '</div>' +
+    '<div class="perday"><span class="label">Google per day</span>' + perDay + '</div>' +
+    '<div class="preview" hidden></div>';
 }
 
 function renderSheet() {
@@ -911,7 +942,7 @@ function copyText(text) {
 }
 function fallbackCopy(text) {
   const pre = sheetEl.querySelector(".preview");
-  if (pre) { pre.textContent = text; const r = document.createRange(); r.selectNodeContents(pre); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); toast("Text selected: copy it manually"); }
+  if (pre) { pre.hidden = false; pre.textContent = text; const r = document.createRange(); r.selectNodeContents(pre); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); toast("Text selected: copy it manually"); }
 }
 
 /* ---------- Events ---------- */
@@ -927,6 +958,9 @@ document.addEventListener("click", e => {
     const el = app.querySelector('.rowmain[data-id="' + id + '"]'); if (el) el.focus({ preventScroll: true });
   } else if (act === "amt") { S.selected.set(b.dataset.id, +b.dataset.amt); render(true); }
   else if (act === "info") openSheet({ type: "info", id: b.dataset.id });
+  else if (act === "expand") { const id = b.dataset.id; S.expanded.has(id) ? S.expanded.delete(id) : S.expanded.add(id); render(true); }
+  else if (act === "theme") { S.theme = isDark() ? "light" : "dark"; document.documentElement.setAttribute("data-theme", S.theme); persist(); render(true); }
+  else if (act === "copyall") { const ev = planEvent(S.plan); copyText(ev.title + "\n\n" + ev.body); }
   else if (act === "cal") openSheet({ type: "cal" });
   else if (act === "closesheet") closeSheet();
   else if (act === "copyday") { const d = S.plan.days[+b.dataset.day - 1]; const ev = eventFor(S.plan, d); copyText(ev.title + "\n\n" + ev.body); }
