@@ -232,6 +232,24 @@ p { margin: 0; }
 .perday { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 16px; }
 .perday a { height: 32px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); font-size: 13px; display: inline-flex; align-items: center; text-decoration: none; }
 .perday a:hover { border-color: var(--blue); }
+.water { display: flex; align-items: center; gap: 12px; margin-top: 12px; padding: 12px 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; }
+.ring { width: 52px; height: 52px; flex: none; transform: rotate(-90deg); }
+.ring circle { fill: none; stroke-width: 6; }
+.ring .track { stroke: var(--blue-soft); }
+.ring .fill { stroke: var(--blue); stroke-linecap: round; transition: stroke-dashoffset .3s; }
+.wtxt { flex: 1; min-width: 0; }
+.wn { font-size: 15px; }
+.wn b { font-weight: 500; font-size: 18px; }
+.ws { font-size: 11.5px; color: var(--muted); }
+.wplus { width: 48px; height: 48px; border-radius: 50%; border: 0; background: var(--blue); display: grid; place-items: center; flex: none; }
+.wplus .ic { stroke: var(--blue-ink); }
+.iconbtn:disabled { opacity: .4; cursor: default; }
+.item.recipe { display: block; width: 100%; text-align: left; border: 0; border-top: 1px solid var(--line); background: none; }
+.item.recipe:first-child { border-top: 0; }
+.ing { margin: 6px 0 4px; padding-left: 18px; font-size: 13.5px; }
+.ing li::marker { color: var(--blue); }
+.calrow.rem .txt { flex: 1 1 60px; }
+.time { font-family: var(--mono); font-size: 14px; border: 1px solid var(--line); background: var(--bg); border-radius: 9px; height: 34px; padding: 0 8px; }
 @keyframes rise { from { transform: translateY(30px); opacity: .4; } to { transform: none; opacity: 1; } }
 
 .toast { position: fixed; left: 50%; bottom: calc(150px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%) translateY(10px); background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 10px; font-size: 14px; opacity: 0; transition: opacity .2s, transform .2s; z-index: 60; pointer-events: none; }
@@ -301,6 +319,9 @@ const ICON = {
   pulse: '<path d="M3 12h4l2.5-6 5 12 2.5-6h4"/>',
   sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
   moon: '<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  minus: '<path d="M5 12h14"/>',
+  recipe: '<path d="M6 3v8a3 3 0 0 0 3 3v7M9 3v5M12 3v8a3 3 0 0 1-3 3"/><path d="M18 21V3c-2 0-4 2-4 6v5h4"/>',
   phone: '<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a1 1 0 0 1-1 1A16 16 0 0 1 4 5a1 1 0 0 1 1-1z"/>',
   stimulant: '<path d="M13 3 5 14h6l-1 7 8-11h-6z"/>',
   empathogen: '<path d="M12 20s-7.5-4.6-7.5-10.3A4.2 4.2 0 0 1 12 7.2a4.2 4.2 0 0 1 7.5 2.5C19.5 15.4 12 20 12 20z"/>',
@@ -606,6 +627,26 @@ const ADVICE = [
   { k: "avoid", t: "Staying inside alone", w: ["Daylight lifts mood.", "A short walk is enough."], tags: ["mood"], d: [2, 5] }
 ];
 
+/* ---------- Recipes ----------
+   tags: matched against what is active that day · fermented: skipped while an MAO block is active */
+const RECIPES = [
+  { n: "Recovery smoothie", min: 5, tags: ["bloodsugar", "appetite", "oxidative", "serotonin"], ing: ["1 banana", "Handful of frozen berries", "3 tbsp oats", "150 g yoghurt", "250 ml milk or oat milk"], how: "Blend until smooth. Sip slowly." },
+  { n: "Salted coconut cooler", min: 2, tags: ["electrolytes", "hydration"], ing: ["300 ml coconut water", "Juice of ½ orange", "Squeeze of lime", "Pinch of salt"], how: "Stir and sip over half an hour." },
+  { n: "Ginger rice congee", min: 25, tags: ["gut", "integration"], ing: ["75 g white rice", "1 L vegetable broth", "3 slices fresh ginger", "Spring onion"], how: "Simmer rice in broth with ginger until creamy. Top with spring onion." },
+  { n: "Turkey & sweet potato bowl", min: 25, tags: ["serotonin", "mood", "bloodsugar"], ing: ["120 g turkey or tofu", "1 sweet potato", "Handful of spinach", "1 tbsp pumpkin seeds"], how: "Roast cubed sweet potato 20 min, pan-fry turkey, toss with spinach and seeds." },
+  { n: "Salmon, rice & greens", min: 20, tags: ["mood", "integration", "serotonin", "oxidative"], ing: ["1 salmon fillet", "75 g brown rice", "Broccoli", "Lemon"], how: "Cook rice, steam broccoli, bake salmon 12 min at 200 °C. Finish with lemon." },
+  { n: "Overnight oats", min: 5, tags: ["serotonin", "bloodsugar", "constipation", "muscle"], ing: ["50 g oats", "150 ml milk", "1 tbsp chia seeds", "½ banana", "Few walnuts"], how: "Mix in a jar and leave in the fridge overnight." },
+  { n: "Red lentil soup", min: 30, tags: ["constipation", "dopamine", "electrolytes", "gut"], ing: ["100 g red lentils", "1 carrot", "1 celery stick", "1 tsp cumin", "800 ml vegetable broth"], how: "Simmer everything 20 min, then blend." },
+  { n: "Egg & avocado toast", min: 10, tags: ["liver", "b12", "muscle", "cardio"], ing: ["2 eggs", "½ avocado", "2 slices wholegrain bread", "Handful of spinach"], how: "Poach or scramble the eggs, mash avocado on toast, add spinach." },
+  { n: "Chicken & bean wrap", min: 15, tags: ["dopamine", "appetite", "oxidative"], ing: ["100 g chicken", "½ tin black beans", "½ bell pepper", "Wholegrain wrap"], how: "Pan-fry chicken and pepper, add beans, roll up." },
+  { n: "Watermelon cucumber salad", min: 5, tags: ["hydration", "electrolytes"], ing: ["2 cups watermelon", "½ cucumber", "Fresh mint", "Lime"], how: "Cube, toss with mint and lime." },
+  { n: "Fresh vegetable noodle soup", min: 20, tags: ["maoi", "gut", "integration"], ing: ["1 L fresh vegetable broth", "Rice noodles", "Carrot", "Courgette", "Fresh ginger"], how: "Simmer sliced vegetables 10 min, add noodles for the last 3 min." },
+  { n: "Pear & prune yoghurt bowl", min: 10, tags: ["constipation", "gut"], ing: ["1 pear", "4 prunes", "150 g yoghurt", "1 tsp honey"], how: "Warm chopped pear and prunes 5 min, spoon over yoghurt." },
+  { n: "Peanut butter banana toast", min: 3, tags: ["appetite", "bloodsugar", "dopamine"], ing: ["2 slices wholegrain toast", "2 tbsp peanut butter", "1 banana"], how: "Spread, slice banana on top." },
+  { n: "Spinach almond pasta", min: 15, tags: ["muscle", "sleep", "cardio"], ing: ["80 g wholegrain pasta", "2 handfuls spinach", "Handful of almonds", "Olive oil, garlic"], how: "Blend spinach, almonds, oil and garlic, stir through hot pasta." },
+  { n: "Kefir berry bowl", min: 3, fermented: true, tags: ["gut", "oxidative"], ing: ["200 ml kefir", "Berries", "1 tbsp granola"], how: "Pour kefir, top with berries and granola." }
+];
+
 const SECTIONS = [["vit", "Vitamins & supplements", "vit", "Take"], ["drink", "Drinks", "drink", "Drink"], ["eat", "Eat", "eat", "Eat"], ["avoid", "Avoid", "avoid", "Avoid"]];
 const PER_SECTION = 4;
 
@@ -622,11 +663,15 @@ function buildPlan(picks, profile, createdISO) {
   const w = profile.w, h = profile.h;
   const ctx = {
     tags: allTags, has: id => set.has(id),
-    water(d) {
+    waterL(d) {
       const dry = allTags.hydration || allTags.electrolytes;
       const extra = dry ? (d === 1 ? 0.5 : d === 2 ? 0.25 : 0) + (lots.length && d <= 2 ? 0.25 : 0) : 0;
-      if (!w) return d === 1 && extra ? "2.5–3 L" : "2–2.5 L";
-      return Math.min(4.5, Math.max(1.5, w * 0.035 + extra)).toFixed(1).replace(".0", "") + " L";
+      if (!w) return 2.25 + extra;
+      return Math.round(Math.min(4.5, Math.max(1.5, w * 0.035 + extra)) * 4) / 4;
+    },
+    water(d) {
+      if (!w) return this.waterL(d) > 2.5 ? "2.5–3 L" : "2–2.5 L";
+      return this.waterL(d) + " L";
     },
     protein: w ? "≈ " + Math.round(w * 1.2 / 5) * 5 + " g" : "1.2 g / kg",
     kcal: (w && h) ? Math.round(((10 * w + 6.25 * h - 150 - 78) * 1.4) / 50) * 50 : null
@@ -650,7 +695,12 @@ function buildPlan(picks, profile, createdISO) {
         .slice(0, PER_SECTION)
         .map(({ a }) => ({ t: typeof a.t === "function" ? a.t(ctx, d) : a.t, w: a.w }));
     });
-    days.push({ n: d, date, title: dayTitle(d, len, tags), note: dayNote(d, len, tags, lots.length), sections });
+    const prev = days.length ? days[days.length - 1].recipes.map(r => r.n) : [];
+    const recipes = RECIPES
+      .filter(r => !(allTags.maoi && d <= 2 && r.fermented))
+      .map(r => ({ r, score: r.tags.reduce((n, t) => n + (tags[t] || 0), 0) - (prev.includes(r.n) ? 5 : 0) }))
+      .sort((x, y) => y.score - x.score).slice(0, 3).map(x => x.r);
+    days.push({ n: d, date, title: dayTitle(d, len, tags), note: dayNote(d, len, tags, lots.length), sections, recipes, waterL: ctx.waterL(d) });
   }
   const combos = COMBOS.filter(c => c.test(set));
   if (lots.length) combos.unshift({ t: "You took a lot", w: "Your plan has an extra day. Have someone check in on you today." });
@@ -700,6 +750,23 @@ function planEvent(P) {
   const end = new Date(P.days[0].date); end.setDate(end.getDate() + P.len);
   return { title: "Days After · " + P.len + "-day recovery", body: days, start: P.days[0].date, end };
 }
+// repeating timed events: the calendar app sends the phone notification
+const REMINDERS = [
+  { k: "vit", t: "Vitamins", body: "Take today's vitamins. Check Days After for the list." },
+  { k: "water1", t: "Water", body: "Drink two glasses of water." },
+  { k: "water2", t: "Water", body: "Drink two glasses of water." },
+  { k: "bed", t: "Wind down", body: "Screens off, chamomile tea, bed within 30 min." }
+];
+function reminderUrl(r, P) {
+  const [hh, mm] = (S.reminders[r.k] || "09:00").split(":").map(Number);
+  const s = new Date(P.days[0].date); s.setHours(hh, mm, 0, 0);
+  const e = new Date(s.getTime() + 15 * 60000);
+  const t = d => ymd(d) + "T" + String(d.getHours()).padStart(2, "0") + String(d.getMinutes()).padStart(2, "0") + "00";
+  let tz = ""; try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone; } catch (err) {}
+  return "https://calendar.google.com/calendar/render?action=TEMPLATE&text=" + encodeURIComponent("Days After · " + r.t) +
+    "&dates=" + t(s) + "/" + t(e) + "&details=" + encodeURIComponent(r.body) +
+    "&recur=" + encodeURIComponent("RRULE:FREQ=DAILY;COUNT=" + P.len) + (tz ? "&ctz=" + encodeURIComponent(tz) : "");
+}
 function googleUrl(e) {
   return "https://calendar.google.com/calendar/render?action=TEMPLATE&text=" + encodeURIComponent(e.title) +
     "&dates=" + ymd(e.start) + "/" + ymd(e.end) + "&details=" + encodeURIComponent(e.body);
@@ -712,7 +779,7 @@ function outlookUrl(e) {
 /* ---------- Storage (this device only) ---------- */
 const KEY = "daysafter.v1";
 function load() { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { return {}; } }
-function persist() { try { localStorage.setItem(KEY, JSON.stringify({ onboarded: S.onboarded, profile: S.profile, saved: S.saved, theme: S.theme })); } catch (e) {} }
+function persist() { try { localStorage.setItem(KEY, JSON.stringify({ onboarded: S.onboarded, profile: S.profile, saved: S.saved, theme: S.theme, water: S.water, reminders: S.reminders })); } catch (e) {} }
 const normPicks = subs => (subs || []).map(x => typeof x === "string" ? { id: x, amt: 2 } : x);
 
 const stored = load();
@@ -723,7 +790,9 @@ const S = {
   view: stored.onboarded ? "subs" : "onboard",
   selected: new Map(), q: "", cat: "all",
   plan: null, planMeta: null, day: 1, confirmDel: null, sheet: null,
-  expanded: new Set(), theme: stored.theme || null
+  expanded: new Set(), theme: stored.theme || null,
+  water: stored.water || {}, openRecipe: null,
+  reminders: stored.reminders || { vit: "09:00", water1: "11:00", water2: "15:00", bed: "22:30" }
 };
 if (S.theme) document.documentElement.setAttribute("data-theme", S.theme);
 
@@ -838,8 +907,32 @@ function vPlan() {
     '<div class="planhead"><h1>Your recovery</h1><div class="facts">' + facts + '</div></div>' +
     '<div class="daybar" role="tablist" style="margin-top:18px">' + dayBtns + '</div>' +
     '<div class="dayhead"><span class="t">' + esc(day.title) + '</span></div>' +
-    '<div class="note">' + ic("pulse", "sm") + '<span>' + esc(day.note) + '</span></div>' + sections +
+    waterCard(day) +
+    '<div class="note">' + ic("pulse", "sm") + '<span>' + esc(day.note) + '</span></div>' + sections + recipeList(day) +
     '<div class="disclaimer">Not medical advice. Emergency: 112.</div>';
+}
+
+const GLASS = 0.25;
+function waterCard(day) {
+  const goal = Math.round(day.waterL / GLASS);
+  const key = S.planMeta.created;
+  const n = ((S.water[key] || {})[day.n]) || 0;
+  const pct = Math.min(1, n / goal), C = 2 * Math.PI * 26;
+  return '<div class="water"><svg class="ring" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="26" class="track"/>' +
+    '<circle cx="32" cy="32" r="26" class="fill" stroke-dasharray="' + C.toFixed(1) + '" stroke-dashoffset="' + (C * (1 - pct)).toFixed(1) + '"/></svg>' +
+    '<div class="wtxt"><div class="wn mono"><b>' + n + '</b> / ' + goal + ' glasses</div><div class="ws mono">' + +(n * GLASS).toFixed(2) + ' of ' + day.waterL + ' L</div></div>' +
+    '<button class="iconbtn" data-act="water" data-d="-1" aria-label="Remove a glass"' + (n ? '' : ' disabled') + '>' + ic("minus", "sm") + '</button>' +
+    '<button class="wplus" data-act="water" data-d="1" aria-label="Add a glass">' + ic("plus") + '</button></div>';
+}
+
+function recipeList(day) {
+  if (!day.recipes.length) return "";
+  return '<section class="sect"><div class="sh">' + ic("recipe", "sm") + '<span class="label">Recipes</span></div><div class="items">' +
+    day.recipes.map(r => {
+      const open = S.openRecipe === r.n;
+      return '<button class="item recipe" data-act="recipe" data-n="' + esc(r.n) + '" aria-expanded="' + open + '"><div class="it">' + esc(r.n) + '<span class="amtag">' + r.min + ' min</span></div>' +
+        (open ? '<ul class="ing">' + r.ing.map(i => '<li>' + esc(i) + '</li>').join("") + '</ul><div class="why">' + esc(r.how) + '</div>' : '') + '</button>';
+    }).join("") + '</div></section>';
 }
 
 function vSaved() {
@@ -893,6 +986,10 @@ function sCal() {
       '<button class="btn2" data-act="copyall">' + ic("copy", "sm") + 'Copy for Apple / other</button>' +
     '</div>' +
     '<div class="perday"><span class="label">Google per day</span>' + perDay + '</div>' +
+    '<h2>Daily reminders</h2><div class="calrows">' + REMINDERS.map(r =>
+      '<div class="calrow rem"><div class="txt"><div class="t">' + esc(r.t) + '</div></div>' +
+      '<input class="time" type="time" id="rem-' + r.k + '" data-rem="' + r.k + '" value="' + esc(S.reminders[r.k]) + '" aria-label="' + esc(r.t) + ' time">' +
+      '<div class="links"><a href="' + esc(reminderUrl(r, P)) + '" target="_blank" rel="noopener" data-remlink="' + r.k + '">Google' + ic("ext", "sm") + '</a></div></div>').join("") + '</div>' +
     '<div class="preview" hidden></div>';
 }
 
@@ -966,6 +1063,14 @@ document.addEventListener("click", e => {
     const el = app.querySelector('.rowmain[data-id="' + id + '"]'); if (el) el.focus({ preventScroll: true });
   } else if (act === "amt") { S.selected.set(b.dataset.id, +b.dataset.amt); render(true); }
   else if (act === "info") openSheet({ type: "info", id: b.dataset.id });
+  else if (act === "water") {
+    const key = S.planMeta.created, day = S.plan.days[S.day - 1];
+    const m = S.water[key] = S.water[key] || {};
+    m[day.n] = Math.max(0, (m[day.n] || 0) + +b.dataset.d);
+    if (+b.dataset.d > 0 && m[day.n] === Math.round(day.waterL / GLASS)) toast("Water goal reached");
+    persist(); render(true);
+  }
+  else if (act === "recipe") { S.openRecipe = S.openRecipe === b.dataset.n ? null : b.dataset.n; render(true); }
   else if (act === "expand") { const id = b.dataset.id; S.expanded.has(id) ? S.expanded.delete(id) : S.expanded.add(id); render(true); }
   else if (act === "theme") { S.theme = isDark() ? "light" : "dark"; document.documentElement.setAttribute("data-theme", S.theme); persist(); render(true); }
   else if (act === "copyall") { const ev = planEvent(S.plan); copyText(ev.title + "\n\n" + ev.body); }
@@ -978,7 +1083,8 @@ document.addEventListener("click", e => {
   else if (act === "create") {
     const picks = [...S.selected].map(([id, amt]) => ({ id, amt }));
     openPlan(picks, { id: null, created: new Date().toISOString(), w: S.profile.w, h: S.profile.h, subs: picks });
-  } else if (act === "day") { S.day = +b.dataset.day; render(true); }
+  }
+  else if (act === "day") { S.day = +b.dataset.day; S.openRecipe = null; render(true); }
   else if (act === "back") { S.view = S.view === "plan" ? "story" : (S.planMeta && S.planMeta.id ? "saved" : "subs"); render(); }
   else if (act === "toplan") { S.view = "plan"; render(); }
   else if (act === "save") {
@@ -999,6 +1105,15 @@ document.addEventListener("click", e => {
     try { localStorage.removeItem(KEY); } catch (err) {}
     S.onboarded = true; persist(); render(true); toast("All data cleared");
   }
+});
+
+document.addEventListener("change", e => {
+  const k = e.target.dataset && e.target.dataset.rem;
+  if (!k || !e.target.value) return;
+  S.reminders[k] = e.target.value; persist();
+  const a = sheetEl.querySelector('[data-remlink="' + k + '"]');
+  const r = REMINDERS.find(x => x.k === k);
+  if (a && r) a.href = reminderUrl(r, S.plan);
 });
 
 document.addEventListener("keydown", e => { if (e.key === "Escape" && S.sheet) closeSheet(); });
