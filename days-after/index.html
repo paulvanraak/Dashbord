@@ -220,7 +220,8 @@ p { margin: 0; }
 .story { gap: 12px; }
 .story .para { display: flex; flex-direction: column; gap: 8px; }
 .story .para + .para { border-top: 1px solid var(--line); padding-top: 12px; }
-.story .para b { font-weight: 600; }
+.story .para b, .prose b { font-weight: 600; }
+.prose { font-size: 17px; line-height: 1.6; }
 .amtag { font-family: var(--mono); font-size: 11.5px; color: var(--muted); margin-left: 4px; white-space: nowrap; }
 .qbtn.inline { display: inline-grid; width: 22px; height: 22px; font-size: 12px; vertical-align: 1px; margin-left: 6px; }
 .qbtn[aria-expanded="true"] { background: var(--blue); color: var(--blue-ink); border-color: var(--blue); }
@@ -327,197 +328,200 @@ const SUBS = [
   { id: "alcohol", n: "Alcohol", aka: "beer, wine, spirits", c: "depressant", dur: "Clears ≈ 1 unit / h", days: 2,
     amt: ["1–3 drinks", "4–7 drinks", "8+ drinks"],
     tags: ["hydration", "electrolytes", "liver", "sleep", "mood", "bloodsugar", "gut", "oxidative"],
-    story: "Alcohol boosted your calming GABA signals while your liver turned it into acetaldehyde, the toxin behind headache and nausea. It also made you pee out more fluid than you drank and skipped your deep sleep.",
     info: { what: "Ethanol, a depressant in beer, wine and spirits.", use: "Drunk. One standard drink holds about 10 g of alcohol.", onset: "15–45 min",
       safer: ["Alternate every drink with water.", "Eat before and during.", "Never mix with GHB, benzos or opioids."] },
     flag: "Confusion, non-stop vomiting, slow breathing, cold or bluish skin." },
   { id: "cannabis", n: "Cannabis", aka: "weed, hash, THC", c: "cannabinoid", dur: "Effects 2–6 h", days: 2,
     amt: ["A few hits", "A joint", "Several / edible"],
     tags: ["hydration", "sleep", "lungs", "mood", "anxiety"],
-    story: "THC attached to CB1 receptors and changed your sense of time, taste and memory. It is stored in fat and released slowly, so a foggy head and dry mouth can linger.",
     info: { what: "Flowers or resin of the cannabis plant; THC is the main active compound.", use: "Smoked, vaped or eaten in edibles.", onset: "Smoked: minutes · edibles: 30–120 min",
       safer: ["Wait 2 hours before eating more of an edible.", "Vaping is easier on your lungs than tobacco joints.", "Start low with strong strains."] },
     flag: "Panic that won't settle, chest pain, or repeated vomiting with cramps." },
   { id: "mdma", n: "MDMA / Ecstasy", aka: "XTC, molly, pills", c: "empathogen", dur: "Effects 3–6 h · t½ ≈ 8 h", days: 5,
     amt: ["Half a pill", "One pill", "More / redosed"],
     tags: ["hydration", "electrolytes", "serotonin", "sleep", "oxidative", "mood", "muscle", "appetite", "cardio"],
-    story: "MDMA released a big wave of serotonin, dopamine and oxytocin, and raised your temperature and jaw tension while you sweated out water and salt. Your serotonin is now low and rebuilds over days, which causes the midweek dip.",
     info: { what: "An empathogen sold as crystals or pressed pills, often high in strength.", use: "Swallowed, sometimes dabbed. Many people redose.", onset: "30–60 min",
       safer: ["Test your pills or crystals first.", "Take dance breaks to cool down.", "Sip about 500 ml of water per hour.", "Leave 3 months between uses."] },
     flag: "Overheating, confusion, severe headache, or a puffy, nauseous feeling after lots of water." },
   { id: "cocaine", n: "Cocaine", aka: "coke, blow, snow", c: "stimulant", dur: "Effects 30–90 min · t½ ≈ 1 h", days: 3,
     amt: ["A line or two", "Several lines", "All night"],
     tags: ["hydration", "dopamine", "sleep", "cardio", "nasal", "mood", "appetite", "oxidative"],
-    story: "Cocaine blocked dopamine recycling, so you felt sharp and confident while your heart and blood pressure went up. Dopamine is now depleted, bringing low mood and cravings, and your nose lining is irritated.",
     info: { what: "A stimulant powder made from coca leaves.", use: "Snorted, sometimes smoked as crack.", onset: "Snorted: 2–5 min",
       safer: ["Use your own straw.", "Avoid alcohol with it.", "Set a limit before you start."] },
     flag: "Chest pain, irregular heartbeat, sudden severe headache, or a nosebleed that won't stop." },
   { id: "amphetamine", n: "Amphetamine", aka: "speed, pep", c: "stimulant", dur: "Effects 4–8 h · t½ ≈ 10 h", days: 4,
     tags: ["hydration", "dopamine", "sleep", "cardio", "muscle", "appetite", "mood", "nasal"],
-    story: "Speed pushed out dopamine and noradrenaline for hours, switching off hunger, thirst and sleep. The comedown brings exhaustion, irritability and a big appetite.",
     info: { what: "A synthetic stimulant, usually a white or pink paste or powder.", use: "Snorted or swallowed in paper (bombing).", onset: "Snorted 5–10 min · swallowed 30–45 min",
       safer: ["Swallowing is gentler on your nose.", "Eat something before.", "Stop by midnight so you can sleep."] },
     flag: "Chest pain, racing heartbeat, overheating, or paranoia that doesn't fade." },
   { id: "meth", n: "Methamphetamine", aka: "crystal, tina, ice", c: "stimulant", dur: "Effects 8–12 h · t½ ≈ 10–12 h", days: 5,
     tags: ["hydration", "electrolytes", "dopamine", "sleep", "cardio", "muscle", "appetite", "mood", "oxidative"],
-    story: "Meth released dopamine harder and longer than speed, keeping you hot, awake and not eating. The crash can mean heavy sleep, low mood and cravings for days.",
     info: { what: "A strong, long-acting stimulant, usually crystals.", use: "Smoked, snorted, swallowed or injected.", onset: "Seconds to 30 min",
       safer: ["Never share pipes or needles.", "Set a time to stop and sleep.", "Eat and drink on a schedule."] },
     flag: "Chest pain, overheating, seizures, or seeing and hearing things." },
   { id: "ketamine", n: "Ketamine", aka: "K, special K, keta", c: "dissociative", dur: "Effects 45–90 min · t½ ≈ 2.5 h", days: 3,
     amt: ["A bump or two", "Several bumps", "K-hole / all night"],
     tags: ["hydration", "bladder", "nasal", "gut", "mood", "integration", "dissociative"],
-    story: "Ketamine blocked NMDA receptors and disconnected your mind from your body. Its by-products leave through your bladder, which they can irritate.",
     info: { what: "A dissociative anaesthetic used in hospitals and vet clinics.", use: "Usually snorted as powder.", onset: "5–15 min",
       safer: ["Sit or lie down somewhere safe.", "Don't mix with alcohol or G.", "Frequent use damages the bladder."] },
     flag: "Pain or blood when peeing, or strong stomach cramps." },
   { id: "ghb", n: "GHB / GBL", aka: "G, liquid ecstasy", c: "depressant", dur: "Effects 1–3 h · t½ < 1 h", days: 3,
     amt: ["One dose", "2–3 doses", "Dosed all night"],
     tags: ["sleep", "anxiety", "depressant", "mood", "hydration"],
-    story: "GHB acted on GABA-B receptors for a warm, euphoric high with a tiny margin before passing out. As it wore off, your brain bounced back with restlessness and shallow sleep.",
     info: { what: "A depressant liquid; GBL turns into GHB in the body.", use: "Swallowed in small measured millilitres, mixed in a drink.", onset: "10–30 min",
       safer: ["Measure with a pipette or syringe.", "Wait at least 2 hours before redosing.", "Never combine with alcohol."] },
     flag: "Shaking, sweating and a racing heart after dosing for long periods: possible withdrawal, get help." },
   { id: "lsd", n: "LSD", aka: "acid, tabs", c: "psychedelic", dur: "Effects 8–12 h · t½ ≈ 3.5 h", days: 3,
     amt: ["Half a tab", "One tab", "Two or more"],
     tags: ["sleep", "integration", "hydration", "appetite", "mood"],
-    story: "LSD bound to serotonin 5-HT2A receptors and changed how your brain filters senses and thoughts. The long trip cost you sleep, so today can feel tender and tired.",
     info: { what: "A potent semi-synthetic psychedelic, active in micrograms.", use: "A blotter tab or drop held on the tongue.", onset: "30–90 min",
       safer: ["Pick a safe setting and a sober sitter.", "Start with half a tab.", "Keep the next day free."] },
     flag: "Panic that returns, visuals that won't fade, or feeling unreal for days." },
   { id: "psilocybin", n: "Psilocybin mushrooms", aka: "magic mushrooms, truffles", c: "psychedelic", dur: "Effects 4–6 h", days: 3,
     amt: ["Microdose / low", "Normal dose", "Heroic dose"],
     tags: ["gut", "integration", "sleep", "mood", "hydration"],
-    story: "Your body turned psilocybin into psilocin, which loosened your brain's usual patterns. An afterglow of openness often comes with tiredness and emotional rawness.",
     info: { what: "Mushrooms or truffles containing psilocybin.", use: "Eaten fresh or dried, or brewed as tea.", onset: "20–60 min",
       safer: ["Weigh your dose.", "Tea or lemon can ease nausea.", "Have a trusted sitter."] },
     flag: "Returning panic or dark thoughts that don't lift after a few days." },
   { id: "ayahuasca", n: "Ayahuasca", aka: "aya, the medicine, the brew", c: "psychedelic", dur: "Effects 4–6 h · MAO block ≈ 24 h", days: 4,
     amt: ["One cup", "Two cups", "Three+ cups"],
     tags: ["maoi", "gut", "hydration", "electrolytes", "integration", "sleep", "mood"],
-    story: "The vine blocked your MAO enzyme so DMT could reach your brain, and purging cost you fluid and salts. That MAO block lasts about a day, so some foods and medicines stay risky.",
     info: { what: "A ceremonial Amazonian brew of the vine and DMT-containing leaves.", use: "Drunk in a ceremony led by a facilitator.", onset: "30–60 min",
       safer: ["Tell the facilitator all your medication.", "Follow the diet: no tyramine-rich foods.", "Choose an experienced, vetted group."] },
     flag: "Severe headache, stiff neck, fever, or rigid, twitching muscles." },
   { id: "dmt", n: "DMT (smoked)", aka: "dimitri, changa", c: "psychedelic", dur: "Effects 5–20 min", days: 2,
     tags: ["lungs", "integration", "mood"],
-    story: "Smoked DMT flooded your serotonin receptors within seconds for a short, overwhelming journey. Your body clears it in minutes; mostly your throat and the memory remain.",
     info: { what: "A short-acting psychedelic also found in many plants.", use: "Vaporised or smoked, sometimes in herb blends (changa).", onset: "Seconds",
       safer: ["Sit or lie down before inhaling.", "Have someone present.", "Use a vaporiser, not a flame."] },
     flag: "Ongoing anxiety or chest tightness." },
   { id: "2cb", n: "2C-B", aka: "Nexus, Venus, bees", c: "psychedelic", dur: "Effects 4–6 h", days: 3,
     tags: ["gut", "sleep", "integration", "hydration"],
-    story: "2C-B activated serotonin receptors for colourful visuals and an MDMA-like body high. The comedown is usually mild: tired and in need of quiet.",
     info: { what: "A synthetic psychedelic sold as pills or powder.", use: "Swallowed; snorting is very painful.", onset: "45–75 min",
       safer: ["Doses are small: weigh carefully.", "Pink 'tusi' powder is usually not 2C-B.", "Test before use."] },
     flag: "Overheating, racing heart, or panic that won't settle." },
   { id: "n2o", n: "Nitrous oxide", aka: "laughing gas, balloons", c: "inhalant", dur: "Effects 1–3 min", days: 4,
     amt: ["1–5 balloons", "6–20 balloons", "20+ / a tank"],
     tags: ["b12", "hydration", "mood"],
-    story: "Each balloon briefly blocked NMDA receptors and pushed oxygen out of your lungs. Nitrous also switches off vitamin B12, which your nerves need.",
     info: { what: "A gas used in whipped-cream chargers and medicine.", use: "Inhaled from a balloon, never straight from the canister.", onset: "Seconds",
       safer: ["Sit down while inhaling.", "Breathe normal air between balloons.", "Heavy use needs B12 supplements."] },
     flag: "Tingling, numbness, weak legs or balance problems: see a doctor about B12." },
   { id: "poppers", n: "Poppers", aka: "amyl, alkyl nitrites", c: "inhalant", dur: "Effects 1–3 min", days: 2,
     tags: ["cardio", "hydration", "headache"],
-    story: "Poppers widened your blood vessels, dropping blood pressure and giving a warm head rush. That same effect often leaves a pounding headache.",
     info: { what: "Volatile alkyl nitrites sold in small bottles.", use: "Sniffed from the bottle.", onset: "Seconds",
       safer: ["Never drink it.", "Keep it off your skin.", "Never with Viagra-type pills."] },
     flag: "Blue lips, breathlessness, vision changes, or fainting." },
   { id: "cathinones", n: "3-MMC / Mephedrone", aka: "4-MMC, meow, cathinones", c: "empathogen", dur: "Effects 1–3 h", days: 4,
     tags: ["hydration", "serotonin", "dopamine", "sleep", "cardio", "mood", "muscle", "nasal", "appetite"],
-    story: "Cathinones released serotonin and dopamine like a short mix of MDMA and cocaine, driving you to redose. Both are now low, so expect low mood and restless sleep.",
     info: { what: "Synthetic stimulants related to khat; 3-MMC is common in the Netherlands.", use: "Snorted or swallowed, often redosed.", onset: "Snorted 5–15 min · swallowed 15–45 min",
       safer: ["Decide your total amount in advance.", "Never inject.", "Stop well before you want to sleep."] },
     flag: "Chest pain, overheating, cold blue fingers, or paranoia." },
   { id: "kratom", n: "Kratom", aka: "ketum, kratom tea", c: "plant", dur: "Effects 2–6 h", days: 3,
     tags: ["constipation", "gut", "liver", "hydration", "sleep"],
-    story: "Kratom partly activated your opioid receptors: energising at low doses, sedating at high ones. Like opioids it slows your gut.",
     info: { what: "Leaves of a Southeast Asian tree with opioid-like alkaloids.", use: "Powder swallowed or brewed as tea.", onset: "10–30 min",
       safer: ["Avoid daily use.", "Don't mix with other depressants.", "Buy from a tested source."] },
     flag: "Yellow skin or eyes, dark urine, or withdrawal shakes." },
   { id: "caffeine", n: "Caffeine / energy drinks", aka: "coffee, Red Bull, pre-workout", c: "stimulant", dur: "t½ ≈ 5 h", days: 2,
     amt: ["1–2 cups", "3–5 cups", "6+ / energy drinks"],
     tags: ["sleep", "cardio", "hydration", "bloodsugar", "anxiety"],
-    story: "Caffeine blocked adenosine, your sleep-pressure signal, so you stayed alert. Too much leaves jitters, a fast heart and shorter sleep.",
     info: { what: "The world's most used stimulant, in coffee, tea and energy drinks.", use: "Drunk, or taken as pills or pre-workout.", onset: "15–45 min",
       safer: ["Stay under about 400 mg a day.", "None after 2 pm if you want sleep.", "Don't mix energy drinks with alcohol."] },
     flag: "Chest pain, irregular heartbeat, or vomiting." },
   { id: "nicotine", n: "Nicotine", aka: "cigarettes, vapes, snus", c: "stimulant", dur: "t½ ≈ 2 h", days: 2,
     amt: ["A few", "Half a pack", "A pack or more"],
     tags: ["lungs", "cardio", "oxidative"],
-    story: "Nicotine gave quick bursts of dopamine and adrenaline. Heavy smoking also loaded your lungs with carbon monoxide and tar.",
     info: { what: "The stimulant in tobacco and vapes.", use: "Smoked, vaped, or as pouches under the lip.", onset: "Seconds",
       safer: ["You smoke more when drinking: set a limit.", "Pouches spare your lungs.", "Drink water between cigarettes."] },
     flag: "Chest pain, coughing blood, or breathlessness at rest." },
   { id: "benzos", n: "Benzodiazepines", aka: "Xanax, diazepam, oxazepam", c: "depressant", dur: "t½ 6–100 h by type", days: 4,
     tags: ["depressant", "anxiety", "sleep", "mood"],
-    story: "Benzos boosted GABA, easing anxiety but blurring memory and coordination. Many linger for days, and anxiety can rebound as they fade.",
     info: { what: "Prescription sedatives like alprazolam (Xanax) and diazepam.", use: "Swallowed as tablets; street pills are often fake.", onset: "15–60 min",
       safer: ["Street 'Xanax' can contain far stronger drugs.", "Never with alcohol or opioids.", "Daily use leads to dependence."] },
     flag: "Extreme drowsiness, slow breathing, or seizures after stopping daily use." },
   { id: "opioids", n: "Opioids", aka: "heroin, oxycodone, codeine", c: "depressant", dur: "Effects 3–6 h", days: 4,
     tags: ["depressant", "constipation", "gut", "sleep", "mood"],
-    story: "Opioids activated mu-opioid receptors for a heavy, warm calm while slowing your breathing and gut. As they fade, restlessness, aches and low mood can follow.",
     info: { what: "Painkillers and heroin that act on opioid receptors.", use: "Swallowed, smoked, snorted or injected.", onset: "Seconds to 30 min",
       safer: ["Carry naloxone and never use alone.", "Test for fentanyl where possible.", "Tolerance drops fast after a break."] },
     flag: "Slow or stopped breathing, blue lips, pinpoint pupils: call 112." },
   { id: "mescaline", n: "Mescaline / San Pedro", aka: "huachuma, peyote", c: "psychedelic", dur: "Effects 8–12 h", days: 3,
     tags: ["gut", "integration", "sleep", "hydration"],
-    story: "Mescaline gently activated serotonin receptors for a long, warm, heart-opening journey. The length drains your energy; today is for rest.",
     info: { what: "The active compound of San Pedro and peyote cacti.", use: "Drunk as a cactus brew or swallowed as powder.", onset: "45–120 min",
       safer: ["Expect nausea: eat light beforehand.", "Keep a long day free.", "Have a sitter."] },
     flag: "Returning panic or a racing heart." },
   { id: "ibogaine", n: "Ibogaine / Iboga", aka: "iboga root bark", c: "psychedelic", dur: "Effects 24–36 h · lingers days", days: 5,
     tags: ["cardio", "gut", "hydration", "electrolytes", "integration", "sleep", "mood"],
-    story: "Ibogaine acts on many receptors for a long, dreamlike journey, and slows your heart's electrical recharge. Its by-product stays for days, so fatigue can linger.",
     info: { what: "An alkaloid from the African iboga shrub, used in Bwiti rituals and addiction treatment.", use: "Swallowed as root bark or extract.", onset: "1–3 h",
       safer: ["Get an ECG and medical screening first.", "Never with opioids or other drugs.", "Only with medical monitoring."] },
     flag: "Fainting, palpitations or irregular heartbeat: get help immediately." },
   { id: "salvia", n: "Salvia divinorum", aka: "salvia, diviner's sage", c: "psychedelic", dur: "Effects 5–15 min", days: 2,
     tags: ["integration", "lungs", "mood"],
-    story: "Salvinorin A switched on kappa-opioid receptors, which can feel like reality folding. It fades in minutes and barely touches your body.",
     info: { what: "A Mexican sage with the potent compound salvinorin A.", use: "Smoked as leaf extract, or leaves chewed.", onset: "Under a minute",
       safer: ["Sit down with a sitter present.", "Clear sharp objects nearby.", "Don't redose quickly."] },
     flag: "Feeling unreal or anxious for days." },
   { id: "rxstim", n: "Ritalin / Adderall", aka: "methylphenidate, dexamphetamine", c: "stimulant", dur: "Effects 4–12 h", days: 3,
     tags: ["dopamine", "sleep", "appetite", "cardio", "hydration", "mood"],
-    story: "These ADHD stimulants raised dopamine and noradrenaline, pushing away tiredness and hunger. When they wear off you feel drained and hungry.",
     info: { what: "ADHD medications used off-label for focus or partying.", use: "Swallowed, sometimes snorted.", onset: "30–60 min",
       safer: ["Don't mix with other stimulants.", "Eat a meal first.", "Take them early in the day."] },
     flag: "Chest pain, irregular heartbeat, or severe agitation." },
   { id: "dxm", n: "DXM", aka: "dextromethorphan, cough syrup", c: "dissociative", dur: "Effects 6–8 h", days: 3,
     tags: ["gut", "liver", "sleep", "serotonin", "mood", "dissociative"],
-    story: "High-dose DXM blocked NMDA receptors and raised serotonin, causing dissociation. Today can feel slow, dizzy and queasy.",
     info: { what: "A cough-suppressant ingredient, recreational at high doses.", use: "Swallowed as pills or syrup.", onset: "30–120 min",
       safer: ["Check the label: no paracetamol or other drugs.", "Never with MDMA or antidepressants.", "Lie down somewhere safe."] },
     flag: "If it contained paracetamol, see a doctor today: liver damage can be silent." },
   { id: "spice", n: "Synthetic cannabinoids", aka: "Spice, K2", c: "cannabinoid", dur: "Effects 1–6 h", days: 3,
     tags: ["cardio", "anxiety", "gut", "hydration", "lungs", "mood"],
-    story: "Synthetic cannabinoids hit your CB1 receptors far harder than THC, in unpredictable doses. Expect to feel shaky, anxious and drained.",
     info: { what: "Lab chemicals sprayed on herbs, far stronger than THC.", use: "Smoked or vaped.", onset: "Minutes",
       safer: ["Potency varies batch to batch.", "One small puff, then wait.", "Never use alone."] },
     flag: "Chest pain, seizures, peeing very little, or confusion." },
   { id: "rape", n: "Rapé / Hapé", aka: "ceremonial snuff", c: "plant", dur: "Effects 10–30 min", days: 2,
     tags: ["nasal", "cardio", "gut", "integration"],
-    story: "This tobacco snuff delivered a strong nicotine dose through your nose, with nausea and grounded focus. Your sinuses may feel irritated today.",
     info: { what: "Ceremonial Amazonian tobacco snuff mixed with plant ashes.", use: "Blown into each nostril through a pipe.", onset: "Seconds",
       safer: ["Sit down during and after.", "Keep a purge bucket nearby.", "Blow your nose gently afterwards."] },
     flag: "Fainting, racing heart, or a nosebleed that won't stop." },
   { id: "kava", n: "Kava", aka: "kava-kava, grog", c: "plant", dur: "Effects 2–4 h", days: 2,
     amt: ["1–2 shells", "3–5 shells", "6+ shells"],
     tags: ["liver", "gut", "sleep"],
-    story: "Kavalactones calmed your nervous system without alcohol's confusion. Your liver processes kava, so give it a rest.",
     info: { what: "A Pacific root drink with calming kavalactones.", use: "Drunk as a brew of powdered root.", onset: "20–30 min",
       safer: ["Choose noble kava varieties.", "Don't combine with alcohol.", "Avoid with liver problems."] },
     flag: "Yellow skin or eyes, dark urine, or pain under your right ribs." },
   { id: "4fa", n: "4-FA / 4-FMP", aka: "4-fluoroamphetamine", c: "empathogen", dur: "Effects 4–8 h", days: 4,
     tags: ["hydration", "dopamine", "serotonin", "sleep", "cardio", "mood", "appetite", "headache"],
-    story: "4-FA released dopamine and some serotonin, between speed and MDMA, and raised your blood pressure. Expect tiredness and low mood for a few days.",
     info: { what: "A synthetic amphetamine with MDMA-like effects.", use: "Swallowed.", onset: "30–90 min",
       safer: ["Redosing raises headache risk.", "Avoid it with heart or blood-pressure problems.", "Not with alcohol."] },
     flag: "Sudden severe headache, vomiting or one-sided weakness: call 112." }
 ];
+// one-line story per substance; the name is prepended in bold
+const STORY = {
+  "alcohol": "slowed your brain, dried you out and left acetaldehyde behind, the cause of your headache.",
+  "cannabis": "hit your CB1 receptors and lingers in fat, so a foggy head can stay a while.",
+  "mdma": "flooded your brain with serotonin and heated you up. Refilling takes days, so a dip can follow.",
+  "cocaine": "piled up dopamine and pushed your heart hard. Now dopamine is low and your nose is sore.",
+  "amphetamine": "kept dopamine high for hours and switched off hunger and sleep.",
+  "meth": "drove dopamine hard and long. The crash can last days.",
+  "ketamine": "disconnected mind from body and now irritates your bladder on the way out.",
+  "ghb": "gave a warm high with a thin safety margin. Restlessness follows.",
+  "lsd": "rewired your senses for hours and cost you a night of sleep.",
+  "psilocybin": "loosened your brain patterns. Expect an afterglow and some rawness.",
+  "ayahuasca": "blocked MAO so DMT could work. That block lasts a day, and purging cost you salts.",
+  "dmt": "gave a short, intense journey your body cleared in minutes.",
+  "2cb": "mixed visuals with a body high. The comedown is mild.",
+  "n2o": "briefly cut your oxygen and switched off vitamin B12, which your nerves need.",
+  "poppers": "widened your blood vessels for a rush that often ends in a headache.",
+  "cathinones": "released serotonin and dopamine in short bursts. Both are low now.",
+  "kratom": "touched your opioid receptors and slowed your gut.",
+  "caffeine": "blocked your sleep signal and raised your heart rate.",
+  "nicotine": "spiked dopamine and adrenaline and filled your lungs with smoke.",
+  "benzos": "boosted calming GABA. They linger for days and anxiety can rebound.",
+  "opioids": "brought heavy calm but slowed your breathing and gut.",
+  "mescaline": "gave a long, gentle journey that drained your energy.",
+  "ibogaine": "acted on many receptors and strained your heart rhythm. It lingers for days.",
+  "salvia": "folded reality for minutes and barely touched your body.",
+  "rxstim": "pushed dopamine up and hunger and sleep away. Now you are drained.",
+  "dxm": "dissociated you and raised serotonin. Today may feel dizzy.",
+  "spice": "hit your cannabinoid receptors far harder than THC. Expect shakiness.",
+  "rape": "sent a strong nicotine hit through your nose.",
+  "kava": "calmed your nerves and gave your liver work.",
+  "4fa": "mixed speed and MDMA effects and raised your blood pressure."
+};
 const BYID = Object.fromEntries(SUBS.map(s => [s.id, s]));
 
 /* ---------- Combination warnings ---------- */
@@ -779,7 +783,7 @@ function subRow(s) {
   return '<div class="sub' + (on ? ' on' : '') + '"><div class="row">' +
     '<button class="rowmain" role="switch" aria-checked="' + on + '" data-act="toggle" data-id="' + s.id + '">' +
       '<span class="glyph">' + ic(s.c) + '</span>' +
-      '<span class="txt"><div class="name">' + esc(s.n) + '</div><div class="aka">' + esc(s.aka) + '</div><div class="meta">' + esc(CATNAME[s.c]) + ' · ' + esc(s.dur) + '</div></span>' +
+      '<span class="txt"><div class="name">' + esc(s.n) + '</div><div class="aka">' + esc(s.aka) + '</div></span>' +
     '</button>' +
     '<button class="qbtn" data-act="info" data-id="' + s.id + '" aria-label="About ' + esc(s.n) + '">?</button>' +
     '<button class="swbtn" data-act="toggle" data-id="' + s.id + '" tabindex="-1" aria-hidden="true"><span class="switch"></span></button>' +
@@ -800,6 +804,18 @@ function vSubs() {
     '<div class="list" id="list">' + (list.map(subRow).join("") || '<div class="empty">No substance matches "' + esc(S.q) + '".</div>') + '</div>';
 }
 
+function vStory() {
+  const P = S.plan;
+  const prose = P.list.map(({ s }) =>
+    '<b>' + esc(s.n) + '</b><button class="qbtn inline" data-act="expand" data-id="' + s.id + '" aria-expanded="' + S.expanded.has(s.id) + '" aria-label="More about ' + esc(s.n) + '">?</button> ' + esc(STORY[s.id])).join(" ");
+  const more = P.list.filter(({ s }) => S.expanded.has(s.id)).map(({ s }) =>
+    '<div class="more"><p><b>' + esc(s.n) + '</b> · ' + esc(s.info.what) + '</p><p><span class="label">Get help</span>' + esc(s.flag) + '</p></div>').join("");
+  const combos = P.combos.length ? '<div class="caution">' + P.combos.map(c =>
+    '<div class="c">' + ic("alert", "sm") + '<div><b>' + esc(c.t) + '</b><span>' + esc(c.w) + '</span></div></div>').join("") + '</div>' : '';
+  return top(true) + '<h1>What happened in your body</h1>' +
+    '<article class="story" style="margin-top:16px"><p class="prose">' + prose + '</p>' + more + '</article>' + combos;
+}
+
 function vPlan() {
   const P = S.plan, m = S.planMeta, day = P.days[S.day - 1];
   const facts = [
@@ -809,16 +825,6 @@ function vPlan() {
     m.h ? '<span class="fact"><b>' + m.h + '</b> cm</span>' : '',
     P.ctx.kcal ? '<span class="fact">≈ <b>' + P.ctx.kcal.toLocaleString("en-GB") + '</b> kcal / day</span>' : ''
   ].join("");
-  const story = '<article class="story">' + P.list.map(({ s, amt }) => {
-    const open = S.expanded.has(s.id);
-    return '<div class="para"><p><b>' + esc(s.n) + '</b><span class="amtag">' + esc(amtLabel(s, amt)) + '</span>' +
-      '<button class="qbtn inline" data-act="expand" data-id="' + s.id + '" aria-expanded="' + open + '" aria-label="More about ' + esc(s.n) + '">?</button><br>' + esc(s.story) + '</p>' +
-      (open ? '<div class="more"><p>' + esc(s.info.what) + ' ' + esc(s.info.use) + '</p>' +
-        '<p><span class="label">Onset</span>' + esc(s.info.onset) + '</p>' +
-        '<p><span class="label">Get help</span>' + esc(s.flag) + '</p></div>' : '') + '</div>';
-  }).join("") + '</article>';
-  const combos = P.combos.length ? '<div class="caution">' + P.combos.map(c =>
-    '<div class="c">' + ic("alert", "sm") + '<div><b>' + esc(c.t) + '</b><span>' + esc(c.w) + '</span></div></div>').join("") + '</div>' : '';
   const dayBtns = P.days.map(d =>
     '<button class="daybtn" role="tab" data-act="day" data-day="' + d.n + '" aria-selected="' + (d.n === S.day) + '"><span class="n">Day ' + d.n + '</span><span class="d">' + fmtShort(d.date) + '</span></button>').join("");
   const sections = SECTIONS.map(([k, name, icon]) => {
@@ -829,9 +835,8 @@ function vPlan() {
       '</div></section>';
   }).join("");
   return top(true) +
-    '<div class="planhead"><h1>' + esc(P.list.map(x => x.s.n).join(" + ")) + '</h1><div class="facts">' + facts + '</div></div>' +
-    '<h2>What happened in your body</h2>' + story + combos +
-    '<h2>Recovery</h2><div class="daybar" role="tablist">' + dayBtns + '</div>' +
+    '<div class="planhead"><h1>Your recovery</h1><div class="facts">' + facts + '</div></div>' +
+    '<div class="daybar" role="tablist" style="margin-top:18px">' + dayBtns + '</div>' +
     '<div class="dayhead"><span class="t">' + esc(day.title) + '</span></div>' +
     '<div class="note">' + ic("pulse", "sm") + '<span>' + esc(day.note) + '</span></div>' + sections +
     '<div class="disclaimer">Not medical advice. Emergency: 112.</div>';
@@ -904,6 +909,7 @@ function render(keepScroll) {
   let html;
   if (S.view === "onboard") html = vOnboard();
   else if (S.view === "plan") html = vPlan();
+  else if (S.view === "story") html = vStory();
   else if (S.view === "saved") html = vSaved();
   else if (S.view === "profile") html = vProfile();
   else html = vSubs();
@@ -918,12 +924,14 @@ function renderDock() {
   if (S.view === "subs") {
     const n = S.selected.size;
     cta = '<div class="cta-wrap"><button class="cta" data-act="create"' + (n ? "" : " disabled") + '>' + ic("spark", "sm") + 'Create recovery diet' + (n ? '<span class="count">' + n + '</span>' : '') + '</button></div>';
+  } else if (S.view === "story") {
+    cta = '<div class="cta-wrap"><button class="cta" data-act="toplan">' + ic("calendar", "sm") + 'See my recovery plan</button></div>';
   } else if (S.view === "plan") {
     const saved = !!S.planMeta.id;
     cta = '<div class="cta-wrap"><button class="cta ghost" data-act="cal" aria-label="Add to calendar" style="flex:0 0 54px">' + ic("calendar") + '</button>' +
       '<button class="cta" data-act="' + (saved ? "nav" : "save") + '" data-view="saved">' + ic(saved ? "bookmarkOn" : "bookmark", "sm") + (saved ? "Saved · view all plans" : "Save plan") + '</button></div>';
   }
-  const cur = S.view === "plan" ? (S.planMeta.id ? "saved" : "subs") : S.view;
+  const cur = (S.view === "plan" || S.view === "story") ? (S.planMeta.id ? "saved" : "subs") : S.view;
   const tab = (v, icon, label, badge) => '<button class="tab" data-act="nav" data-view="' + v + '"' + (cur === v ? ' aria-current="page"' : '') + '>' + ic(icon) + label + (badge ? '<span class="badge">' + badge + '</span>' : '') + '</button>';
   dock.innerHTML = cta + '<nav class="tabs">' + tab("subs", "flask", "Substances") + tab("saved", "bookmark", "Saved", S.saved.length || "") + tab("profile", "user", "Profile") + '</nav>';
 }
@@ -931,7 +939,7 @@ function renderDock() {
 function openPlan(picks, meta) {
   S.planMeta = meta;
   S.plan = buildPlan(picks, { w: meta.w, h: meta.h }, meta.created);
-  S.day = 1; S.view = "plan"; render();
+  S.day = 1; S.expanded = new Set(); S.view = "story"; render();
 }
 
 function copyText(text) {
@@ -971,7 +979,8 @@ document.addEventListener("click", e => {
     const picks = [...S.selected].map(([id, amt]) => ({ id, amt }));
     openPlan(picks, { id: null, created: new Date().toISOString(), w: S.profile.w, h: S.profile.h, subs: picks });
   } else if (act === "day") { S.day = +b.dataset.day; render(true); }
-  else if (act === "back") { S.view = S.planMeta && S.planMeta.id ? "saved" : "subs"; render(); }
+  else if (act === "back") { S.view = S.view === "plan" ? "story" : (S.planMeta && S.planMeta.id ? "saved" : "subs"); render(); }
+  else if (act === "toplan") { S.view = "plan"; render(); }
   else if (act === "save") {
     const m = S.planMeta; m.id = "p" + Date.now().toString(36);
     S.saved.push({ id: m.id, created: m.created, subs: m.subs, w: m.w, h: m.h });
