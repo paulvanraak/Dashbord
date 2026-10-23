@@ -249,17 +249,18 @@ p { margin: 0; }
 .perday { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 16px; }
 .perday a { height: 32px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); font-size: 13px; display: inline-flex; align-items: center; text-decoration: none; }
 .perday a:hover { border-color: var(--blue); }
-.water { display: flex; align-items: center; gap: 12px; margin-top: 12px; padding: 12px 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; }
-.ring { width: 52px; height: 52px; flex: none; transform: rotate(-90deg); }
-.ring circle { fill: none; stroke-width: 6; }
-.ring .track { stroke: var(--blue-soft); }
-.ring .fill { stroke: var(--blue); stroke-linecap: round; transition: stroke-dashoffset .3s; }
-.wtxt { flex: 1; min-width: 0; }
-.wn { font-size: 15px; }
-.wn b { font-weight: 500; font-size: 18px; }
-.ws { font-size: 11.5px; color: var(--muted); }
-.wplus { width: 48px; height: 48px; border-radius: 50%; border: 0; background: var(--blue); display: grid; place-items: center; flex: none; }
-.wplus .ic { stroke: var(--blue-ink); }
+.water { margin-top: 12px; padding: 12px 14px 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; display: flex; flex-direction: column; gap: 10px; }
+.whead { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.wn { font-size: 13px; color: var(--muted); }
+.wn b { color: var(--ink); font-weight: 500; font-size: 16px; }
+.stamps { display: grid; grid-template-columns: repeat(8, 1fr); gap: 6px; }
+.stamp { aspect-ratio: 1; max-width: 100%; border: 1px dashed var(--line); border-radius: 9px; background: var(--bg); display: grid; place-items: center; padding: 0; transition: background .15s, border-color .15s; }
+.stamp svg { width: 20px; height: 20px; }
+.stamp .glass { fill: none; stroke: var(--blue); stroke-width: 1.5; stroke-linejoin: round; opacity: .45; }
+.stamp .wfill { fill: var(--blue); opacity: 0; transition: opacity .15s; }
+.stamp.on { border-style: solid; border-color: var(--blue); background: var(--blue-soft); }
+.stamp.on .glass { opacity: 1; }
+.stamp.on .wfill { opacity: .85; }
 .iconbtn:disabled { opacity: .4; cursor: default; }
 .item.recipe { display: block; width: 100%; text-align: left; border: 0; border-top: 1px solid var(--line); background: none; }
 .item.recipe:first-child { border-top: 0; }
@@ -796,7 +797,7 @@ function outlookUrl(e) {
 /* ---------- Storage (this device only) ---------- */
 const KEY = "daysafter.v1";
 function load() { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { return {}; } }
-function persist() { try { localStorage.setItem(KEY, JSON.stringify({ onboarded: S.onboarded, profile: S.profile, saved: S.saved, theme: S.theme, water: S.water, reminders: S.reminders })); } catch (e) {} }
+function persist() { try { localStorage.setItem(KEY, JSON.stringify({ onboarded: S.onboarded, profile: S.profile, saved: S.saved, theme: S.theme, stamps: S.water, reminders: S.reminders })); } catch (e) {} }
 const normPicks = subs => (subs || []).map(x => typeof x === "string" ? { id: x, amt: 2 } : x);
 
 const stored = load();
@@ -808,7 +809,7 @@ const S = {
   selected: new Map(), q: "", cat: "all",
   plan: null, planMeta: null, day: 1, confirmDel: null, sheet: null,
   expanded: new Set(), theme: stored.theme || null,
-  water: stored.water || {}, openRecipe: null,
+  water: stored.stamps || {}, openRecipe: null,
   reminders: stored.reminders || { vit: "09:00", water1: "11:00", water2: "15:00", bed: "22:30" }
 };
 if (S.theme) document.documentElement.setAttribute("data-theme", S.theme);
@@ -929,17 +930,18 @@ function vPlan() {
     '<div class="disclaimer">Not medical advice. Emergency: 112.</div>';
 }
 
-const GLASS = 0.25;
+const GLASS = 0.2;
+// stamp field: one glass per 0.2 L, filled left to right
 function waterCard(day) {
-  const goal = Math.round(day.waterL / GLASS);
-  const key = S.planMeta.created;
-  const n = ((S.water[key] || {})[day.n]) || 0;
-  const pct = Math.min(1, n / goal), C = 2 * Math.PI * 26;
-  return '<div class="water"><svg class="ring" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="26" class="track"/>' +
-    '<circle cx="32" cy="32" r="26" class="fill" stroke-dasharray="' + C.toFixed(1) + '" stroke-dashoffset="' + (C * (1 - pct)).toFixed(1) + '"/></svg>' +
-    '<div class="wtxt"><div class="wn mono"><b>' + n + '</b> / ' + goal + ' glasses</div><div class="ws mono">' + +(n * GLASS).toFixed(2) + ' of ' + day.waterL + ' L</div></div>' +
-    '<button class="iconbtn" data-act="water" data-d="-1" aria-label="Remove a glass"' + (n ? '' : ' disabled') + '>' + ic("minus", "sm") + '</button>' +
-    '<button class="wplus" data-act="water" data-d="1" aria-label="Add a glass">' + ic("plus") + '</button></div>';
+  const goal = Math.ceil(day.waterL / GLASS - 0.01);
+  const n = Math.min(goal, ((S.water[S.planMeta.created] || {})[day.n]) || 0);
+  const stamps = Array.from({ length: goal }, (_, i) => {
+    const on = i < n;
+    return '<button class="stamp' + (on ? ' on' : '') + '" data-act="water" data-i="' + (i + 1) + '" aria-pressed="' + on + '" aria-label="Glass ' + (i + 1) + ' of ' + goal + '">' +
+      '<svg viewBox="0 0 24 24" aria-hidden="true"><path class="wfill" d="M7.6 11h8.8l-.8 9H8.4z"/><path class="glass" d="M6 4h12l-1.5 16.2a1 1 0 0 1-1 .8h-7a1 1 0 0 1-1-.8z"/></svg></button>';
+  }).join("");
+  return '<div class="water"><div class="whead"><span class="label">Water · 0.2 L per glass</span><span class="mono wn"><b>' + +(n * GLASS).toFixed(1) + '</b> / ' + day.waterL + ' L</span></div>' +
+    '<div class="stamps">' + stamps + '</div></div>';
 }
 
 function recipeList(day) {
@@ -1083,8 +1085,9 @@ document.addEventListener("click", e => {
   else if (act === "water") {
     const key = S.planMeta.created, day = S.plan.days[S.day - 1];
     const m = S.water[key] = S.water[key] || {};
-    m[day.n] = Math.max(0, (m[day.n] || 0) + +b.dataset.d);
-    if (+b.dataset.d > 0 && m[day.n] === Math.round(day.waterL / GLASS)) toast("Water goal reached");
+    const i = +b.dataset.i, cur = m[day.n] || 0;
+    m[day.n] = i === cur ? i - 1 : i;
+    if (m[day.n] === Math.ceil(day.waterL / GLASS - 0.01) && m[day.n] > cur) toast("Water goal reached");
     persist(); render(true);
   }
   else if (act === "recipe") { S.openRecipe = S.openRecipe === b.dataset.n ? null : b.dataset.n; render(true); }
