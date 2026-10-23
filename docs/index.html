@@ -31,6 +31,7 @@
   --blue: #1D55D8;
   --blue-ink: #FFFFFF;
   --blue-soft: #E7EEFC;
+  --tint: #C9D8FA;
   --grid: rgba(29, 85, 216, .07);
   --scrim: rgba(12, 26, 46, .38);
   --sans: "IBM Plex Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
@@ -40,13 +41,13 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --bg: #08111F; --surface: #0F1A2C; --ink: #E5ECF7; --muted: #8E9DB4; --line: #1F2E47;
-    --blue: #6E9CFF; --blue-ink: #06101F; --blue-soft: #14254A; --grid: rgba(110, 156, 255, .08); --scrim: rgba(0, 0, 0, .55);
+    --blue: #6E9CFF; --blue-ink: #06101F; --blue-soft: #14254A; --tint: #24427E; --grid: rgba(110, 156, 255, .08); --scrim: rgba(0, 0, 0, .55);
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --bg: #08111F; --surface: #0F1A2C; --ink: #E5ECF7; --muted: #8E9DB4; --line: #1F2E47;
-  --blue: #6E9CFF; --blue-ink: #06101F; --blue-soft: #14254A; --grid: rgba(110, 156, 255, .08); --scrim: rgba(0, 0, 0, .55);
+  --blue: #6E9CFF; --blue-ink: #06101F; --blue-soft: #14254A; --tint: #24427E; --grid: rgba(110, 156, 255, .08); --scrim: rgba(0, 0, 0, .55);
   color-scheme: dark;
 }
 html, body { height: 100%; }
@@ -268,6 +269,11 @@ p { margin: 0; }
 .ing li::marker { color: var(--blue); }
 .calrow.rem .txt { flex: 1 1 60px; }
 .time { font-family: var(--mono); font-size: 14px; border: 1px solid var(--line); background: var(--bg); border-radius: 9px; height: 34px; padding: 0 8px; }
+.item.withicon { display: flex; gap: 12px; align-items: flex-start; }
+.item .itxt { flex: 1; min-width: 0; }
+.duo { width: 38px; height: 38px; border-radius: 10px; background: var(--bg); display: grid; place-items: center; flex: none; }
+.duo svg { width: 24px; height: 24px; fill: none; stroke: var(--blue); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.duo svg .f { fill: var(--tint); stroke: none; }
 @keyframes rise { from { transform: translateY(30px); opacity: .4; } to { transform: none; opacity: 1; } }
 
 .toast { position: fixed; left: 50%; bottom: calc(150px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%) translateY(10px); background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 10px; font-size: 14px; opacity: 0; transition: opacity .2s, transform .2s; z-index: 60; pointer-events: none; }
@@ -665,6 +671,70 @@ const RECIPES = [
   { n: "Kefir berry bowl", min: 3, fermented: true, tags: ["gut", "oxidative"], ing: ["200 ml kefir", "Berries", "1 tbsp granola"], how: "Pour kefir, top with berries and granola." }
 ];
 
+/* ---------- Two-tone item icons ----------
+   stroke = blue, class "f" = tint fill */
+const DUO = {
+  pill: '<g transform="rotate(-45 12 12)"><path class="f" d="M12 8.5h5.5a3.5 3.5 0 0 1 0 7H12z"/><rect x="3" y="8.5" width="18" height="7" rx="3.5"/><path d="M12 8.5v7"/></g>',
+  tablet: '<circle class="f" cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="8"/><path d="M7.5 12h9"/>',
+  citrus: '<circle class="f" cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="5.5"/><path d="M12 6.5v11M7.2 9.2l9.6 5.6M16.8 9.2l-9.6 5.6"/>',
+  fish: '<path class="f" d="M3 12c3-5 10-6 14 0-4 6-11 5-14 0z"/><path d="M3 12c3-5 10-6 14 0-4 6-11 5-14 0zM17 12l4-3v6z"/><circle cx="7.5" cy="11" r=".7"/>',
+  moon: '<path class="f" d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>',
+  wheat: '<path class="f" d="M12 8c-2-1-2-4 0-5 2 1 2 4 0 5z"/><path d="M12 21V8M12 8c-2-1-2-4 0-5 2 1 2 4 0 5zM12 13c-3 0-4-2-4-4 3 0 4 2 4 4zM12 13c3 0 4-2 4-4-3 0-4 2-4 4zM12 18c-3 0-4-2-4-4 3 0 4 2 4 4zM12 18c3 0 4-2 4-4-3 0-4 2-4 4z"/>',
+  glass: '<path class="f" d="M7.4 11h9.2l-.9 9H8.3z"/><path d="M6 4h12l-1.5 16.2a1 1 0 0 1-1 .8h-7a1 1 0 0 1-1-.8z"/>',
+  sachet: '<path class="f" d="M5 9h14v11H5z"/><path d="M5 4h14v16H5zM5 8h14M9.5 14h5M12 11.5v5"/>',
+  coconut: '<circle class="f" cx="12" cy="13" r="8"/><circle cx="12" cy="13" r="8"/><path d="M8 7.5c2 1.5 6 1.5 8 0"/><circle cx="10" cy="11" r=".7"/><circle cx="14" cy="11" r=".7"/><circle cx="12" cy="13.5" r=".7"/>',
+  tea: '<path class="f" d="M5 12h11v2a5 5 0 0 1-5 5h-1a5 5 0 0 1-5-5z"/><path d="M5 9h11v5a5 5 0 0 1-5 5h-1a5 5 0 0 1-5-5zM16 10.5h1.5a2.5 2.5 0 0 1 0 5H16M8 3c-1 1.5 1 2.5 0 4M12 3c-1 1.5 1 2.5 0 4M4 21h13"/>',
+  smoothie: '<path class="f" d="M7.6 12h8.8l-.8 8H8.4z"/><path d="M6 8h12l-1.5 12.2a1 1 0 0 1-1 .8h-7a1 1 0 0 1-1-.8zM5 8h14M13 8l2-5h3"/>',
+  bowl: '<path class="f" d="M3 12h18a9 9 0 0 1-18 0z"/><path d="M3 12h18a9 9 0 0 1-18 0zM9 4c-1 1.5 1 2.5 0 4M13 4c-1 1.5 1 2.5 0 4"/>',
+  oats: '<path class="f" d="M3 12h18a9 9 0 0 1-18 0z"/><path d="M3 12h18a9 9 0 0 1-18 0zM14 12l5-8"/>',
+  rice: '<path class="f" d="M5 11a7 4 0 0 1 14 0z"/><path d="M3 11h18a9 9 0 0 1-18 0zM5 11a7 4 0 0 1 14 0M14 3l-2.5 8M19 4l-5 7"/>',
+  jar: '<path class="f" d="M6 13h12v6a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2z"/><path d="M6 8h12v11a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2zM7 4h10v4H7z"/>',
+  bottle: '<path class="f" d="M8 13h8v6a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2z"/><path d="M10 3h4v4l2 3v9a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2v-9l2-3zM8 13h8"/>',
+  drum: '<ellipse class="f" cx="15" cy="9" rx="5.5" ry="5" transform="rotate(-45 15 9)"/><ellipse cx="15" cy="9" rx="5.5" ry="5" transform="rotate(-45 15 9)"/><path d="M11.2 12.8 6.5 17.5M4.5 15.5a2 2 0 1 0 4 4"/>',
+  banana: '<path class="f" d="M4 13c3 5 11 6 16-3-3 3-9 4-13 1z"/><path d="M4 13c3 5 11 6 16-3-3 3-9 4-13 1zM20 10l.4-3"/>',
+  egg: '<path class="f" d="M5.2 14h13.6a7 7 0 0 1-13.6 0z"/><path d="M12 3c4 0 7 6 7 10a7 7 0 0 1-14 0c0-4 3-10 7-10z"/>',
+  bean: '<path class="f" d="M9 4c4-1 9 2 9 7s-3 9-8 9-6-4-4-7 0-8 3-9z"/><path d="M9 4c4-1 9 2 9 7s-3 9-8 9-6-4-4-7 0-8 3-9zM12 9c1 2 0 4-1 5"/>',
+  berry: '<circle class="f" cx="8" cy="15" r="4"/><circle cx="8" cy="15" r="4"/><circle cx="16" cy="15" r="4"/><path d="M8 11c0-3 2-6 4-7 2 1 4 4 4 7"/>',
+  leaf: '<path class="f" d="M5 19C5 11 11 5 19 5c0 8-6 14-14 14z"/><path d="M5 19C5 11 11 5 19 5c0 8-6 14-14 14zM5 19l9-9"/>',
+  yoghurt: '<path class="f" d="M6.6 13h10.8l-.9 7a1 1 0 0 1-1 1h-7a1 1 0 0 1-1-1z"/><path d="M6 9h12l-1.5 11a1 1 0 0 1-1 1h-7a1 1 0 0 1-1-1zM5 6h14v3H5z"/>',
+  pear: '<path class="f" d="M12 7c-2 0-3 2-3 4-2 1-4 3-4 6a7 4.5 0 0 0 14 0c0-3-2-5-4-6 0-2-1-4-3-4z"/><path d="M12 7c-2 0-3 2-3 4-2 1-4 3-4 6a7 4.5 0 0 0 14 0c0-3-2-5-4-6 0-2-1-4-3-4zM12 7V4M12 5c1-1 3-1 4 0"/>',
+  clock: '<circle class="f" cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  milk: '<path class="f" d="M6 12h12v9H6z"/><path d="M6 8l2-4h8l2 4v13H6zM6 8h12M8 4l2 4"/>',
+  potato: '<path class="f" d="M4 15c2-6 9-11 14-10 2 1 2 4 0 7-4 5-9 7-12 6-1 0-2-1-2-3z"/><path d="M4 15c2-6 9-11 14-10 2 1 2 4 0 7-4 5-9 7-12 6-1 0-2-1-2-3zM18 5l2-2M9 12h.5M13 9h.5M11 15h.5"/>',
+  melon: '<path class="f" d="M3 9h18a9 9 0 0 1-18 0z"/><path d="M3 9h18a9 9 0 0 1-18 0zM6 9a6 6 0 0 0 12 0M10 12v.5M14 12v.5M12 14v.5"/>',
+  wine: '<path class="f" d="M7 6h10a5 5 0 0 1-10 0z"/><path d="M7 3h10v4a5 5 0 0 1-10 0zM12 12v9M8 21h8"/>',
+  cheese: '<path class="f" d="M3 12l14-6 4 6z"/><path d="M3 12l14-6 4 6v7H3zM3 12h18"/><circle cx="8" cy="15.5" r="1"/><circle cx="15" cy="15.5" r="1.3"/>',
+  meds: '<rect class="f" x="6" y="8" width="12" height="13" rx="2"/><rect x="6" y="8" width="12" height="13" rx="2"/><path d="M5 4h14v4H5zM12 11.5v6M9 14.5h6"/>',
+  repeat: '<circle class="f" cx="12" cy="12" r="4"/><path d="M4 12a8 8 0 0 1 13.7-5.6L20 4v5.5h-5.5l2-2A5.5 5.5 0 0 0 6.5 12M20 12a8 8 0 0 1-13.7 5.6L4 20v-5.5h5.5l-2 2A5.5 5.5 0 0 0 17.5 12"/>',
+  coffee: '<path class="f" d="M4 11h12v3a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z"/><path d="M4 8h12v6a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5zM16 10h1.5a2.5 2.5 0 0 1 0 5H16M3 21h14M8 2v3M12 2v3"/>',
+  car: '<path class="f" d="M5 11l2-5h10l2 5z"/><path d="M3 17v-4l2-2 2-5h10l2 5 2 2v4zM5 17v2.5M19 17v2.5M5 11h14"/><circle cx="7.5" cy="14" r=".8"/><circle cx="16.5" cy="14" r=".8"/>',
+  fries: '<path class="f" d="M5 11h14l-2 10H7z"/><path d="M5 11h14l-2 10H7zM8 11V4M11 11V3M14 11V4M17 11V6"/>',
+  can: '<path class="f" d="M7 9h10v9H7z"/><path d="M8 3h8l1 2v14l-1 2H8l-1-2V5zM7 9h10M7 18h10"/>',
+  weight: '<rect class="f" x="5" y="7" width="3" height="10" rx="1"/><rect class="f" x="16" y="7" width="3" height="10" rx="1"/><path d="M2.5 10v4M21.5 10v4M8 12h8"/><rect x="5" y="7" width="3" height="10" rx="1"/><rect x="16" y="7" width="3" height="10" rx="1"/>',
+  smoke: '<path class="f" d="M3 13h14v4H3z"/><path d="M3 13h18v4H3zM17 13v4M18 4c0 3 3 3 3 6M14.5 5c0 2 2 2 2 4"/>',
+  drop: '<path class="f" d="M12 3s6 6.4 6 11a6 6 0 0 1-12 0c0-4.6 6-11 6-11z"/><path d="M12 3s6 6.4 6 11a6 6 0 0 1-12 0c0-4.6 6-11 6-11z"/>',
+  sign: '<path class="f" d="M12 5h7l2 2.5-2 2.5h-7z"/><path d="M12 3v18M8 21h8M12 5h7l2 2.5-2 2.5h-7zM12 12H5l-2 2.5L5 17h7"/>',
+  phone: '<rect class="f" x="7.5" y="5" width="9" height="12"/><rect x="6" y="2.5" width="12" height="19" rx="2"/><path d="M11 19h2"/>',
+  sun: '<circle class="f" cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+  house: '<path class="f" d="M5 11l7-6 7 6v9H5z"/><path d="M3 12l9-8 9 8M5 10.5V20h14v-9.5M10 20v-5h4v5"/>'
+};
+// title prefix → icon; first match wins
+const ICON_FOR = [
+  ["Vitamin C", "citrus"], ["Magnesium", "tablet"], ["Zinc", "tablet"], ["Omega", "fish"], ["Melatonin", "moon"], ["Psyllium", "wheat"],
+  ["Vitamin", "pill"], ["5-HTP", "pill"], ["L-tyrosine", "pill"], ["Multivitamin", "pill"],
+  ["Water and", "tea"], ["Water", "glass"], ["Rehydration", "sachet"], ["Coconut", "coconut"], ["Ginger", "tea"], ["Chamomile", "tea"],
+  ["Banana-berry", "smoothie"], ["Vegetable broth", "bowl"], ["Honey", "jar"], ["Prune", "bottle"], ["Tart cherry", "bottle"],
+  ["Protein", "drum"], ["Bananas", "banana"], ["Oatmeal", "oats"], ["Eggs", "egg"], ["Turkey", "drum"], ["Chicken", "bean"],
+  ["Berries", "berry"], ["Spinach", "leaf"], ["Rice", "rice"], ["Plain yoghurt", "yoghurt"], ["Pears", "pear"], ["Oily fish", "fish"],
+  ["Small meals", "clock"], ["Dairy", "milk"], ["Soup", "bowl"], ["Sweet potato", "potato"], ["Watermelon", "melon"],
+  ["Aged cheese", "cheese"], ["Serotonergic", "meds"], ["Alcohol", "wine"], ["Redosing", "repeat"], ["Coffee", "coffee"],
+  ["Sleeping", "moon"], ["Driving", "car"], ["Painkillers", "tablet"], ["Greasy", "fries"], ["Sugary", "can"], ["Hard exercise", "weight"],
+  ["Over 1 L", "drop"], ["Smoking", "smoke"], ["Snorting", "drop"], ["Big decisions", "sign"], ["Late-night", "phone"], ["Fizzy", "can"],
+  ["Heat", "sun"], ["Staying inside", "house"]
+];
+const iconFor = t => (ICON_FOR.find(([p]) => t.startsWith(p)) || [, "pill"])[1];
+const duo = n => '<span class="duo"><svg viewBox="0 0 24 24" aria-hidden="true">' + DUO[n] + '</svg></span>';
+
 const SECTIONS = [["vit", "Vitamins & supplements", "vit", "Take"], ["drink", "Drinks", "drink", "Drink"], ["eat", "Eat", "eat", "Eat"], ["avoid", "Avoid", "avoid", "Avoid"]];
 const PER_SECTION = 4;
 
@@ -796,8 +866,10 @@ function outlookUrl(e) {
 
 /* ---------- Storage (this device only) ---------- */
 const KEY = "daysafter.v1";
-function load() { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { return {}; } }
-function persist() { try { localStorage.setItem(KEY, JSON.stringify({ onboarded: S.onboarded, profile: S.profile, saved: S.saved, theme: S.theme, stamps: S.water, reminders: S.reminders })); } catch (e) {} }
+const REMEMBER = false; // fresh start on every open for now; set true to keep plans, water and settings
+if (!REMEMBER) { try { localStorage.removeItem(KEY); } catch (e) {} }
+function load() { if (!REMEMBER) return {}; try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { return {}; } }
+function persist() { if (!REMEMBER) return;  try { localStorage.setItem(KEY, JSON.stringify({ onboarded: S.onboarded, profile: S.profile, saved: S.saved, theme: S.theme, stamps: S.water, reminders: S.reminders })); } catch (e) {} }
 const normPicks = subs => (subs || []).map(x => typeof x === "string" ? { id: x, amt: 2 } : x);
 
 const stored = load();
@@ -918,15 +990,15 @@ function vPlan() {
     const items = day.sections[k];
     if (!items.length) return "";
     return '<section class="sect"><div class="sh">' + ic(icon, "sm") + '<span class="label">' + name + '</span></div><div class="items">' +
-      items.map(it => '<div class="item"><div class="it">' + esc(it.t) + '</div><div class="why"><span>' + esc(it.w[0]) + '</span><span>' + esc(it.w[1]) + '</span></div></div>').join("") +
+      items.map(it => '<div class="item withicon">' + duo(iconFor(it.t)) + '<div class="itxt"><div class="it">' + esc(it.t) + '</div><div class="why"><span>' + esc(it.w[0]) + '</span><span>' + esc(it.w[1]) + '</span></div></div></div>').join("") +
       '</div></section>';
   }).join("");
   return top(true) +
-    '<div class="planhead"><h1>Your recovery</h1><div class="facts">' + facts + '</div></div>' +
+    '<div class="planhead"><h1>Your recovery</h1></div>' +
     '<div class="daybar" role="tablist" style="margin-top:18px">' + dayBtns + '</div>' +
     '<div class="dayhead"><span class="t">' + esc(day.title) + '</span></div>' +
     waterCard(day) +
-    '<div class="note">' + ic("pulse", "sm") + '<span>' + esc(day.note) + '</span></div>' + sections + recipeList(day) +
+    sections + recipeList(day) +
     '<div class="disclaimer">Not medical advice. Emergency: 112.</div>';
 }
 
@@ -1043,11 +1115,9 @@ function renderDock() {
   } else if (S.view === "story") {
     cta = '<div class="cta-wrap"><button class="cta" data-act="toplan">' + ic("calendar", "sm") + 'See my recovery plan</button></div>';
   } else if (S.view === "plan") {
-    const saved = !!S.planMeta.id;
-    cta = '<div class="cta-wrap"><button class="cta ghost" data-act="cal" aria-label="Add to calendar" style="flex:0 0 54px">' + ic("calendar") + '</button>' +
-      '<button class="cta" data-act="' + (saved ? "nav" : "save") + '" data-view="saved">' + ic(saved ? "bookmarkOn" : "bookmark", "sm") + (saved ? "Saved · view all plans" : "Save plan") + '</button></div>';
+    cta = '<div class="cta-wrap"><button class="cta" data-act="cal">' + ic("calendar", "sm") + 'Add to calendar</button></div>';
   }
-  const cur = (S.view === "plan" || S.view === "story") ? (S.planMeta.id ? "saved" : "subs") : S.view;
+  const cur = (S.view === "plan" || S.view === "story") ? "saved" : S.view;
   const tab = (v, icon, label, badge) => '<button class="tab" data-act="nav" data-view="' + v + '"' + (cur === v ? ' aria-current="page"' : '') + '>' + ic(icon) + label + (badge ? '<span class="badge">' + badge + '</span>' : '') + '</button>';
   dock.innerHTML = cta + '<nav class="tabs">' + tab("subs", "flask", "Substances") + tab("saved", "bookmark", "Saved", S.saved.length || "") + tab("profile", "user", "Profile") + '</nav>';
 }
@@ -1102,7 +1172,11 @@ document.addEventListener("click", e => {
   else if (act === "skip") { S.onboarded = true; persist(); S.view = "subs"; render(); }
   else if (act === "create") {
     const picks = [...S.selected].map(([id, amt]) => ({ id, amt }));
-    openPlan(picks, { id: null, created: new Date().toISOString(), w: S.profile.w, h: S.profile.h, subs: picks });
+    const meta = { id: "p" + Date.now().toString(36), created: new Date().toISOString(), w: S.profile.w, h: S.profile.h, subs: picks };
+    S.saved.push({ id: meta.id, created: meta.created, subs: picks, w: meta.w, h: meta.h });
+    persist();
+    openPlan(picks, meta);
+    toast("Plan saved");
   }
   else if (act === "day") { S.day = +b.dataset.day; S.openRecipe = null; render(true); }
   else if (act === "back") { S.view = S.view === "plan" ? "story" : (S.planMeta && S.planMeta.id ? "saved" : "subs"); render(); }
