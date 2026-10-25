@@ -1556,7 +1556,7 @@ function renderDock() {
   }
   const cur = (S.view === "plan" || S.view === "story") ? "saved" : S.view;
   const tab = (v, icon, label, badge) => '<button class="tab" data-act="nav" data-view="' + v + '"' + (cur === v ? ' aria-current="page"' : '') + '>' + ic(icon) + t(label) + (badge ? '<span class="badge">' + badge + '</span>' : '') + '</button>';
-  dock.innerHTML = cta + '<nav class="tabs">' + tab("today", "drink", "Today") + tab("subs", "flask", "Substances") + tab("saved", "bookmark", "Saved", S.saved.length || "") + tab("profile", "user", "Profile") + '</nav>';
+  dock.innerHTML = cta + '<nav class="tabs">' + tab("today", "sun", "Today") + tab("subs", "flask", "Substances") + tab("saved", "bookmark", "Saved", S.saved.length || "") + tab("profile", "user", "Profile") + '</nav>';
 }
 
 function openPlan(picks, meta, view, day) {
