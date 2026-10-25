@@ -276,6 +276,55 @@ p { margin: 0; }
 .duo { width: 38px; height: 38px; border-radius: 10px; background: var(--bg); display: grid; place-items: center; flex: none; }
 .duo svg { width: 24px; height: 24px; fill: none; stroke: var(--blue); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
 .duo svg .f { fill: var(--tint); stroke: none; }
+/* Lock */
+.lock { min-height: calc(100vh - 40px); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; text-align: center; padding-block: 24px; }
+.lock h1 { font-size: 22px; margin: 6px 0 0; }
+.lock .lead { font-size: 14px; min-height: 1.5em; }
+.lockmark { width: 56px; height: 56px; border-radius: 16px; background: var(--blue-soft); display: grid; place-items: center; }
+.langs { display: inline-flex; gap: 4px; padding: 3px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); }
+.langs button { border: 0; background: none; border-radius: 999px; padding: 5px 12px; font-family: var(--mono); font-size: 12.5px; }
+.langs button[aria-pressed="true"] { background: var(--blue); color: var(--blue-ink); }
+.lock .langs { margin-bottom: 18px; }
+.dots { display: flex; gap: 14px; margin: 14px 0 2px; }
+.dot { width: 13px; height: 13px; border-radius: 50%; border: 1.5px solid var(--blue); }
+.dot.on { background: var(--blue); }
+.shake { animation: shake .35s; }
+@keyframes shake { 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+.err { min-height: 20px; font-size: 13.5px; color: var(--blue); }
+.keypad { display: grid; grid-template-columns: repeat(3, 72px); gap: 14px 22px; margin-top: 8px; }
+.key { width: 72px; height: 72px; border-radius: 50%; border: 1px solid var(--line); background: var(--surface); font-size: 26px; font-weight: 300; display: grid; place-items: center; }
+.key:active { background: var(--blue-soft); }
+.key.fn { border-color: transparent; background: none; }
+.linkbtn { border: 0; background: none; color: var(--blue); font-size: 14px; margin-top: 14px; }
+/* Today */
+.todayhead { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.todayhead .mono { color: var(--muted); font-size: 13px; }
+.water.big { padding: 18px 16px; margin-top: 16px; }
+.water.big .ringwrap, .water.big .ring { width: 100px; height: 100px; }
+.water.big .ring circle { stroke-width: 8; }
+.water.big .rin { font-size: 16px; }
+.water.big .wn { white-space: nowrap; }
+.water.big .wn b { font-size: 24px; }
+.todaycard { width: 100%; margin-top: 12px; text-align: left; border: 1px solid var(--line); background: var(--surface); border-radius: 14px; padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; }
+.todaycard:hover { border-color: var(--blue); }
+.todaycard .t { font-size: 18px; font-weight: 500; }
+.todaycard .s { font-size: 12px; color: var(--muted); }
+.prog { height: 6px; border-radius: 3px; background: var(--blue-soft); overflow: hidden; }
+.prog span { display: block; height: 100%; background: var(--blue); border-radius: 3px; }
+.demo { margin-left: auto; font-family: var(--mono); font-size: 10.5px; text-transform: uppercase; letter-spacing: .06em; padding: 2px 7px; border-radius: 6px; border: 1px dashed var(--blue); color: var(--blue); }
+.item.more-alerts { width: 100%; text-align: left; border: 0; border-top: 1px solid var(--line); background: none; color: var(--blue); font-weight: 500; }
+.item.alert .why b { color: var(--ink); font-weight: 500; }
+.sosrow { margin-top: 18px; }
+.sos { display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 16px; border-radius: 12px; border: 1px solid var(--blue); color: var(--blue); font-weight: 500; text-decoration: none; background: var(--surface); }
+.more .sos, .block .sos { margin-top: 8px; height: 38px; }
+/* Sections + checkboxes */
+.grouphead { display: flex; align-items: center; gap: 8px; margin: 22px 0 -2px; }
+.grouphead .label { color: var(--ink); font-size: 12px; }
+.check { width: 30px; height: 30px; border-radius: 9px; border: 1.5px solid var(--line); background: var(--surface); flex: none; display: grid; place-items: center; align-self: center; padding: 0; }
+.check svg { width: 18px; height: 18px; fill: none; stroke: var(--blue-ink); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; opacity: 0; }
+.check[aria-pressed="true"] { background: var(--blue); border-color: var(--blue); }
+.check[aria-pressed="true"] svg { opacity: 1; }
+.item.done .it { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--blue); }
 @keyframes rise { from { transform: translateY(30px); opacity: .4; } to { transform: none; opacity: 1; } }
 
 .toast { position: fixed; left: 50%; bottom: calc(150px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%) translateY(10px); background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 10px; font-size: 14px; opacity: 0; transition: opacity .2s, transform .2s; z-index: 60; pointer-events: none; }
@@ -368,6 +417,13 @@ const CATS = [
   ["inhalant", "Inhalant"], ["plant", "Plant-based"]
 ];
 const CATNAME = Object.fromEntries(CATS);
+// the four sections of the substance list
+const GROUPS = [
+  { k: "up", n: "Uppers", icon: "stimulant", ids: ["cocaine", "amphetamine", "meth", "cathinones", "4fa", "rxstim", "caffeine", "nicotine", "rape"] },
+  { k: "mdma", n: "MDMA & XTC", icon: "empathogen", ids: ["mdma", "xtc"] },
+  { k: "down", n: "Downers", icon: "depressant", ids: ["alcohol", "ghb", "benzos", "opioids", "kratom", "kava", "cannabis", "spice"] },
+  { k: "psy", n: "Psychedelics & other", icon: "psychedelic", ids: ["lsd", "psilocybin", "ayahuasca", "dmt", "2cb", "mescaline", "ibogaine", "salvia", "ketamine", "dxm", "n2o", "poppers"] }
+];
 const AMT = ["A bit", "Medium", "A lot"];
 
 /* ---------- 30 substances ----------
@@ -385,11 +441,17 @@ const SUBS = [
     info: { what: "Flowers or resin of the cannabis plant; THC is the main active compound.", use: "Smoked, vaped or eaten in edibles.", onset: "Smoked: minutes · edibles: 30–120 min",
       safer: ["Wait 2 hours before eating more of an edible.", "Vaping is easier on your lungs than tobacco joints.", "Start low with strong strains."] },
     flag: "Panic that won't settle, chest pain, or repeated vomiting with cramps." },
-  { id: "mdma", n: "MDMA / Ecstasy", aka: "XTC, molly, pills", c: "empathogen", dur: "Effects 3–6 h · t½ ≈ 8 h", days: 5,
-    amt: ["Half a pill", "One pill", "More / redosed"],
+  { id: "mdma", n: "MDMA (powder)", aka: "crystal, molly, MD", c: "empathogen", dur: "Effects 3–6 h · t½ ≈ 8 h", days: 5,
+    amt: ["A dab", "≈ 0.1 g", "0.2 g or more"],
     tags: ["hydration", "electrolytes", "serotonin", "sleep", "oxidative", "mood", "muscle", "appetite", "cardio"],
-    info: { what: "An empathogen sold as crystals or pressed pills, often high in strength.", use: "Swallowed, sometimes dabbed. Many people redose.", onset: "30–60 min",
-      safer: ["Test your pills or crystals first.", "Take dance breaks to cool down.", "Sip about 500 ml of water per hour.", "Leave 3 months between uses."] },
+    info: { what: "MDMA as crystals or powder, often very pure.", use: "Dabbed, swallowed in paper or snorted.", onset: "30–60 min",
+      safer: ["Test your crystals first.", "Take dance breaks to cool down.", "Sip about 500 ml of water per hour.", "Leave 3 months between uses."] },
+    flag: "Overheating, confusion, severe headache, or a puffy, nauseous feeling after lots of water." },
+  { id: "xtc", n: "XTC pill", aka: "ecstasy, pills", c: "empathogen", dur: "Effects 3–6 h · t½ ≈ 8 h", days: 5,
+    amt: ["Half a pill", "One pill", "More pills"],
+    tags: ["hydration", "electrolytes", "serotonin", "sleep", "oxidative", "mood", "muscle", "appetite", "cardio"],
+    info: { what: "A pressed pill sold as ecstasy. Strength varies a lot and some pills contain other drugs.", use: "Swallowed, often in halves or quarters.", onset: "30–60 min",
+      safer: ["Get your pill tested first.", "Start with a quarter or half.", "Check the pill alerts.", "Leave 3 months between uses."] },
     flag: "Overheating, confusion, severe headache, or a puffy, nauseous feeling after lots of water." },
   { id: "cocaine", n: "Cocaine", aka: "coke, blow, snow", c: "stimulant", dur: "Effects 30–90 min · t½ ≈ 1 h", days: 3,
     amt: ["A line or two", "Several lines", "All night"],
@@ -541,6 +603,7 @@ const SUBS = [
 const STORY = {
   "alcohol": "slowed your brain, dried you out and left acetaldehyde behind, the cause of your headache.",
   "cannabis": "hit your CB1 receptors and lingers in fat, so a foggy head can stay a while.",
+  "xtc": "flooded your brain with serotonin and heated you up. Refilling takes days, so a dip can follow.",
   "mdma": "flooded your brain with serotonin and heated you up. Refilling takes days, so a dip can follow.",
   "cocaine": "piled up dopamine and pushed your heart hard. Now dopamine is low and your nose is sore.",
   "amphetamine": "kept dopamine high for hours and switched off hunger and sleep.",
@@ -747,6 +810,7 @@ const subLen = (s, amt) => Math.min(5, Math.max(1, s.days + (amt - 2)));
 function buildPlan(picks, profile, createdISO) {
   const list = picks.map(p => ({ s: BYID[p.id], amt: p.amt || 2 })).filter(x => x.s);
   const set = new Set(list.map(x => x.s.id));
+  if (set.has("xtc")) set.add("mdma"); // an XTC pill is MDMA for every rule
   const len = Math.min(5, Math.max(2, ...list.map(x => subLen(x.s, x.amt))));
   const lots = list.filter(x => x.amt === 3);
   const allTags = {};
@@ -821,25 +885,51 @@ function dayNote(d, len, t, lots) {
   return "A daylight walk resets sleep and mood.";
 }
 
+/* ---------- Translations (filled below) ---------- */
+const DICT = { nl: {}, es: {} };
+
+/* ---------- Language ----------
+   English is the source text; DICT maps it to Dutch and Spanish. {x} are placeholders. */
+const LANGS = [["nl", "NL"], ["en", "EN"], ["es", "ES"]];
+const LOCALE = { nl: "nl-NL", en: "en-GB", es: "es-ES" };
+let LANG = (() => {
+  try { const l = localStorage.getItem("daysafter.lang"); if (l) return l; } catch (e) {}
+  const n = (navigator.language || "en").slice(0, 2);
+  return n === "nl" || n === "es" ? n : "en";
+})();
+document.documentElement.lang = LANG;
+function t(s, v) {
+  if (s == null) return "";
+  const d = DICT[LANG] || {};
+  let out = LANG === "en" ? s : d[s];
+  if (out == null && s.indexOf(" · ") > -1) out = s.split(" · ").map(p => d[p] || p).join(" · ");
+  if (out == null) out = s;
+  return v ? out.replace(/\{(\w+)\}/g, (_, k) => v[k]) : out;
+}
+function setLang(l) {
+  LANG = l; document.documentElement.lang = l;
+  try { localStorage.setItem("daysafter.lang", l); } catch (e) {}
+}
+
 /* ---------- Calendar export ---------- */
 const ymd = d => d.getFullYear() + String(d.getMonth() + 1).padStart(2, "0") + String(d.getDate()).padStart(2, "0");
 const ymdDash = d => d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
-const shortLabel = t => t.replace(" · ", " ");
+const shortLabel = s => t(s).replace(" · ", " ");
 
 function eventFor(P, day) {
-  const title = "Days After · Day " + day.n + ": " + day.title;
-  const lines = SECTIONS.map(([k, , , verb]) => day.sections[k].length ? verb.toUpperCase() + "\n" + day.sections[k].map(i => "• " + shortLabel(i.t)).join("\n") : "").filter(Boolean);
-  const body = "Day " + day.n + " of " + P.len + "\n\n" + lines.join("\n\n") + "\n\nTIP\n" + day.note;
+  const title = "Days After · " + t("Day {n}", { n: day.n }) + ": " + t(day.title);
+  const lines = SECTIONS.map(([k, , , verb]) => day.sections[k].length ? t(verb).toUpperCase() + "\n" + day.sections[k].map(i => "• " + shortLabel(i.t)).join("\n") : "").filter(Boolean);
+  const body = t("Day {n} of {len}", { n: day.n, len: P.len }) + "\n\n" + lines.join("\n\n") + "\n\n" + t("Tip").toUpperCase() + "\n" + t(day.note);
   const next = new Date(day.date); next.setDate(next.getDate() + 1);
   return { title, body, start: day.date, end: next };
 }
 // one all-day event spanning every day of the plan, with the day-by-day list inside
 function planEvent(P) {
-  const days = P.days.map(day => "DAY " + day.n + " · " + day.title.toUpperCase() + "\n" +
-    SECTIONS.map(([k, , , verb]) => day.sections[k].length ? verb + ": " + day.sections[k].map(i => shortLabel(i.t)).join(" / ") : "").filter(Boolean).join("\n") +
-    "\nTip: " + day.note).join("\n\n");
+  const body = P.days.map(day => (t("Day {n}", { n: day.n }) + " · " + t(day.title)).toUpperCase() + "\n" +
+    SECTIONS.map(([k, , , verb]) => day.sections[k].length ? t(verb) + ": " + day.sections[k].map(i => shortLabel(i.t)).join(" / ") : "").filter(Boolean).join("\n") +
+    "\n" + t("Tip") + ": " + t(day.note)).join("\n\n");
   const end = new Date(P.days[0].date); end.setDate(end.getDate() + P.len);
-  return { title: "Days After · " + P.len + "-day recovery", body: days, start: P.days[0].date, end };
+  return { title: "Days After · " + t("{n}-day recovery", { n: P.len }), body, start: P.days[0].date, end };
 }
 // repeating timed events: the calendar app sends the phone notification
 const REMINDERS = [
@@ -852,10 +942,10 @@ function reminderUrl(r, P) {
   const [hh, mm] = (S.reminders[r.k] || "09:00").split(":").map(Number);
   const s = new Date(P.days[0].date); s.setHours(hh, mm, 0, 0);
   const e = new Date(s.getTime() + 15 * 60000);
-  const t = d => ymd(d) + "T" + String(d.getHours()).padStart(2, "0") + String(d.getMinutes()).padStart(2, "0") + "00";
+  const tm = d => ymd(d) + "T" + String(d.getHours()).padStart(2, "0") + String(d.getMinutes()).padStart(2, "0") + "00";
   let tz = ""; try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone; } catch (err) {}
-  return "https://calendar.google.com/calendar/render?action=TEMPLATE&text=" + encodeURIComponent("Days After · " + r.t) +
-    "&dates=" + t(s) + "/" + t(e) + "&details=" + encodeURIComponent(r.body) +
+  return "https://calendar.google.com/calendar/render?action=TEMPLATE&text=" + encodeURIComponent("Days After · " + t(r.t)) +
+    "&dates=" + tm(s) + "/" + tm(e) + "&details=" + encodeURIComponent(t(r.body)) +
     "&recur=" + encodeURIComponent("RRULE:FREQ=DAILY;COUNT=" + P.len) + (tz ? "&ctz=" + encodeURIComponent(tz) : "");
 }
 function googleUrl(e) {
@@ -867,67 +957,238 @@ function outlookUrl(e) {
     "&startdt=" + ymdDash(e.start) + "&enddt=" + ymdDash(e.end) + "&subject=" + encodeURIComponent(e.title) + "&body=" + encodeURIComponent(e.body);
 }
 
-/* ---------- Storage (this device only) ---------- */
-const KEY = "daysafter.v1";
-const REMEMBER = false; // fresh start on every open for now; set true to keep plans, water and settings
-if (!REMEMBER) { try { localStorage.removeItem(KEY); } catch (e) {} }
-function load() { if (!REMEMBER) return {}; try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { return {}; } }
-function persist() { if (!REMEMBER) return;  try { localStorage.setItem(KEY, JSON.stringify({ onboarded: S.onboarded, profile: S.profile, saved: S.saved, theme: S.theme, stamps: S.water, reminders: S.reminders })); } catch (e) {} }
-const normPicks = subs => (subs || []).map(x => typeof x === "string" ? { id: x, amt: 2 } : x);
+/* ---------- Pill alerts ----------
+   Demo entries until the Trimbos (DIMS) feed is connected. Shown with a clear demo label. */
+const ALERTS = [
+  { n: "Blue Punisher", what: "280 mg MDMA", lvl: "High dose", tip: "A quarter is already a full dose.", d: "2026-10-21" },
+  { n: "Red Tesla", what: "Contains PMMA", lvl: "Dangerous", tip: "Do not take. PMMA works slowly and can be deadly with a redose.", d: "2026-10-17" },
+  { n: "Green Rolex", what: "245 mg MDMA", lvl: "High dose", tip: "Take half at most and wait two hours.", d: "2026-10-12" }
+];
 
-const stored = load();
+/* ---------- Vault: encrypted on this device ----------
+   Everything is AES-GCM encrypted with a key derived from the 6-digit code (PBKDF2).
+   With Face ID on, that key is kept non-extractable in IndexedDB and released after a passkey check. */
+const VAULT = "daysafter.vault";
+const te = new TextEncoder(), td = new TextDecoder();
+const b64 = u => { let s = ""; u.forEach(c => { s += String.fromCharCode(c); }); return btoa(s); };
+const unb64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+let KEYC = null;
+function readVault() { try { return JSON.parse(localStorage.getItem(VAULT)); } catch (e) { return null; } }
+function writeVault(v) { try { localStorage.setItem(VAULT, JSON.stringify(v)); } catch (e) {} }
+async function deriveKey(pin, salt) {
+  const base = await crypto.subtle.importKey("raw", te.encode(pin), "PBKDF2", false, ["deriveKey"]);
+  return crypto.subtle.deriveKey({ name: "PBKDF2", salt, iterations: 250000, hash: "SHA-256" }, base, { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]);
+}
+async function seal(obj) {
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const ct = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, KEYC, te.encode(JSON.stringify(obj)));
+  return { iv: b64(iv), ct: b64(new Uint8Array(ct)) };
+}
+async function unseal(v) {
+  const pt = await crypto.subtle.decrypt({ name: "AES-GCM", iv: unb64(v.iv) }, KEYC, unb64(v.ct));
+  return JSON.parse(td.decode(pt));
+}
+function idb(mode, fn) {
+  return new Promise((res, rej) => {
+    const r = indexedDB.open("daysafter", 1);
+    r.onupgradeneeded = () => r.result.createObjectStore("k");
+    r.onerror = () => rej(r.error);
+    r.onsuccess = () => {
+      const tx = r.result.transaction("k", mode), req = fn(tx.objectStore("k"));
+      tx.oncomplete = () => { res(req && req.result); r.result.close(); };
+      tx.onerror = () => rej(tx.error);
+    };
+  });
+}
+async function faceAvailable() {
+  try { return !!(window.PublicKeyCredential && await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()); } catch (e) { return false; }
+}
+async function faceEnroll() {
+  const cred = await navigator.credentials.create({ publicKey: {
+    rp: { name: "Days After" }, user: { id: crypto.getRandomValues(new Uint8Array(16)), name: "Days After", displayName: "Days After" },
+    challenge: crypto.getRandomValues(new Uint8Array(32)),
+    pubKeyCredParams: [{ type: "public-key", alg: -7 }, { type: "public-key", alg: -257 }],
+    authenticatorSelection: { authenticatorAttachment: "platform", userVerification: "required" }, timeout: 60000 } });
+  await idb("readwrite", s => s.put(KEYC, "key"));
+  const v = readVault(); v.face = b64(new Uint8Array(cred.rawId)); writeVault(v);
+}
+async function faceUnlock() {
+  const v = readVault();
+  await navigator.credentials.get({ publicKey: { challenge: crypto.getRandomValues(new Uint8Array(32)),
+    allowCredentials: [{ type: "public-key", id: unb64(v.face) }], userVerification: "required", timeout: 60000 } });
+  KEYC = await idb("readonly", s => s.get("key"));
+  if (!KEYC) throw new Error("no key");
+  restore(await unseal(v));
+}
+async function faceOff() {
+  const v = readVault(); delete v.face; writeVault(v);
+  try { await idb("readwrite", s => s.delete("key")); } catch (e) {}
+}
+
+let saveT;
+function persist() {
+  clearTimeout(saveT);
+  saveT = setTimeout(async () => {
+    if (!KEYC) return;
+    const v = readVault() || {};
+    Object.assign(v, await seal(snapshot()));
+    writeVault(v);
+  }, 150);
+}
+function snapshot() {
+  return { onboarded: S.onboarded, profile: S.profile, saved: S.saved, theme: S.theme, water: S.water, checks: S.checks, reminders: S.reminders };
+}
+const normPicks = subs => (subs || []).map(x => typeof x === "string" ? { id: x, amt: 2 } : x);
+function restore(d) {
+  d = d || {};
+  S.onboarded = !!d.onboarded;
+  S.profile = d.profile || { w: null, h: null };
+  S.saved = (d.saved || []).map(s => Object.assign({}, s, { subs: normPicks(s.subs) }));
+  S.theme = d.theme || null;
+  S.water = d.water || {};
+  S.checks = d.checks || {};
+  if (d.reminders) S.reminders = d.reminders;
+  applyTheme();
+}
+
 const S = {
-  onboarded: !!stored.onboarded,
-  profile: stored.profile || { w: null, h: null },
-  saved: Array.isArray(stored.saved) ? stored.saved.map(s => Object.assign({}, s, { subs: normPicks(s.subs) })) : [],
-  view: stored.onboarded ? "subs" : "onboard",
-  selected: new Map(), q: "", cat: "all",
+  onboarded: false, profile: { w: null, h: null }, saved: [], theme: null, water: {}, checks: {},
+  reminders: { vit: "09:00", water1: "11:00", water2: "15:00", bed: "22:30" },
+  view: "lock", lock: { mode: readVault() ? "enter" : "create", pin: "", first: "", err: "", tries: 0, until: 0, busy: false, reset: false },
+  faceOK: false, selected: new Map(), q: "",
   plan: null, planMeta: null, day: 1, confirmDel: null, sheet: null,
-  expanded: new Set(), theme: stored.theme || null,
-  water: stored.stamps || {}, openRecipe: null,
-  reminders: stored.reminders || { vit: "09:00", water1: "11:00", water2: "15:00", bed: "22:30" }
+  expanded: new Set(), openRecipe: null
 };
-if (S.theme) document.documentElement.setAttribute("data-theme", S.theme);
+function applyTheme() {
+  if (S.theme) document.documentElement.setAttribute("data-theme", S.theme);
+  else document.documentElement.removeAttribute("data-theme");
+}
 
 /* ---------- Helpers ---------- */
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-const fmtDay = d => d.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" });
-const fmtShort = d => d.toLocaleDateString("en-GB", { day: "numeric", month: "short" });
-const amtLabel = (s, a) => AMT[a - 1] + (s.amt ? " · " + s.amt[a - 1] : "");
+const fmtDay = d => d.toLocaleDateString(LOCALE[LANG], { weekday: "short", day: "numeric", month: "short" });
+const fmtShort = d => d.toLocaleDateString(LOCALE[LANG], { day: "numeric", month: "short" });
+const amtLabel = (s, a) => t(AMT[a - 1]) + (s.amt ? " · " + t(s.amt[a - 1]) : "");
+const itemKey = it => it.t.split(" · ")[0];
 const app = document.getElementById("app"), dock = document.getElementById("dock"), sheetEl = document.getElementById("sheet");
 let toastT;
 function toast(msg) { const el = document.getElementById("toast"); el.textContent = msg; el.classList.add("on"); clearTimeout(toastT); toastT = setTimeout(() => el.classList.remove("on"), 1800); }
 
 function isDark() {
-  const t = document.documentElement.getAttribute("data-theme");
-  if (t) return t === "dark";
+  const th = document.documentElement.getAttribute("data-theme");
+  if (th) return th === "dark";
   try { return matchMedia("(prefers-color-scheme: dark)").matches; } catch (e) { return false; }
 }
 
 function top(back) {
   return '<header class="top">' +
-    (back ? '<button class="iconbtn" data-act="back" aria-label="Back">' + ic("back", "sm") + '</button>' : ic("logo")) +
+    (back ? '<button class="iconbtn" data-act="back" aria-label="' + t("Back") + '">' + ic("back", "sm") + '</button>' : ic("logo")) +
     '<div class="brand">Days <b>After</b></div><div class="spacer"></div>' +
-    '<button class="themebtn" data-act="theme" aria-label="' + (isDark() ? "Light mode" : "Dark mode") + '">' + ic(isDark() ? "sun" : "moon", "sm") + '</button></header>';
+    '<button class="themebtn" data-act="theme" aria-label="' + (isDark() ? t("Light mode") : t("Dark mode")) + '">' + ic(isDark() ? "sun" : "moon", "sm") + '</button></header>';
+}
+const sos = () => '<a class="sos" href="tel:112">' + ic("phone", "sm") + t("Call 112") + '</a>';
+const langPills = () => '<div class="langs" role="group" aria-label="' + t("Language") + '">' +
+  LANGS.map(([k, n]) => '<button data-act="lang" data-lang="' + k + '" aria-pressed="' + (LANG === k) + '">' + n + '</button>').join("") + '</div>';
+
+/* ---------- Lock ---------- */
+function vLock() {
+  const L = S.lock;
+  if (L.mode === "face") {
+    return '<div class="lock"><div class="lockmark">' + ic("shield", "lg") + '</div><h1>' + t("Unlock with Face ID?") + '</h1>' +
+      '<p class="lead">' + t("Your code still works as a backup.") + '</p>' +
+      '<div class="calmain" style="width:100%;max-width:320px"><button class="cta" data-act="faceyes">' + ic("user", "sm") + t("Use Face ID") + '</button>' +
+      '<button class="btn2" data-act="faceno">' + t("Not now") + '</button></div></div>';
+  }
+  const title = { create: "Create a 6-digit code", confirm: "Repeat your code", enter: "Enter your code" }[L.mode];
+  const dots = Array.from({ length: 6 }, (_, i) => '<span class="dot' + (i < L.pin.length ? ' on' : '') + '"></span>').join("");
+  const v = readVault();
+  const faceBtn = L.mode === "enter" && v && v.face && S.faceOK
+    ? '<button class="key fn" data-act="faceunlock" aria-label="Face ID">' + ic("user") + '</button>' : '<span></span>';
+  const keys = ["1", "2", "3", "4", "5", "6", "7", "8", "9"].map(k => '<button class="key" data-act="key" data-k="' + k + '">' + k + '</button>').join("") +
+    faceBtn + '<button class="key" data-act="key" data-k="0">0</button>' +
+    '<button class="key fn" data-act="del" aria-label="' + t("Delete") + '">' + ic("back", "sm") + '</button>';
+  const forgot = L.mode !== "enter" ? "" : L.reset
+    ? '<div class="confirm"><button data-act="noreset">' + t("Cancel") + '</button><button class="yes" data-act="yesreset">' + t("Erase all and start over") + '</button></div>'
+    : '<button class="linkbtn" data-act="askreset">' + t("Forgot code?") + '</button>';
+  return '<div class="lock">' + langPills() +
+    '<div class="lockmark">' + ic("logo", "lg") + '</div>' +
+    '<h1>' + t(title) + '</h1>' +
+    '<p class="lead">' + (L.mode === "create" ? t("Your data stays encrypted on this phone.") : "&nbsp;") + '</p>' +
+    '<div class="dots' + (L.err ? ' shake' : '') + '" aria-live="polite">' + dots + '</div>' +
+    '<div class="err" role="alert">' + esc(L.err ? t(L.err) : "") + '</div>' +
+    '<div class="keypad">' + keys + '</div>' + forgot + '</div>';
+}
+
+async function pinComplete() {
+  const L = S.lock, pin = L.pin;
+  L.busy = true;
+  try {
+    if (L.mode === "create") { L.first = pin; L.mode = "confirm"; L.err = ""; }
+    else if (L.mode === "confirm") {
+      if (pin !== L.first) { L.mode = "create"; L.first = ""; L.err = "Codes don't match. Try again."; }
+      else {
+        const salt = crypto.getRandomValues(new Uint8Array(16));
+        KEYC = await deriveKey(pin, salt);
+        writeVault(Object.assign({ salt: b64(salt) }, await seal(snapshot())));
+        L.err = "";
+        if (S.faceOK) L.mode = "face"; else return afterUnlock();
+      }
+    } else {
+      if (Date.now() < L.until) { L.err = "Too many tries. Wait 30 seconds."; }
+      else {
+        const v = readVault();
+        try { KEYC = await deriveKey(pin, unb64(v.salt)); restore(await unseal(v)); L.tries = 0; return afterUnlock(); }
+        catch (e) { KEYC = null; L.tries++; L.err = "Wrong code"; if (L.tries >= 5) { L.until = Date.now() + 30000; L.tries = 0; } }
+      }
+    }
+  } finally { L.pin = ""; L.busy = false; }
+  render(true);
+}
+function pressKey(k) {
+  const L = S.lock;
+  if (L.busy || L.pin.length >= 6) return;
+  L.pin += k; L.err = "";
+  if (L.pin.length === 6) { render(true); pinComplete(); } else render(true);
+}
+async function wipeAll() {
+  try { localStorage.removeItem(VAULT); } catch (e) {}
+  try { await idb("readwrite", s => s.clear()); } catch (e) {}
+  KEYC = null; restore({});
+  S.lock = { mode: "create", pin: "", first: "", err: "", tries: 0, until: 0, busy: false, reset: false };
+  S.view = "lock"; render();
+}
+function afterUnlock() {
+  S.lock = { mode: "enter", pin: "", first: "", err: "", tries: 0, until: 0, busy: false, reset: false };
+  const sh = readShared(location.hash);
+  if (sh) {
+    S.onboarded = true;
+    const meta = { id: "p" + Date.now().toString(36), created: sh.created, w: S.profile.w, h: S.profile.h, subs: sh.picks };
+    S.saved.push({ id: meta.id, created: meta.created, subs: meta.subs, w: null, h: null });
+    persist(); history.replaceState(null, "", location.pathname + location.search);
+    openPlan(sh.picks, meta); toast(t("Shared plan opened"));
+    return;
+  }
+  S.view = S.onboarded ? "today" : "onboard";
+  render();
 }
 
 /* ---------- Views ---------- */
 function vOnboard() {
   return top() +
-    '<h1>Recover well.</h1>' +
+    '<h1>' + t("Recover well.") + '</h1>' +
     '<div class="points">' +
-      '<div class="point"><span class="glyph">' + ic("shield") + '</span><div><b>Anonymous</b><span>Stays on this device.</span></div></div>' +
-      '<div class="point"><span class="glyph">' + ic("scale") + '</span><div><b>Weight and height optional</b><span>For exact amounts.</span></div></div>' +
-      '<div class="point"><span class="glyph">' + ic("phone") + '</span><div><b>Emergency</b><span>Call 112.</span></div></div>' +
+      '<div class="point"><span class="glyph">' + ic("shield") + '</span><div><b>' + t("Anonymous") + '</b><span>' + t("Encrypted on this phone.") + '</span></div></div>' +
+      '<div class="point"><span class="glyph">' + ic("scale") + '</span><div><b>' + t("Weight and height optional") + '</b><span>' + t("For exact amounts.") + '</span></div></div>' +
+      '<div class="point"><span class="glyph">' + ic("phone") + '</span><div><b>' + t("Emergency") + '</b><span>' + t("Call 112.") + '</span></div></div>' +
     '</div>' + bodyFields() +
-    '<div class="actions"><button class="btn2" data-act="skip">Skip</button><button class="btn2 primary" data-act="start">Continue</button></div>';
+    '<div class="actions"><button class="btn2" data-act="skip">' + t("Skip") + '</button><button class="btn2 primary" data-act="start">' + t("Continue") + '</button></div>';
 }
 
 function bodyFields() {
   const p = S.profile;
   return '<div class="fields">' +
-    '<label class="field"><span class="label">Weight</span><span class="box"><input id="in-w" inputmode="decimal" type="number" min="30" max="250" placeholder="70" value="' + (p.w || "") + '"><span class="unit">kg</span></span></label>' +
-    '<label class="field"><span class="label">Height</span><span class="box"><input id="in-h" inputmode="decimal" type="number" min="120" max="230" placeholder="175" value="' + (p.h || "") + '"><span class="unit">cm</span></span></label>' +
+    '<label class="field"><span class="label">' + t("Weight") + '</span><span class="box"><input id="in-w" inputmode="decimal" type="number" min="30" max="250" placeholder="70" value="' + (p.w || "") + '"><span class="unit">kg</span></span></label>' +
+    '<label class="field"><span class="label">' + t("Height") + '</span><span class="box"><input id="in-h" inputmode="decimal" type="number" min="120" max="230" placeholder="175" value="' + (p.h || "") + '"><span class="unit">cm</span></span></label>' +
   '</div>';
 }
 
@@ -937,159 +1198,216 @@ function readBody() {
   persist();
 }
 
+/* Today: water first, then today's plan and pill alerts */
+const planLen = subs => Math.min(5, Math.max(2, ...subs.map(p => BYID[p.id] ? subLen(BYID[p.id], p.amt || 2) : 2)));
+function activePlan() {
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const list = S.saved.slice().sort((a, b) => b.created.localeCompare(a.created));
+  for (const s of list) {
+    const start = new Date(s.created); start.setHours(0, 0, 0, 0);
+    const n = Math.round((today - start) / 864e5) + 1;
+    if (n >= 1 && n <= planLen(s.subs)) return { s, n, plan: buildPlan(s.subs, { w: s.w, h: s.h }, s.created) };
+  }
+  return null;
+}
+function defaultWaterL() {
+  const w = S.profile.w;
+  return w ? Math.round(Math.min(4.5, Math.max(1.5, w * 0.035)) * 4) / 4 : 2.25;
+}
+
+function vToday() {
+  const now = new Date(), ap = activePlan();
+  const day = ap ? ap.plan.days[ap.n - 1] : null;
+  const goalL = day ? day.waterL : defaultWaterL();
+  let planCard;
+  if (ap) {
+    const items = SECTIONS.reduce((a, [k]) => a.concat(day.sections[k]), []);
+    const done = items.filter(it => (S.checks[ymd(now)] || {})[itemKey(it)]).length;
+    planCard = '<button class="todaycard" data-act="openactive">' +
+      '<span class="label">' + t("Day {n} of {len}", { n: ap.n, len: ap.plan.len }) + '</span>' +
+      '<span class="t">' + esc(t(day.title)) + '</span>' +
+      '<span class="prog"><span style="width:' + Math.round(done / Math.max(1, items.length) * 100) + '%"></span></span>' +
+      '<span class="mono s">' + t("{d} of {n} done", { d: done, n: items.length }) + '</span></button>';
+  } else {
+    planCard = '<button class="todaycard" data-act="nav" data-view="subs"><span class="label">' + t("No active plan") + '</span>' +
+      '<span class="t">' + t("Create recovery diet") + '</span></button>';
+  }
+  const alerts = ALERTS.slice(0, 2).map(alertRow).join("");
+  return top() +
+    '<div class="todayhead"><h1>' + t("Today") + '</h1><span class="mono">' + esc(fmtDay(now)) + '</span></div>' +
+    waterCard(ymd(now), goalL, true) + planCard +
+    '<div class="sect"><div class="sh">' + ic("alert", "sm") + '<span class="label">' + t("Pill alerts") + '</span><span class="demo">' + t("Demo") + '</span></div>' +
+    '<div class="items">' + alerts + '<button class="item more-alerts" data-act="alerts">' + t("All alerts") + '</button></div></div>' +
+    '<div class="sosrow">' + sos() + '</div>';
+}
+
+function alertRow(a) {
+  return '<div class="item withicon alert">' + duo("pill") + '<div class="itxt"><div class="it">' + esc(a.n) + '<span class="amtag">' + esc(fmtShort(new Date(a.d))) + '</span></div>' +
+    '<div class="why"><b>' + esc(t(a.lvl)) + '</b> · ' + esc(t(a.what)) + '. ' + esc(t(a.tip)) + '</div></div></div>';
+}
+
 function subRow(s) {
   const on = S.selected.has(s.id), amt = S.selected.get(s.id) || 2;
-  const seg = on ? '<div class="amount"><span class="label">How much?</span><div class="seg" role="group" aria-label="Amount of ' + esc(s.n) + '">' +
-    AMT.map((a, i) => '<button data-act="amt" data-id="' + s.id + '" data-amt="' + (i + 1) + '" aria-pressed="' + (amt === i + 1) + '">' + a + (s.amt ? '<small>' + esc(s.amt[i]) + '</small>' : '') + '</button>').join("") +
+  const seg = on ? '<div class="amount"><span class="label">' + t("How much?") + '</span><div class="seg" role="group" aria-label="' + esc(t(s.n)) + '">' +
+    AMT.map((a, i) => '<button data-act="amt" data-id="' + s.id + '" data-amt="' + (i + 1) + '" aria-pressed="' + (amt === i + 1) + '">' + t(a) + (s.amt ? '<small>' + esc(t(s.amt[i])) + '</small>' : '') + '</button>').join("") +
     '</div></div>' : '';
   return '<div class="sub' + (on ? ' on' : '') + '"><div class="row">' +
     '<button class="rowmain" role="switch" aria-checked="' + on + '" data-act="toggle" data-id="' + s.id + '">' +
       '<span class="glyph">' + ic(s.c) + '</span>' +
-      '<span class="txt"><div class="name">' + esc(s.n) + '</div><div class="aka">' + esc(s.aka) + '</div></span>' +
+      '<span class="txt"><div class="name">' + esc(t(s.n)) + '</div><div class="aka">' + esc(t(s.aka)) + '</div></span>' +
     '</button>' +
-    '<button class="qbtn" data-act="info" data-id="' + s.id + '" aria-label="About ' + esc(s.n) + '">?</button>' +
+    '<button class="qbtn" data-act="info" data-id="' + s.id + '" aria-label="' + esc(t(s.n)) + '">?</button>' +
     '<button class="swbtn" data-act="toggle" data-id="' + s.id + '" tabindex="-1" aria-hidden="true"><span class="switch"></span></button>' +
   '</div>' + seg + '</div>';
 }
 
 function vSubs() {
   const q = S.q.trim().toLowerCase();
-  const list = SUBS.filter(s => (S.cat === "all" || s.c === S.cat) &&
-    (!q || (s.n + " " + s.aka + " " + CATNAME[s.c]).toLowerCase().includes(q)));
+  const match = s => !q || (s.n + " " + s.aka + " " + t(s.n) + " " + t(s.aka)).toLowerCase().includes(q);
+  const groups = GROUPS.map(g => {
+    const list = g.ids.map(id => BYID[id]).filter(s => s && match(s));
+    if (!list.length) return "";
+    return '<div class="grouphead">' + ic(g.icon, "sm") + '<span class="label">' + t(g.n) + '</span></div>' +
+      '<div class="list">' + list.map(subRow).join("") + '</div>';
+  }).join("");
   return top() +
-    '<h1>What did you take?</h1>' +
-    '<div class="search">' + ic("search", "sm") + '<input id="q" type="search" placeholder="Search 30 substances" autocomplete="off" value="' + esc(S.q) + '" aria-label="Search substances"></div>' +
-    '<div class="chips" role="toolbar" aria-label="Filter by type">' +
-      ['<button class="chip" data-act="cat" data-cat="all" aria-pressed="' + (S.cat === "all") + '">All</button>']
-        .concat(CATS.map(([k, n]) => '<button class="chip" data-act="cat" data-cat="' + k + '" aria-pressed="' + (S.cat === k) + '">' + n + '</button>')).join("") +
-    '</div>' +
-    '<div class="list" id="list">' + (list.map(subRow).join("") || '<div class="empty">No substance matches "' + esc(S.q) + '".</div>') + '</div>';
+    '<h1>' + t("What did you take?") + '</h1>' +
+    '<div class="search">' + ic("search", "sm") + '<input id="q" type="search" placeholder="' + t("Search {n} substances", { n: SUBS.length }) + '" autocomplete="off" value="' + esc(S.q) + '" aria-label="' + t("Search") + '"></div>' +
+    (groups || '<div class="empty">' + t("Nothing matches your search.") + '</div>');
 }
 
 function vStory() {
   const P = S.plan;
   const prose = P.list.map(({ s }) =>
-    '<b>' + esc(s.n) + '</b><button class="qbtn inline" data-act="expand" data-id="' + s.id + '" aria-expanded="' + S.expanded.has(s.id) + '" aria-label="More about ' + esc(s.n) + '">?</button> ' + esc(STORY[s.id])).join(" ");
+    '<b>' + esc(t(s.n)) + '</b><button class="qbtn inline" data-act="expand" data-id="' + s.id + '" aria-expanded="' + S.expanded.has(s.id) + '" aria-label="' + esc(t(s.n)) + '">?</button> ' + esc(t(STORY[s.id]))).join(" ");
   const more = P.list.filter(({ s }) => S.expanded.has(s.id)).map(({ s }) =>
-    '<div class="more"><p><b>' + esc(s.n) + '</b> · ' + esc(s.info.what) + '</p><p><span class="label">Get help</span>' + esc(s.flag) + '</p></div>').join("");
+    '<div class="more"><p><b>' + esc(t(s.n)) + '</b> · ' + esc(t(s.info.what)) + '</p><p><span class="label">' + t("Get help") + '</span>' + esc(t(s.flag)) + '</p>' + sos() + '</div>').join("");
   const combos = P.combos.length ? '<div class="caution">' + P.combos.map(c =>
-    '<div class="c">' + ic("alert", "sm") + '<div><b>' + esc(c.t) + '</b><span>' + esc(c.w) + '</span></div></div>').join("") + '</div>' : '';
-  return top(true) + '<h1>What happened in your body</h1>' +
+    '<div class="c">' + ic("alert", "sm") + '<div><b>' + esc(t(c.t)) + '</b><span>' + esc(t(c.w)) + '</span></div></div>').join("") + '</div>' : '';
+  return top(true) + '<h1>' + t("What happened in your body") + '</h1>' +
     '<article class="story" style="margin-top:16px"><p class="prose">' + prose + '</p>' + more + '</article>' + combos;
 }
 
 function vPlan() {
-  const P = S.plan, m = S.planMeta, day = P.days[S.day - 1];
-  const facts = [
-    '<span class="fact"><b>' + P.list.length + '</b> substance' + (P.list.length > 1 ? "s" : "") + '</span>',
-    '<span class="fact"><b>' + P.len + '</b> days</span>',
-    m.w ? '<span class="fact"><b>' + m.w + '</b> kg</span>' : '',
-    m.h ? '<span class="fact"><b>' + m.h + '</b> cm</span>' : '',
-    P.ctx.kcal ? '<span class="fact">≈ <b>' + P.ctx.kcal.toLocaleString("en-GB") + '</b> kcal / day</span>' : ''
-  ].join("");
+  const P = S.plan, day = P.days[S.day - 1], date = ymd(day.date);
+  const checks = S.checks[date] || {};
   const dayBtns = P.days.map(d =>
-    '<button class="daybtn" role="tab" data-act="day" data-day="' + d.n + '" aria-selected="' + (d.n === S.day) + '"><span class="n">Day ' + d.n + '</span><span class="d">' + fmtShort(d.date) + '</span></button>').join("");
+    '<button class="daybtn" role="tab" data-act="day" data-day="' + d.n + '" aria-selected="' + (d.n === S.day) + '"><span class="n">' + t("Day {n}", { n: d.n }) + '</span><span class="d">' + esc(fmtShort(d.date)) + '</span></button>').join("");
   const sections = SECTIONS.map(([k, name, icon]) => {
     const items = day.sections[k];
     if (!items.length) return "";
-    return '<section class="sect"><div class="sh">' + ic(icon, "sm") + '<span class="label">' + name + '</span></div><div class="items">' +
-      items.map(it => '<div class="item withicon">' + duo(iconFor(it.t)) + '<div class="itxt"><div class="it">' + esc(it.t) + '</div><div class="why">' + esc(it.w[0]) + '</div></div></div>').join("") +
-      '</div></section>';
+    return '<section class="sect"><div class="sh">' + ic(icon, "sm") + '<span class="label">' + t(name) + '</span></div><div class="items">' +
+      items.map(it => {
+        const key = itemKey(it), done = !!checks[key], water = key === "Water";
+        return '<div class="item withicon' + (done ? ' done' : '') + '">' + duo(iconFor(it.t)) +
+          '<div class="itxt"><div class="it">' + esc(t(it.t)) + '</div><div class="why">' + esc(t(it.w[0])) + '</div></div>' +
+          (water ? '' : '<button class="check" data-act="check" data-date="' + date + '" data-k="' + esc(key) + '" aria-pressed="' + done + '" aria-label="' + esc(t(it.t)) + '">' +
+            '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button>') + '</div>';
+      }).join("") + '</div></section>';
   }).join("");
   return top(true) +
-    '<div class="planhead"><h1>Your recovery</h1></div>' +
+    '<div class="planhead"><h1>' + t("Your recovery") + '</h1></div>' +
     '<div class="daybar" role="tablist" style="margin-top:18px">' + dayBtns + '</div>' +
-    '<div class="dayhead"><span class="t">' + esc(day.title) + '</span></div>' +
-    waterCard(day) +
+    '<div class="dayhead"><span class="t">' + esc(t(day.title)) + '</span></div>' +
+    waterCard(date, day.waterL) +
     sections + recipeList(day) +
-    '<div class="disclaimer">Not medical advice. Emergency: 112.</div>';
+    '<div class="disclaimer">' + t("Not medical advice. Emergency: 112.") + '</div>';
 }
 
 const GLASS = 0.2;
-const waterGoal = day => Math.ceil(day.waterL / GLASS - 0.01);
-function waterCard(day) {
-  const goal = waterGoal(day);
-  const n = Math.min(goal, ((S.water[S.planMeta.created] || {})[day.n]) || 0);
-  const C = 2 * Math.PI * 30, pct = n / goal;
-  return '<div class="water"><div class="ringwrap"><svg class="ring" viewBox="0 0 72 72" aria-hidden="true"><circle cx="36" cy="36" r="30" class="track"/>' +
-    '<circle cx="36" cy="36" r="30" class="fill" stroke-dasharray="' + C.toFixed(1) + '" stroke-dashoffset="' + (C * (1 - pct)).toFixed(1) + '"/></svg>' +
+const waterGoal = L => Math.ceil(L / GLASS - 0.01);
+function waterCard(date, goalL, big) {
+  const goal = waterGoal(goalL);
+  const n = Math.min(goal, S.water[date] || 0);
+  const R = big ? 44 : 30, V = (R + 6) * 2, C = 2 * Math.PI * R, pct = n / goal;
+  return '<div class="water' + (big ? ' big' : '') + '"><div class="ringwrap"><svg class="ring" viewBox="0 0 ' + V + ' ' + V + '" aria-hidden="true"><circle cx="' + V / 2 + '" cy="' + V / 2 + '" r="' + R + '" class="track"/>' +
+    '<circle cx="' + V / 2 + '" cy="' + V / 2 + '" r="' + R + '" class="fill" stroke-dasharray="' + C.toFixed(1) + '" stroke-dashoffset="' + (C * (1 - pct)).toFixed(1) + '"/></svg>' +
     '<span class="rin mono">' + Math.round(pct * 100) + '%</span></div>' +
-    '<div class="wtxt"><div class="wn mono"><b>' + +(n * GLASS).toFixed(1) + '</b> / ' + day.waterL + ' L</div><div class="ws mono">' + n + ' / ' + goal + ' glasses</div></div>' +
-    '<button class="iconbtn" data-act="water" data-d="-1" aria-label="Remove a glass"' + (n ? '' : ' disabled') + '>' + ic("minus", "sm") + '</button>' +
-    '<button class="wplus" data-act="water" data-d="1" aria-label="Add a glass"' + (n >= goal ? ' disabled' : '') + '>' + ic("plus") + '</button></div>';
+    '<div class="wtxt">' + (big ? '<div class="label">' + t("Water") + '</div>' : '') + '<div class="wn mono"><b>' + +(n * GLASS).toFixed(1) + '</b> / ' + goalL + ' L</div><div class="ws mono">' + t("{n} / {g} glasses", { n, g: goal }) + '</div></div>' +
+    '<button class="iconbtn" data-act="water" data-d="-1" data-date="' + date + '" data-goal="' + goal + '" aria-label="' + t("Remove a glass") + '"' + (n ? '' : ' disabled') + '>' + ic("minus", "sm") + '</button>' +
+    '<button class="wplus" data-act="water" data-d="1" data-date="' + date + '" data-goal="' + goal + '" aria-label="' + t("Add a glass") + '"' + (n >= goal ? ' disabled' : '') + '>' + ic("plus") + '</button></div>';
 }
 
 function recipeList(day) {
   if (!day.recipes.length) return "";
-  return '<section class="sect"><div class="sh">' + ic("recipe", "sm") + '<span class="label">Recipes</span></div><div class="items">' +
+  return '<section class="sect"><div class="sh">' + ic("recipe", "sm") + '<span class="label">' + t("Recipes") + '</span></div><div class="items">' +
     day.recipes.map(r => {
       const open = S.openRecipe === r.n;
-      return '<button class="item recipe" data-act="recipe" data-n="' + esc(r.n) + '" aria-expanded="' + open + '"><div class="it">' + esc(r.n) + '<span class="amtag">' + r.min + ' min</span></div>' +
-        (open ? '<ul class="ing">' + r.ing.map(i => '<li>' + esc(i) + '</li>').join("") + '</ul><div class="why">' + esc(r.how) + '</div>' : '') + '</button>';
+      return '<button class="item recipe" data-act="recipe" data-n="' + esc(r.n) + '" aria-expanded="' + open + '"><div class="it">' + esc(t(r.n)) + '<span class="amtag">' + r.min + ' min</span></div>' +
+        (open ? '<ul class="ing">' + r.ing.map(i => '<li>' + esc(t(i)) + '</li>').join("") + '</ul><div class="why">' + esc(t(r.how)) + '</div>' : '') + '</button>';
     }).join("") + '</div></section>';
 }
 
 function vSaved() {
   const items = S.saved.slice().sort((a, b) => b.created.localeCompare(a.created)).map(s => {
-    const names = s.subs.map(p => BYID[p.id] ? BYID[p.id].n : p.id).join(", ");
-    const len = Math.min(5, Math.max(2, ...s.subs.map(p => BYID[p.id] ? subLen(BYID[p.id], p.amt || 2) : 2)));
+    const names = s.subs.map(p => BYID[p.id] ? t(BYID[p.id].n) : p.id).join(", ");
     const del = S.confirmDel === s.id
-      ? '<div class="confirm"><button data-act="nodel">Keep</button><button class="yes" data-act="yesdel" data-id="' + s.id + '">Delete</button></div>'
-      : '<button class="iconbtn" data-act="askdel" data-id="' + s.id + '" aria-label="Delete plan">' + ic("trash", "sm") + '</button>';
-    return '<div class="scard"><span class="glyph">' + ic("bookmark") + '</span><div class="txt"><button class="open" data-act="open" data-id="' + s.id + '"><div class="t">' + esc(names) + '</div><div class="s mono">' + fmtDay(new Date(s.created)) + ' · ' + len + ' days</div></button></div>' + del + '</div>';
+      ? '<div class="confirm"><button data-act="nodel">' + t("Keep") + '</button><button class="yes" data-act="yesdel" data-id="' + s.id + '">' + t("Delete") + '</button></div>'
+      : '<button class="iconbtn" data-act="askdel" data-id="' + s.id + '" aria-label="' + t("Delete") + '">' + ic("trash", "sm") + '</button>';
+    return '<div class="scard"><span class="glyph">' + ic("bookmark") + '</span><div class="txt"><button class="open" data-act="open" data-id="' + s.id + '"><div class="t">' + esc(names) + '</div><div class="s mono">' + esc(fmtDay(new Date(s.created))) + ' · ' + t("{n} days", { n: planLen(s.subs) }) + '</div></button></div>' + del + '</div>';
   }).join("");
-  return top() + '<h1>Saved plans</h1>' +
+  return top() + '<h1>' + t("Saved plans") + '</h1>' +
     (items ? '<div class="saved">' + items + '</div>' :
-      '<div class="emptystate">' + ic("bookmark", "lg") + '<span>No saved plans yet.</span><button class="btn2" data-act="nav" data-view="subs">Choose substances</button></div>');
+      '<div class="emptystate">' + ic("bookmark", "lg") + '<span>' + t("No saved plans yet.") + '</span><button class="btn2" data-act="nav" data-view="subs">' + t("Choose substances") + '</button></div>');
 }
 
 function vProfile() {
-  const p = S.profile;
+  const p = S.profile, v = readVault();
   const bmi = p.w && p.h ? (p.w / Math.pow(p.h / 100, 2)).toFixed(1) : "–";
-  const water = p.w ? (p.w * 0.035).toFixed(1) + " L" : "–";
   const prot = p.w ? Math.round(p.w * 1.2 / 5) * 5 + " g" : "–";
-  return top() + '<h1>Your body</h1>' + bodyFields() +
-    '<div class="panel"><div class="kv"><span>BMI</span><span class="v">' + bmi + '</span></div><div class="kv"><span>Base water target</span><span class="v">' + water + '</span></div><div class="kv"><span>Protein target</span><span class="v">' + prot + '</span></div></div>' +
-    '<div class="actions"><button class="btn2 primary" data-act="savebody">Save</button></div>' +
-    '<h2>Privacy</h2><div class="panel"><p class="lead">Nothing leaves this device.</p>' +
-    (S.confirmDel === "all" ? '<div class="confirm"><button data-act="nodel">Cancel</button><button class="yes" data-act="wipe">Delete everything</button></div>'
-      : '<div><button class="btn2" data-act="askwipe">' + ic("trash", "sm") + 'Clear all data on this device</button></div>') + '</div>' +
-    '<h2>Emergency</h2><div class="panel"><div class="kv">' + ic("phone", "sm") + '<span style="flex:1">Emergency services (EU)</span><span class="v">112</span></div></div>';
+  return top() + '<h1>' + t("Profile") + '</h1>' + bodyFields() +
+    '<div class="panel"><div class="kv"><span>BMI</span><span class="v">' + bmi + '</span></div><div class="kv"><span>' + t("Base water target") + '</span><span class="v">' + (p.w ? defaultWaterL() + " L" : "–") + '</span></div><div class="kv"><span>' + t("Protein target") + '</span><span class="v">' + prot + '</span></div></div>' +
+    '<div class="actions"><button class="btn2 primary" data-act="savebody">' + t("Save") + '</button></div>' +
+    '<h2>' + t("Language") + '</h2>' + langPills() +
+    '<h2>' + t("Security") + '</h2><div class="panel">' +
+      (S.faceOK ? '<div class="kv"><span>Face ID</span><button class="btn2" data-act="' + (v && v.face ? "faceoff" : "faceon") + '">' + (v && v.face ? t("Turn off") : t("Turn on")) + '</button></div>' : '') +
+      '<div class="kv"><span>' + t("Lock the app now") + '</span><button class="btn2" data-act="lock">' + ic("shield", "sm") + t("Lock") + '</button></div>' +
+      '<p class="lead">' + t("Everything is encrypted on this phone. Nothing is sent anywhere.") + '</p>' +
+      (S.confirmDel === "all" ? '<div class="confirm"><button data-act="nodel">' + t("Cancel") + '</button><button class="yes" data-act="wipe">' + t("Erase all and start over") + '</button></div>'
+        : '<div><button class="btn2" data-act="askwipe">' + ic("trash", "sm") + t("Clear all data") + '</button></div>') + '</div>' +
+    '<h2>' + t("Emergency") + '</h2><div class="panel">' + sos() + '</div>';
 }
 
 /* ---------- Sheets ---------- */
 function sInfo(s) {
   const i = s.info;
-  return '<div class="shead"><span class="glyph">' + ic(s.c) + '</span><div class="txt"><div class="t">' + esc(s.n) + '</div><div class="s">' + esc(s.aka) + '</div></div>' +
-    '<button class="iconbtn" data-act="closesheet" aria-label="Close">' + ic("close", "sm") + '</button></div>' +
-    '<div class="facts sheetfacts"><span class="fact">' + esc(CATNAME[s.c]) + '</span><span class="fact">Onset <b>' + esc(i.onset) + '</b></span><span class="fact">' + esc(s.dur) + '</span></div>' +
-    '<div class="block"><span class="label">What it is</span><p>' + esc(i.what) + '</p></div>' +
-    '<div class="block"><span class="label">How it’s used</span><p>' + esc(i.use) + '</p></div>' +
-    '<div class="block"><span class="label">Safer use</span><ul>' + i.safer.map(x => '<li>' + esc(x) + '</li>').join("") + '</ul></div>' +
-    '<div class="block caution"><div class="c">' + ic("alert", "sm") + '<div><b>Get help if</b><span>' + esc(s.flag) + ' Call 112.</span></div></div></div>';
+  return '<div class="shead"><span class="glyph">' + ic(s.c) + '</span><div class="txt"><div class="t">' + esc(t(s.n)) + '</div><div class="s">' + esc(t(s.aka)) + '</div></div>' +
+    '<button class="iconbtn" data-act="closesheet" aria-label="' + t("Close") + '">' + ic("close", "sm") + '</button></div>' +
+    '<div class="facts sheetfacts"><span class="fact">' + esc(t(CATNAME[s.c])) + '</span><span class="fact">' + t("Onset") + ' <b>' + esc(t(i.onset)) + '</b></span><span class="fact">' + esc(t(s.dur)) + '</span></div>' +
+    '<div class="block"><span class="label">' + t("What it is") + '</span><p>' + esc(t(i.what)) + '</p></div>' +
+    '<div class="block"><span class="label">' + t("How it’s used") + '</span><p>' + esc(t(i.use)) + '</p></div>' +
+    '<div class="block"><span class="label">' + t("Safer use") + '</span><ul>' + i.safer.map(x => '<li>' + esc(t(x)) + '</li>').join("") + '</ul></div>' +
+    '<div class="block caution"><div class="c">' + ic("alert", "sm") + '<div><b>' + t("Get help if") + '</b><span>' + esc(t(s.flag)) + '</span></div></div>' + sos() + '</div>';
+}
+
+function sAlerts() {
+  return '<div class="shead"><span class="glyph">' + ic("alert") + '</span><div class="txt"><div class="t">' + t("Pill alerts") + '</div><div class="s">' + t("Demo data, not real warnings. Live Trimbos feed coming.") + '</div></div>' +
+    '<button class="iconbtn" data-act="closesheet" aria-label="' + t("Close") + '">' + ic("close", "sm") + '</button></div>' +
+    '<div class="items" style="margin-top:12px">' + ALERTS.map(alertRow).join("") + '</div>';
 }
 
 function sCal() {
   const P = S.plan, all = planEvent(P);
-  const perDay = P.days.map(d => '<a href="' + esc(googleUrl(eventFor(P, d))) + '" target="_blank" rel="noopener">Day ' + d.n + '</a>').join("");
-  return '<div class="shead"><span class="glyph">' + ic("calendar") + '</span><div class="txt"><div class="t">Add to calendar</div><div class="s">' + fmtShort(all.start) + ' – ' + fmtShort(P.days[P.len - 1].date) + ' · all day</div></div>' +
-    '<button class="iconbtn" data-act="closesheet" aria-label="Close">' + ic("close", "sm") + '</button></div>' +
+  const perDay = P.days.map(d => '<a href="' + esc(googleUrl(eventFor(P, d))) + '" target="_blank" rel="noopener">' + t("Day {n}", { n: d.n }) + '</a>').join("");
+  return '<div class="shead"><span class="glyph">' + ic("calendar") + '</span><div class="txt"><div class="t">' + t("Add to calendar") + '</div><div class="s">' + esc(fmtShort(all.start)) + ' – ' + esc(fmtShort(P.days[P.len - 1].date)) + ' · ' + t("all day") + '</div></div>' +
+    '<button class="iconbtn" data-act="closesheet" aria-label="' + t("Close") + '">' + ic("close", "sm") + '</button></div>' +
     '<div class="calmain">' +
-      '<a class="cta" href="' + esc(googleUrl(all)) + '" target="_blank" rel="noopener">' + ic("calendar", "sm") + 'Google Calendar · all ' + P.len + ' days</a>' +
+      '<a class="cta" href="' + esc(googleUrl(all)) + '" target="_blank" rel="noopener">' + ic("calendar", "sm") + t("Google Calendar · all {n} days", { n: P.len }) + '</a>' +
       '<a class="btn2" href="' + esc(outlookUrl(all)) + '" target="_blank" rel="noopener">Outlook' + ic("ext", "sm") + '</a>' +
-      '<button class="btn2" data-act="copyall">' + ic("copy", "sm") + 'Copy for Apple / other</button>' +
+      '<button class="btn2" data-act="copyall">' + ic("copy", "sm") + t("Copy for Apple / other") + '</button>' +
     '</div>' +
-    '<div class="perday"><span class="label">Google per day</span>' + perDay + '</div>' +
-    '<h2>Daily reminders</h2><div class="calrows">' + REMINDERS.map(r =>
-      '<div class="calrow rem"><div class="txt"><div class="t">' + esc(r.t) + '</div></div>' +
-      '<input class="time" type="time" id="rem-' + r.k + '" data-rem="' + r.k + '" value="' + esc(S.reminders[r.k]) + '" aria-label="' + esc(r.t) + ' time">' +
+    '<div class="perday"><span class="label">' + t("Google per day") + '</span>' + perDay + '</div>' +
+    '<h2>' + t("Daily reminders") + '</h2><div class="calrows">' + REMINDERS.map(r =>
+      '<div class="calrow rem"><div class="txt"><div class="t">' + esc(t(r.t)) + '</div></div>' +
+      '<input class="time" type="time" id="rem-' + r.k + '" data-rem="' + r.k + '" value="' + esc(S.reminders[r.k]) + '" aria-label="' + esc(t(r.t)) + '">' +
       '<div class="links"><a href="' + esc(reminderUrl(r, P)) + '" target="_blank" rel="noopener" data-remlink="' + r.k + '">Google' + ic("ext", "sm") + '</a></div></div>').join("") + '</div>' +
     '<div class="preview" hidden></div>';
 }
 
 function renderSheet() {
   if (!S.sheet) { sheetEl.innerHTML = ""; return; }
-  const inner = S.sheet.type === "info" ? sInfo(BYID[S.sheet.id]) : S.sheet.type === "share" ? sShare() : sCal();
+  const ty = S.sheet.type;
+  const inner = ty === "info" ? sInfo(BYID[S.sheet.id]) : ty === "share" ? sShare() : ty === "alerts" ? sAlerts() : sCal();
   sheetEl.innerHTML = '<div class="scrim" data-act="scrim"><div class="sheet" role="dialog" aria-modal="true"><div class="grab"></div>' + inner + '</div></div>';
   const btn = sheetEl.querySelector('[data-act="closesheet"]'); if (btn) btn.focus();
 }
@@ -1097,39 +1415,33 @@ function openSheet(s) { S.sheet = s; renderSheet(); }
 function closeSheet() { S.sheet = null; renderSheet(); }
 
 function render(keepScroll) {
-  let html;
-  if (S.view === "onboard") html = vOnboard();
-  else if (S.view === "plan") html = vPlan();
-  else if (S.view === "story") html = vStory();
-  else if (S.view === "saved") html = vSaved();
-  else if (S.view === "profile") html = vProfile();
-  else html = vSubs();
-  app.innerHTML = html;
+  const V = { lock: vLock, onboard: vOnboard, today: vToday, plan: vPlan, story: vStory, saved: vSaved, profile: vProfile, subs: vSubs };
+  app.innerHTML = (V[S.view] || vToday)();
   renderDock();
   if (!keepScroll) window.scrollTo(0, 0);
 }
 
 function renderDock() {
-  if (S.view === "onboard") { dock.innerHTML = ""; return; }
+  if (S.view === "onboard" || S.view === "lock") { dock.innerHTML = ""; return; }
   let cta = "";
   if (S.view === "subs") {
     const n = S.selected.size;
-    cta = '<div class="cta-wrap"><button class="cta" data-act="create"' + (n ? "" : " disabled") + '>' + ic("spark", "sm") + 'Create recovery diet' + (n ? '<span class="count">' + n + '</span>' : '') + '</button></div>';
+    cta = '<div class="cta-wrap"><button class="cta" data-act="create"' + (n ? "" : " disabled") + '>' + ic("spark", "sm") + t("Create recovery diet") + (n ? '<span class="count">' + n + '</span>' : '') + '</button></div>';
   } else if (S.view === "story") {
-    cta = '<div class="cta-wrap"><button class="cta" data-act="toplan">' + ic("calendar", "sm") + 'See my recovery plan</button></div>';
+    cta = '<div class="cta-wrap"><button class="cta" data-act="toplan">' + ic("calendar", "sm") + t("See my recovery plan") + '</button></div>';
   } else if (S.view === "plan") {
-    cta = '<div class="cta-wrap"><button class="cta ghost" data-act="share" aria-label="Share plan" style="flex:0 0 54px">' + ic("share") + '</button>' +
-      '<button class="cta" data-act="cal">' + ic("calendar", "sm") + 'Add to calendar</button></div>';
+    cta = '<div class="cta-wrap"><button class="cta ghost" data-act="share" aria-label="' + t("Share plan") + '" style="flex:0 0 54px">' + ic("share") + '</button>' +
+      '<button class="cta" data-act="cal">' + ic("calendar", "sm") + t("Add to calendar") + '</button></div>';
   }
   const cur = (S.view === "plan" || S.view === "story") ? "saved" : S.view;
-  const tab = (v, icon, label, badge) => '<button class="tab" data-act="nav" data-view="' + v + '"' + (cur === v ? ' aria-current="page"' : '') + '>' + ic(icon) + label + (badge ? '<span class="badge">' + badge + '</span>' : '') + '</button>';
-  dock.innerHTML = cta + '<nav class="tabs">' + tab("subs", "flask", "Substances") + tab("saved", "bookmark", "Saved", S.saved.length || "") + tab("profile", "user", "Profile") + '</nav>';
+  const tab = (v, icon, label, badge) => '<button class="tab" data-act="nav" data-view="' + v + '"' + (cur === v ? ' aria-current="page"' : '') + '>' + ic(icon) + t(label) + (badge ? '<span class="badge">' + badge + '</span>' : '') + '</button>';
+  dock.innerHTML = cta + '<nav class="tabs">' + tab("today", "drink", "Today") + tab("subs", "flask", "Substances") + tab("saved", "bookmark", "Saved", S.saved.length || "") + tab("profile", "user", "Profile") + '</nav>';
 }
 
-function openPlan(picks, meta) {
+function openPlan(picks, meta, view, day) {
   S.planMeta = meta;
   S.plan = buildPlan(picks, { w: meta.w, h: meta.h }, meta.created);
-  S.day = 1; S.expanded = new Set(); S.view = "story"; render();
+  S.day = day || 1; S.expanded = new Set(); S.view = view || "story"; render();
 }
 
 /* ---------- Sharing ----------
@@ -1142,7 +1454,7 @@ function shareLink() {
 function readShared(hash) {
   const m = /^#plan-([a-z0-9_]+)-(\d{8})$/.exec(hash || "");
   if (!m) return null;
-  const picks = m[1].split("_").map(t => ({ id: t.slice(0, -1), amt: +t.slice(-1) }))
+  const picks = m[1].split("_").map(x => ({ id: x.slice(0, -1), amt: +x.slice(-1) }))
     .filter(p => BYID[p.id] && p.amt >= 1 && p.amt <= 3);
   if (!picks.length) return null;
   const d = m[2], created = new Date(+d.slice(0, 4), +d.slice(4, 6) - 1, +d.slice(6, 8), 12);
@@ -1151,93 +1463,113 @@ function readShared(hash) {
 
 function sShare() {
   const can = typeof navigator.share === "function";
-  return '<div class="shead"><span class="glyph">' + ic("share") + '</span><div class="txt"><div class="t">Share plan</div><div class="s">The link holds what you took, not your weight.</div></div>' +
-    '<button class="iconbtn" data-act="closesheet" aria-label="Close">' + ic("close", "sm") + '</button></div>' +
+  return '<div class="shead"><span class="glyph">' + ic("share") + '</span><div class="txt"><div class="t">' + t("Share plan") + '</div><div class="s">' + t("The link holds what you took, not your weight.") + '</div></div>' +
+    '<button class="iconbtn" data-act="closesheet" aria-label="' + t("Close") + '">' + ic("close", "sm") + '</button></div>' +
     '<div class="calmain">' +
-      (can ? '<button class="cta" data-act="nativeshare">' + ic("share", "sm") + 'Share via…</button>' : '') +
-      '<button class="' + (can ? 'btn2' : 'cta') + '" data-act="copylink">' + ic("copy", "sm") + 'Copy link</button>' +
-      '<button class="btn2" data-act="copyplan">' + ic("copy", "sm") + 'Copy link + full plan</button>' +
+      (can ? '<button class="cta" data-act="nativeshare">' + ic("share", "sm") + t("Share via…") + '</button>' : '') +
+      '<button class="' + (can ? 'btn2' : 'cta') + '" data-act="copylink">' + ic("copy", "sm") + t("Copy link") + '</button>' +
+      '<button class="btn2" data-act="copyplan">' + ic("copy", "sm") + t("Copy link + full plan") + '</button>' +
     '</div>' +
     '<div class="preview">' + esc(shareLink()) + '</div>';
 }
 
 function copyText(text) {
-  const done = () => toast("Copied");
+  const done = () => toast(t("Copied"));
   try {
     navigator.clipboard.writeText(text).then(done, () => fallbackCopy(text));
   } catch (e) { fallbackCopy(text); }
 }
 function fallbackCopy(text) {
   const pre = sheetEl.querySelector(".preview");
-  if (pre) { pre.hidden = false; pre.textContent = text; const r = document.createRange(); r.selectNodeContents(pre); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); toast("Text selected: copy it manually"); }
+  if (pre) { pre.hidden = false; pre.textContent = text; const r = document.createRange(); r.selectNodeContents(pre); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); toast(t("Text selected: copy it manually")); }
 }
 
 /* ---------- Events ---------- */
-document.addEventListener("click", e => {
+document.addEventListener("click", async e => {
   const b = e.target.closest("[data-act]");
   if (!b || b.disabled) return;
   const act = b.dataset.act;
   if (act === "scrim") { if (e.target === b) closeSheet(); return; }
-  if (act === "toggle") {
+  if (act === "key") pressKey(b.dataset.k);
+  else if (act === "del") { S.lock.pin = S.lock.pin.slice(0, -1); render(true); }
+  else if (act === "lang") {
+    setLang(b.dataset.lang);
+    if (S.plan) S.plan = buildPlan(S.planMeta.subs, { w: S.planMeta.w, h: S.planMeta.h }, S.planMeta.created);
+    render(true);
+  }
+  else if (act === "askreset") { S.lock.reset = true; render(true); }
+  else if (act === "noreset") { S.lock.reset = false; render(true); }
+  else if (act === "yesreset") wipeAll();
+  else if (act === "faceyes") {
+    try { await faceEnroll(); toast(t("Face ID is on")); } catch (err) { toast(t("Face ID is not available here")); }
+    afterUnlock();
+  }
+  else if (act === "faceno") afterUnlock();
+  else if (act === "faceunlock") {
+    try { await faceUnlock(); afterUnlock(); } catch (err) { S.lock.err = "Face ID failed. Use your code."; render(true); }
+  }
+  else if (act === "faceon") { try { await faceEnroll(); toast(t("Face ID is on")); } catch (err) { toast(t("Face ID is not available here")); } render(true); }
+  else if (act === "faceoff") { await faceOff(); toast(t("Face ID is off")); render(true); }
+  else if (act === "lock") {
+    KEYC = null; restore({}); S.plan = null; S.planMeta = null; S.selected = new Map(); closeSheet();
+    S.lock = { mode: "enter", pin: "", first: "", err: "", tries: 0, until: 0, busy: false, reset: false };
+    S.view = "lock"; render();
+  }
+  else if (act === "toggle") {
     const id = b.dataset.id;
     S.selected.has(id) ? S.selected.delete(id) : S.selected.set(id, 2);
     render(true);
     const el = app.querySelector('.rowmain[data-id="' + id + '"]'); if (el) el.focus({ preventScroll: true });
   } else if (act === "amt") { S.selected.set(b.dataset.id, +b.dataset.amt); render(true); }
   else if (act === "info") openSheet({ type: "info", id: b.dataset.id });
+  else if (act === "alerts") openSheet({ type: "alerts" });
   else if (act === "water") {
-    const key = S.planMeta.created, day = S.plan.days[S.day - 1];
-    const m = S.water[key] = S.water[key] || {};
-    const goal = waterGoal(day);
-    m[day.n] = Math.min(goal, Math.max(0, (m[day.n] || 0) + +b.dataset.d));
-    if (+b.dataset.d > 0 && m[day.n] === goal) toast("Water goal reached");
+    const date = b.dataset.date, goal = +b.dataset.goal;
+    S.water[date] = Math.min(goal, Math.max(0, (S.water[date] || 0) + +b.dataset.d));
+    if (+b.dataset.d > 0 && S.water[date] === goal) toast(t("Water goal reached"));
     persist(); render(true);
   }
+  else if (act === "check") {
+    const m = S.checks[b.dataset.date] = S.checks[b.dataset.date] || {};
+    if (m[b.dataset.k]) delete m[b.dataset.k]; else m[b.dataset.k] = 1;
+    persist(); render(true);
+  }
+  else if (act === "openactive") { const ap = activePlan(); if (ap) openPlan(ap.s.subs, Object.assign({}, ap.s), "plan", ap.n); }
   else if (act === "recipe") { S.openRecipe = S.openRecipe === b.dataset.n ? null : b.dataset.n; render(true); }
   else if (act === "expand") { const id = b.dataset.id; S.expanded.has(id) ? S.expanded.delete(id) : S.expanded.add(id); render(true); }
-  else if (act === "theme") { S.theme = isDark() ? "light" : "dark"; document.documentElement.setAttribute("data-theme", S.theme); persist(); render(true); }
+  else if (act === "theme") { S.theme = isDark() ? "light" : "dark"; applyTheme(); persist(); render(true); }
   else if (act === "copyall") { const ev = planEvent(S.plan); copyText(ev.title + "\n\n" + ev.body); }
   else if (act === "cal") openSheet({ type: "cal" });
   else if (act === "share") openSheet({ type: "share" });
   else if (act === "copylink") copyText(shareLink());
   else if (act === "copyplan") { const ev = planEvent(S.plan); copyText(shareLink() + "\n\n" + ev.body); }
   else if (act === "nativeshare") {
-    navigator.share({ title: "Days After", text: "My recovery plan", url: shareLink() }).catch(() => {});
+    navigator.share({ title: "Days After", text: t("My recovery plan"), url: shareLink() }).catch(() => {});
   }
   else if (act === "closesheet") closeSheet();
-  else if (act === "copyday") { const d = S.plan.days[+b.dataset.day - 1]; const ev = eventFor(S.plan, d); copyText(ev.title + "\n\n" + ev.body); }
-  else if (act === "cat") { S.cat = b.dataset.cat; render(true); }
-  else if (act === "start") { readBody(); S.onboarded = true; persist(); S.view = "subs"; render(); }
-  else if (act === "skip") { S.onboarded = true; persist(); S.view = "subs"; render(); }
+  else if (act === "start") { readBody(); S.onboarded = true; persist(); S.view = "today"; render(); }
+  else if (act === "skip") { S.onboarded = true; persist(); S.view = "today"; render(); }
   else if (act === "create") {
     const picks = [...S.selected].map(([id, amt]) => ({ id, amt }));
     const meta = { id: "p" + Date.now().toString(36), created: new Date().toISOString(), w: S.profile.w, h: S.profile.h, subs: picks };
     S.saved.push({ id: meta.id, created: meta.created, subs: picks, w: meta.w, h: meta.h });
     persist();
     openPlan(picks, meta);
-    toast("Plan saved");
+    toast(t("Plan saved"));
   }
   else if (act === "day") { S.day = +b.dataset.day; S.openRecipe = null; render(true); }
-  else if (act === "back") { S.view = S.view === "plan" ? "story" : (S.planMeta && S.planMeta.id ? "saved" : "subs"); render(); }
+  else if (act === "back") { S.view = S.view === "plan" ? "story" : "saved"; render(); }
   else if (act === "toplan") { S.view = "plan"; render(); }
-  else if (act === "save") {
-    const m = S.planMeta; m.id = "p" + Date.now().toString(36);
-    S.saved.push({ id: m.id, created: m.created, subs: m.subs, w: m.w, h: m.h });
-    persist(); render(true); toast("Plan saved on this device");
-  } else if (act === "nav") { S.confirmDel = null; S.view = b.dataset.view; render(); }
+  else if (act === "nav") { S.confirmDel = null; S.view = b.dataset.view; render(); }
   else if (act === "open") {
     const s = S.saved.find(x => x.id === b.dataset.id);
     if (s) openPlan(s.subs, Object.assign({}, s));
   } else if (act === "askdel") { S.confirmDel = b.dataset.id; render(true); }
   else if (act === "nodel") { S.confirmDel = null; render(true); }
-  else if (act === "yesdel") { S.saved = S.saved.filter(x => x.id !== b.dataset.id); S.confirmDel = null; persist(); render(true); toast("Plan deleted"); }
-  else if (act === "savebody") { readBody(); render(true); toast("Saved"); }
+  else if (act === "yesdel") { S.saved = S.saved.filter(x => x.id !== b.dataset.id); S.confirmDel = null; persist(); render(true); toast(t("Plan deleted")); }
+  else if (act === "savebody") { readBody(); render(true); toast(t("Saved")); }
   else if (act === "askwipe") { S.confirmDel = "all"; render(true); }
-  else if (act === "wipe") {
-    S.saved = []; S.profile = { w: null, h: null }; S.confirmDel = null;
-    try { localStorage.removeItem(KEY); } catch (err) {}
-    S.onboarded = true; persist(); render(true); toast("All data cleared");
-  }
+  else if (act === "wipe") { S.confirmDel = null; wipeAll(); }
 });
 
 document.addEventListener("change", e => {
@@ -1249,7 +1581,13 @@ document.addEventListener("change", e => {
   if (a && r) a.href = reminderUrl(r, S.plan);
 });
 
-document.addEventListener("keydown", e => { if (e.key === "Escape" && S.sheet) closeSheet(); });
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape" && S.sheet) closeSheet();
+  if (S.view === "lock" && S.lock.mode !== "face") {
+    if (/^[0-9]$/.test(e.key)) pressKey(e.key);
+    else if (e.key === "Backspace") { S.lock.pin = S.lock.pin.slice(0, -1); render(true); }
+  }
+});
 
 document.addEventListener("input", e => {
   if (e.target.id !== "q") return;
@@ -1266,14 +1604,9 @@ splash.addEventListener("click", hideSplash);
 splash.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") hideSplash(); });
 setTimeout(hideSplash, 2200);
 
-const shared = readShared(location.hash);
-if (shared) {
-  S.onboarded = true;
-  const meta = { id: "p" + Date.now().toString(36), created: shared.created, w: S.profile.w, h: S.profile.h, subs: shared.picks };
-  S.saved.push({ id: meta.id, created: meta.created, subs: meta.subs, w: null, h: null });
-  openPlan(shared.picks, meta);
-  setTimeout(() => toast("Shared plan opened"), 2400);
-} else render();
+splash.querySelector(".sub").textContent = t("Recovery, day by day");
+faceAvailable().then(ok => { S.faceOK = ok; if (S.view === "lock") render(true); });
+render();
 })();
 </script>
 
