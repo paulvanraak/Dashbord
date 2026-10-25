@@ -15,6 +15,8 @@
   --blue-ink: #FFFFFF;
   --blue-soft: #E7EEFC;
   --tint: #C9D8FA;
+  --danger: #D92D20;
+  --danger-soft: #FEF0EF;
   --grid: rgba(29, 85, 216, .07);
   --scrim: rgba(12, 26, 46, .38);
   --sans: "IBM Plex Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
@@ -24,13 +26,13 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --bg: #08111F; --surface: #0F1A2C; --ink: #E5ECF7; --muted: #8E9DB4; --line: #1F2E47;
-    --blue: #6E9CFF; --blue-ink: #06101F; --blue-soft: #14254A; --tint: #24427E; --grid: rgba(110, 156, 255, .08); --scrim: rgba(0, 0, 0, .55);
+    --blue: #6E9CFF; --blue-ink: #06101F; --blue-soft: #14254A; --tint: #24427E; --danger: #FF6B5E; --danger-soft: #3A1512; --grid: rgba(110, 156, 255, .08); --scrim: rgba(0, 0, 0, .55);
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --bg: #08111F; --surface: #0F1A2C; --ink: #E5ECF7; --muted: #8E9DB4; --line: #1F2E47;
-  --blue: #6E9CFF; --blue-ink: #06101F; --blue-soft: #14254A; --tint: #24427E; --grid: rgba(110, 156, 255, .08); --scrim: rgba(0, 0, 0, .55);
+  --blue: #6E9CFF; --blue-ink: #06101F; --blue-soft: #14254A; --tint: #24427E; --danger: #FF6B5E; --danger-soft: #3A1512; --grid: rgba(110, 156, 255, .08); --scrim: rgba(0, 0, 0, .55);
   color-scheme: dark;
 }
 html, body { height: 100%; }
@@ -324,6 +326,20 @@ p { margin: 0; }
 .banner .iconbtn { width: 32px; height: 32px; border: 0; background: none; }
 .todaycard .label { display: flex; align-items: center; gap: 8px; }
 @media (prefers-reduced-motion: reduce) { .banner { transition: none; } }
+/* Warnings: red */
+.themebtn.warn { position: relative; }
+.themebtn.warn .ic, .wicon .ic { stroke: var(--danger); }
+.wdot { position: absolute; top: 6px; right: 6px; width: 7px; height: 7px; border-radius: 50%; background: var(--danger); box-shadow: 0 0 0 2px var(--bg); }
+.wicon { width: 38px; height: 38px; border-radius: 10px; background: var(--danger-soft); display: grid; place-items: center; flex: none; }
+.wicon.lg { width: 40px; height: 40px; }
+.banner { background: var(--danger-soft); border-color: var(--danger); border-left-width: 4px; }
+.banner .btxt .label { color: var(--danger); font-weight: 500; }
+.banner .wicon { background: var(--surface); animation: pulse 1.4s ease-in-out 3; }
+.banner .iconbtn .ic { stroke: var(--danger); }
+.item.alert .why b { color: var(--danger); }
+.warnt { color: var(--danger); }
+@keyframes pulse { 50% { transform: scale(1.12); } }
+@media (prefers-reduced-motion: reduce) { .banner .wicon { animation: none; } }
 @keyframes rise { from { transform: translateY(30px); opacity: .4; } to { transform: none; opacity: 1; } }
 
 .toast { position: fixed; left: 50%; bottom: calc(150px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%) translateY(10px); background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 10px; font-size: 14px; opacity: 0; transition: opacity .2s, transform .2s; z-index: 60; pointer-events: none; }
@@ -1087,6 +1103,7 @@ function top(back) {
   return '<header class="top">' +
     (back ? '<button class="iconbtn" data-act="back" aria-label="' + t("Back") + '">' + ic("back", "sm") + '</button>' : ic("logo")) +
     '<div class="brand">Days <b>After</b></div><div class="spacer"></div>' +
+    '<button class="themebtn warn" data-act="alerts" aria-label="' + t("Pill alerts") + '">' + ic("alert", "sm") + '<span class="wdot"></span></button>' +
     '<a class="themebtn" href="tel:112" aria-label="' + t("Call 112") + '">' + ic("phone", "sm") + '</a>' +
     '<button class="themebtn" data-act="theme" aria-label="' + (isDark() ? t("Light mode") : t("Dark mode")) + '">' + ic(isDark() ? "sun" : "moon", "sm") + '</button></header>';
 }
@@ -1192,7 +1209,7 @@ function afterUnlock() {
 let bannerT;
 function showAlertBanner() {
   const a = ALERTS[0], el = document.getElementById("banner");
-  el.innerHTML = '<button class="bannermain" data-act="banneropen">' + duo("pill") +
+  el.innerHTML = '<button class="bannermain" data-act="banneropen"><span class="wicon">' + ic("alert") + '</span>' +
     '<span class="btxt"><span class="label">' + t("New pill alert") + ' · ' + t("Demo") + '</span><b>' + esc(a.n) + '</b><span>' + esc(t(a.lvl)) + ' · ' + esc(t(a.what)) + '</span></span></button>' +
     '<button class="iconbtn" data-act="bannerclose" aria-label="' + t("Close") + '">' + ic("close", "sm") + '</button>';
   el.hidden = false;
@@ -1272,7 +1289,7 @@ function vToday() {
 }
 
 function alertRow(a) {
-  return '<div class="item withicon alert">' + duo("pill") + '<div class="itxt"><div class="it">' + esc(a.n) + '<span class="amtag">' + esc(fmtShort(new Date(a.d))) + '</span></div>' +
+  return '<div class="item withicon alert"><span class="wicon">' + ic("alert") + '</span>' + '<div class="itxt"><div class="it">' + esc(a.n) + '<span class="amtag">' + esc(fmtShort(new Date(a.d))) + '</span></div>' +
     '<div class="why"><b>' + esc(t(a.lvl)) + '</b> · ' + esc(t(a.what)) + '. ' + esc(t(a.tip)) + '</div></div></div>';
 }
 
@@ -1411,7 +1428,7 @@ function sInfo(s) {
 }
 
 function sAlerts() {
-  return '<div class="shead"><span class="glyph">' + ic("alert") + '</span><div class="txt"><div class="t">' + t("Pill alerts") + '</div><div class="s">' + t("Demo data, not real warnings. Live Trimbos feed coming.") + '</div></div>' +
+  return '<div class="shead"><span class="wicon lg">' + ic("alert") + '</span><div class="txt"><div class="t warnt">' + t("Pill alerts") + '</div><div class="s">' + t("Demo data, not real warnings. Live Trimbos feed coming.") + '</div></div>' +
     '<button class="iconbtn" data-act="closesheet" aria-label="' + t("Close") + '">' + ic("close", "sm") + '</button></div>' +
     '<div class="items" style="margin-top:12px">' + ALERTS.map(alertRow).join("") + '</div>';
 }
